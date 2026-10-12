@@ -1,16 +1,23 @@
-From 2a928bbdeec515a7cd0277c513f30f008d68119d Mon Sep 17 00:00:00 2001
+From 0c49ed2a6095559b3ee8e14a2fb54b810bd1b073 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Mon, 15 Jun 2026 11:24:02 +0100
-Subject: [PATCH] securize: rework to property-based toggle with GSI
+Subject: [PATCH] securize: rework to property-based toggle with GSI 
  fingerprint tracking
 
+release builds: add pstore-visible stage markers around the securize
+path so a boot that never dismisses the bootanimation leaves its last
+completed stage in console-ramoops, readable from recovery with no adb
+authorization. move the usb gadget string rewrite from the post-fs
+securize path into phh-on-boot: configfs is not guaranteed to be
+mounted that early, so the rewrite silently no-op'd on a long tail of
+devices, and it does not need to sit in the boot-critical path.
 ---
  base.mk             |   2 -
- phh-on-boot.sh      |  23 ++++++++
- phh-prop-handler.sh |  12 ++++
- rw-system.sh        | 133 +++++++++++++++++++++++++++++++-------------
- vndk.rc             |   7 +--
- 5 files changed, 131 insertions(+), 46 deletions(-)
+ phh-on-boot.sh      |  43 +++++++++++++++
+ phh-prop-handler.sh |  12 +++++
+ rw-system.sh        | 125 ++++++++++++++++++++++++++++++--------------
+ vndk.rc             |   7 ++-
+ 5 files changed, 143 insertions(+), 46 deletions(-)
 
 diff --git a/base.mk b/base.mk
 index a88eade..bdf2fa9 100644
@@ -33,16 +40,20 @@ index a88eade..bdf2fa9 100644
  
  PRODUCT_COPY_FILES += \
 diff --git a/phh-on-boot.sh b/phh-on-boot.sh
-index 5952ec0..9f65610 100644
+index 2f62af2..2195d2c 100644
 --- a/phh-on-boot.sh
 +++ b/phh-on-boot.sh
-@@ -24,6 +24,29 @@ if [ ! -f /sys/fs/fuse/features/fuse_bpf ]; then
+@@ -24,6 +24,49 @@ if [ ! -f /sys/fs/fuse/features/fuse_bpf ]; then
      setprop persist.sys.fuse.bpf.override false
      log -t phh-on-boot "Disabled FUSE BPF (kernel fuse_bpf feature absent)"
  fi
 +# spoof post-boot props
 +# should be applied after boot complete to prevent breaking device features
++# pstore-visible boot-progress marker: reaching this point means init
++# processed sys.boot_completed, so zygote and system_server came up
++echo "phhsec: phh-on-boot entered (boot completed)" > /dev/kmsg 2>/dev/null
 +if [ ! -f /metadata/securize_disable ]; then
++  echo "phhsec: post-boot identity spoof start" > /dev/kmsg 2>/dev/null
 +  resetprop_phh ro.build.user nobody
 +  resetprop_phh ro.build.host android-build
 +  resetprop_phh ro.build.tags release-keys
@@ -62,6 +73,22 @@ index 5952ec0..9f65610 100644
 +  resetprop_phh --delete ro.build.selinux
 +  resetprop_phh -n sys.oem_unlock_allowed 0
 +  resetprop_phh -n init.svc.flash_recovery stopped
++
++  # update usb gadget strings so the host sees the real product name.
++  # configfs is not guaranteed to be mounted during post-fs, so this runs
++  # here instead of in the boot-critical securize path.
++  model="$(getprop ro.product.model)"
++  manufacturer="$(getprop ro.product.manufacturer)"
++  gadget_strings="/config/usb_gadget/g1/strings/0x409"
++  legacy_usb="/sys/class/android_usb/android0"
++  if [ -d "$gadget_strings" ]; then
++      [ -n "$model" ] && echo "$model" > "$gadget_strings/product"
++      [ -n "$manufacturer" ] && echo "$manufacturer" > "$gadget_strings/manufacturer"
++  elif [ -d "$legacy_usb" ]; then
++      [ -n "$model" ] && echo "$model" > "$legacy_usb/iProduct"
++      [ -n "$manufacturer" ] && echo "$manufacturer" > "$legacy_usb/iManufacturer"
++  fi
++  echo "phhsec: post-boot identity spoof done" > /dev/kmsg 2>/dev/null
 +fi
  
  vndk="$(getprop persist.sys.vndk)"
@@ -90,10 +117,10 @@ index d9e3153..bdf7c24 100644
      if [[ "$prop_value" != "0" && "$prop_value" != "1" ]]; then
          exit 1
 diff --git a/rw-system.sh b/rw-system.sh
-index da58e34..f155cc5 100644
+index 8a9ea1f..28b44cd 100644
 --- a/rw-system.sh
 +++ b/rw-system.sh
-@@ -804,72 +804,125 @@ if [ "$brand" = OPPO ] || [ "$brand" = realme ]; then
+@@ -815,72 +815,117 @@ if [ "$brand" = OPPO ] || [ "$brand" = realme ]; then
      fi
  fi
  
@@ -148,6 +175,10 @@ index da58e34..f155cc5 100644
 +fi
 +
 +if [ ! -f /metadata/securize_disable ]; then
++    # pstore-visible stage markers: a release boot that never dismisses the
++    # bootanimation leaves the last completed securize stage in
++    # /sys/fs/pstore/console-ramoops, readable from recovery with no adb
++    echo "phhsec: release securize flood start" > /dev/kmsg 2>/dev/null
      copyprop ro.build.device ro.vendor.build.device
      copyprop ro.system.build.fingerprint ro.vendor.build.fingerprint
      copyprop ro.bootimage.build.fingerprint ro.vendor.build.fingerprint
@@ -228,19 +259,6 @@ index da58e34..f155cc5 100644
 +    copyprop ro.product.system.manufacturer ro.product.vendor.manufacturer
 +    copyprop ro.product.product.manufacturer ro.product.vendor.manufacturer
 +    copyprop ro.product.system_ext.manufacturer ro.product.vendor.manufacturer
-+
-+    # update usb gadget strings so the device appears correctly when connected
-+    model="$(getprop ro.product.model)"
-+    manufacturer="$(getprop ro.product.manufacturer)"
-+    gadget_strings="/config/usb_gadget/g1/strings/0x409"
-+    legacy_usb="/sys/class/android_usb/android0"
-+    if [ -d "$gadget_strings" ]; then
-+        [ -n "$model" ] && echo "$model" > "$gadget_strings/product"
-+        [ -n "$manufacturer" ] && echo "$manufacturer" > "$gadget_strings/manufacturer"
-+    elif [ -d "$legacy_usb" ]; then
-+        [ -n "$model" ] && echo "$model" > "$legacy_usb/iProduct"
-+        [ -n "$manufacturer" ] && echo "$manufacturer" > "$legacy_usb/iManufacturer"
-+    fi
  
      # Hide system/xbin/su
      mount /mnt/phh/empty_dir /system/xbin
@@ -256,6 +274,7 @@ index da58e34..f155cc5 100644
 -    chcon u:object_r:system_file:s0 /mnt/phh/xbin/su
 -
 -    mount -o bind /mnt/phh/xbin /system/xbin
++    echo "phhsec: securize flood done fp=$(getprop ro.build.fingerprint)" > /dev/kmsg 2>/dev/null
  fi
  
  for abi in "" 64;do
