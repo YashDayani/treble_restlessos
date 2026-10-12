@@ -1,7 +1,7 @@
 From 69553111ea2a3aa7c73e9275bd54ceff74683ed7 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Mon, 12 Oct 2026 13:53:42 +0100
-Subject: [PATCH 5/5] hide extended VA space settings on Scudo allocator
+Subject: [PATCH 5/6] hide extended VA space settings on Scudo allocator
 
 mirror the hardened malloc treatment: the GSI uses the Scudo allocator
 and never has hardened_malloc, so the extended virtual address space
