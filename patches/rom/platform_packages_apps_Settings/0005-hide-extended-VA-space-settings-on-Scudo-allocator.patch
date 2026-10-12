@@ -1,0 +1,42 @@
+From 69553111ea2a3aa7c73e9275bd54ceff74683ed7 Mon Sep 17 00:00:00 2001
+From: "Christopher A. Williamson" <contact@chrisaw.io>
+Date: Mon, 12 Oct 2026 13:53:42 +0100
+Subject: [PATCH 5/5] hide extended VA space settings on Scudo allocator
+
+mirror the hardened malloc treatment: the GSI uses the Scudo allocator
+and never has hardened_malloc, so the extended virtual address space
+setting is a no-op. mark the exploit protection list entry unsupported
+and drop the per-app preference from the app info page.
+---
+ src/com/android/settings/applications/AppExtendedVaSpace.kt | 4 ++--
+ src/com/android/settings/spa/app/appinfo/AppInfoSettings.kt | 1 -
+ 2 files changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/src/com/android/settings/applications/AppExtendedVaSpace.kt b/src/com/android/settings/applications/AppExtendedVaSpace.kt
+index aa41df0..ae2902d 100644
+--- a/src/com/android/settings/applications/AppExtendedVaSpace.kt
++++ b/src/com/android/settings/applications/AppExtendedVaSpace.kt
+@@ -57,6 +57,6 @@ class AppExtendedVaSpaceFragment : AswExploitProtectionFragment<AswUseExtendedVa
+ class ExtendedVaSpaceAppListPrefController(context: Context, preferenceKey: String) :
+     AswAppListPrefController(context, preferenceKey, AswAdapterUseExtendedVaSpace) {
+ 
+-    override fun getAvailabilityStatus() = if (AswUseExtendedVaSpace.isAvailable())
+-        ExtSettingControllerHelper.getDevModeSettingAvailability(mContext) else UNSUPPORTED_ON_DEVICE
++    // GSI uses Scudo instead of hardened_malloc; extended VA space is never available
++    override fun getAvailabilityStatus() = UNSUPPORTED_ON_DEVICE
+ }
+diff --git a/src/com/android/settings/spa/app/appinfo/AppInfoSettings.kt b/src/com/android/settings/spa/app/appinfo/AppInfoSettings.kt
+index 3544145..c7e60a9 100644
+--- a/src/com/android/settings/spa/app/appinfo/AppInfoSettings.kt
++++ b/src/com/android/settings/spa/app/appinfo/AppInfoSettings.kt
+@@ -229,7 +229,6 @@ private fun AppInfoSettings(packageInfoPresenter: PackageInfoPresenter) {
+         Category(title = stringResource(R.string.exploit_protection_category_title)) {
+             AppExploitProtectionCompatModeSwitchPreference(app, packageInfoPresenter)
+             com.android.settings.applications.AppMemtagPreference(app)
+-            com.android.settings.applications.AppExtendedVaSpacePreference(app)
+             com.android.settings.applications.AppExecSpawningPreference(app)
+             com.android.settings.applications.AppNativeDebuggingPreference(app)
+             com.android.settings.applications.AppWebViewDynCodeLoadingPreference(app)
+-- 
+2.55.0
+

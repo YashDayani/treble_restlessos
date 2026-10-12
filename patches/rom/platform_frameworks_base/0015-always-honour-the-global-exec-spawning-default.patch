@@ -1,7 +1,7 @@
 From b091aac5b60202c5258fb07094858ffdc5593d1f Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Mon, 12 Oct 2026 13:50:58 +0100
-Subject: [PATCH 15/15] always honour the global exec spawning default
+Subject: [PATCH 15/16] always honour the global exec spawning default
 
 drop the per-app compat-config override for secure app spawning: apps
 in the appcompatconfig table (notably gms) were forced onto the exec
