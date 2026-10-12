@@ -1,7 +1,7 @@
 From 26b7450d17c60ae322d5636e1247b4e4c0c6b345 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Sat, 10 Oct 2026 14:17:14 +0100
-Subject: [PATCH 13/16] pms: spoof absent packages as installed for the grapheneos
+Subject: [PATCH 13/15] pms: spoof absent packages as installed for the grapheneos
  store
 
 the store drops a package from its repo view when a self-referential
