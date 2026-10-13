@@ -1,4 +1,4 @@
-From 1c1d4fbb837e3c740528fdea92042251dfe5f274 Mon Sep 17 00:00:00 2001
+From bc7d86140d426d7b0e1456e2e1e035ed62220abc Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Mon, 28 Sep 2026 09:16:30 +0100
 Subject: [PATCH 1/4] connectivity: tolerate BPF-less legacy kernels
@@ -11,13 +11,13 @@ they are merged into one change.
 ---
  bpf/headers/include/bpf/BpfUtils.h            |   5 +-
  bpf/headers/include/bpf/KernelUtils.h         |   6 +
- bpf/loader/NetBpfLoad.cpp                     |  90 ++++++------
+ bpf/loader/NetBpfLoad.cpp                     |  95 +++++++------
  bpf/netd/BpfHandler.cpp                       | 128 ++++++++++--------
  .../src/android/net/BpfNetMapsUtils.java      |  67 ++++++++-
  .../server/net/NetworkStatsService.java       |  57 +++++++-
  ...id_server_connectivity_ClatCoordinator.cpp |  16 +--
  .../src/com/android/server/BpfNetMaps.java    |  12 ++
- 8 files changed, 263 insertions(+), 118 deletions(-)
+ 8 files changed, 267 insertions(+), 119 deletions(-)
 
 diff --git a/bpf/headers/include/bpf/BpfUtils.h b/bpf/headers/include/bpf/BpfUtils.h
 index 5ca52c6..86fe01e 100644
@@ -60,7 +60,7 @@ index add20c5..7ec3f3a 100644
      return KVER(kver_major, kver_minor, kver_sub);
  }
 diff --git a/bpf/loader/NetBpfLoad.cpp b/bpf/loader/NetBpfLoad.cpp
-index 25cc01a..ec5f86a 100644
+index 25cc01a..37814e9 100644
 --- a/bpf/loader/NetBpfLoad.cpp
 +++ b/bpf/loader/NetBpfLoad.cpp
 @@ -698,19 +698,20 @@ static int pinMap(const borrowed_fd& fd, const struct bpf_map_def& mapDef) {
@@ -285,7 +285,19 @@ index 25cc01a..ec5f86a 100644
              return 0;
          }
      } else {  // implies S/T with 4.9 kernel
-@@ -1870,7 +1881,8 @@ static int doLoad(char** argv, char * const envp[]) {
+@@ -1862,7 +1873,10 @@ static int doLoad(char** argv, char * const envp[]) {
+         if (writeToMapEntry(bpfKernelStatsMapFd, &key, &timeTaken, BPF_ANY)) {
+             ALOGE("Failed to write object load time to kernel stats map, err: [%d, %s]",
+                   errno, strerror(errno));
+-            return 39;
++            // [GSI] non-fatal: the stats map is not pinned on older kernels, and
++            // aborting here exits before the re-exec chain that sets bpf.progs_loaded,
++            // leaving init's wait_for_prop hung for good
++            if (isAtLeastT) failed = true;
+         }
+ 
+         uint32_t value = 123;
+@@ -1870,7 +1884,8 @@ static int doLoad(char** argv, char * const envp[]) {
          if (writeToMapEntry(bpfKernelStatsMapFd, &key, &value, BPF_ANY)) {
              ALOGE("Critical kernel bug - failure to write into index 1 of 2 element bpf map array."
                    "[%d, %s]", errno, strerror(errno));
