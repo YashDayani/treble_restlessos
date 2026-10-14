@@ -1,4 +1,4 @@
-From bc7d86140d426d7b0e1456e2e1e035ed62220abc Mon Sep 17 00:00:00 2001
+From e4e0226a2ee122c32083357c5c79a79e73dd1c2d Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Mon, 28 Sep 2026 09:16:30 +0100
 Subject: [PATCH 1/4] connectivity: tolerate BPF-less legacy kernels
@@ -16,8 +16,8 @@ they are merged into one change.
  .../src/android/net/BpfNetMapsUtils.java      |  67 ++++++++-
  .../server/net/NetworkStatsService.java       |  57 +++++++-
  ...id_server_connectivity_ClatCoordinator.cpp |  16 +--
- .../src/com/android/server/BpfNetMaps.java    |  12 ++
- 8 files changed, 267 insertions(+), 119 deletions(-)
+ .../src/com/android/server/BpfNetMaps.java    |  21 +++
+ 8 files changed, 276 insertions(+), 119 deletions(-)
 
 diff --git a/bpf/headers/include/bpf/BpfUtils.h b/bpf/headers/include/bpf/BpfUtils.h
 index 5ca52c6..86fe01e 100644
@@ -804,7 +804,7 @@ index 437e78f..01a0c2f 100644
  
  #undef V
 diff --git a/service/src/com/android/server/BpfNetMaps.java b/service/src/com/android/server/BpfNetMaps.java
-index be3b12b..3094cf4 100644
+index be3b12b..1ebe274 100644
 --- a/service/src/com/android/server/BpfNetMaps.java
 +++ b/service/src/com/android/server/BpfNetMaps.java
 @@ -1932,6 +1932,10 @@ public class BpfNetMaps {
@@ -840,6 +840,43 @@ index be3b12b..3094cf4 100644
          try {
              sLocalNetBlockedUidMap.deleteEntry(new U32(uid));
          } catch (ErrnoException e) {
+@@ -2039,6 +2051,8 @@ public class BpfNetMaps {
+     @RequiresApi(Build.VERSION_CODES.BAKLAVA)
+     public void removeLocalNetHostAllowlistForInterface(final int ifIndex) {
+         throwIfPre25Q2("removeLocalNetHostAllowlistForInterface is not available on pre-B devices");
++        // [GSI] bpf-less vendor kernels never pin these maps; NPE here would kill system_server
++        if (sLocalNetUidHostAllowlistMap == null || sLocalNetCacheGenerationIdMap == null) return;
+         synchronized (sLocalNetAccessLock) {
+             incrementLnpGenerationId(true);
+             try {
+@@ -2374,6 +2388,9 @@ public class BpfNetMaps {
+             throw new IllegalStateException(
+                     "Parity error in the local net cache generation ID. This should never happen.");
+         }
++        // [GSI] the generation id map is not pinned on bpf-less vendor kernels;
++        // dereferencing it here kills system_server on every connectivity change
++        if (sLocalNetCacheGenerationIdMap == null) return;
+         try {
+             sLocalNetCacheGenerationIdMap.updateEntry(GENERATION_ID_KEY,
+                     new S64(++sLnpGenerationID));
+@@ -2384,6 +2401,8 @@ public class BpfNetMaps {
+ 
+     @GuardedBy("sLocalNetAccessLock")
+     private void updateLocalNetAccessMap(final LocalNetAccessKey key, final boolean isAllowed) {
++        // [GSI] tolerate bpf-less vendor kernels: no map, no bookkeeping
++        if (sLocalNetAccessMap == null) return;
+         int eventType =
+                 CORE_NETWORKING_CRITICAL_COUNTS_EVENT_OCCURRED__EVENT_TYPE__CRITICAL_COUNTS_EVENT_TYPE_LNP_TRIE_NET_OK;
+         try {
+@@ -2405,6 +2424,8 @@ public class BpfNetMaps {
+     @GuardedBy("sLocalNetAccessLock")
+     private void updateLocalNetUidHostAllowlistMap(final LocalNetUidHostAllowlistKey key,
+             final boolean isAllowed) {
++        // [GSI] tolerate bpf-less vendor kernels: no map, no bookkeeping
++        if (sLocalNetUidHostAllowlistMap == null) return;
+         int eventType =
+                 CORE_NETWORKING_CRITICAL_COUNTS_EVENT_OCCURRED__EVENT_TYPE__CRITICAL_COUNTS_EVENT_TYPE_LNP_TRIE_HOST_OK;
+         try {
 -- 
 2.55.0
 
