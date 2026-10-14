@@ -1,4 +1,4 @@
-From e4e0226a2ee122c32083357c5c79a79e73dd1c2d Mon Sep 17 00:00:00 2001
+From bb058fa7a284a19acbb277cbbab0cc42e98c9d66 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Mon, 28 Sep 2026 09:16:30 +0100
 Subject: [PATCH 1/4] connectivity: tolerate BPF-less legacy kernels
@@ -11,13 +11,13 @@ they are merged into one change.
 ---
  bpf/headers/include/bpf/BpfUtils.h            |   5 +-
  bpf/headers/include/bpf/KernelUtils.h         |   6 +
- bpf/loader/NetBpfLoad.cpp                     |  95 +++++++------
+ bpf/loader/NetBpfLoad.cpp                     | 108 +++++++++------
  bpf/netd/BpfHandler.cpp                       | 128 ++++++++++--------
  .../src/android/net/BpfNetMapsUtils.java      |  67 ++++++++-
  .../server/net/NetworkStatsService.java       |  57 +++++++-
  ...id_server_connectivity_ClatCoordinator.cpp |  16 +--
- .../src/com/android/server/BpfNetMaps.java    |  21 +++
- 8 files changed, 276 insertions(+), 119 deletions(-)
+ .../src/com/android/server/BpfNetMaps.java    |  12 ++
+ 8 files changed, 280 insertions(+), 119 deletions(-)
 
 diff --git a/bpf/headers/include/bpf/BpfUtils.h b/bpf/headers/include/bpf/BpfUtils.h
 index 5ca52c6..86fe01e 100644
@@ -60,7 +60,7 @@ index add20c5..7ec3f3a 100644
      return KVER(kver_major, kver_minor, kver_sub);
  }
 diff --git a/bpf/loader/NetBpfLoad.cpp b/bpf/loader/NetBpfLoad.cpp
-index 25cc01a..37814e9 100644
+index 25cc01a..3157e9d 100644
 --- a/bpf/loader/NetBpfLoad.cpp
 +++ b/bpf/loader/NetBpfLoad.cpp
 @@ -698,19 +698,20 @@ static int pinMap(const borrowed_fd& fd, const struct bpf_map_def& mapDef) {
@@ -125,7 +125,27 @@ index 25cc01a..37814e9 100644
              }
          }
  
-@@ -1548,68 +1555,62 @@ static int doLoad(char** argv, char * const envp[]) {
+@@ -1512,6 +1519,19 @@ static int libbpfPrint(enum libbpf_print_level lvl, const char *const formatStr,
+ static int doLoad(char** argv, char * const envp[]) {
+     libbpf_set_print(libbpfPrint);
+ 
++    // [GSI] Fail-safe for the loader hand-off chain: the property is set by the
++    // final 'done' re-exec, and any stage dying before that leaves init's
++    // wait_for_prop hung forever. A forked one-shot watchdog force-releases the
++    // wait; this is a no-op if the chain completed within the window.
++    pid_t watchdog = fork();
++    if (watchdog == 0) {
++        sleep(45);
++        if (!GetIntProperty("bpf.progs_loaded", 0)) {
++            SetProperty("bpf.progs_loaded", "1");
++        }
++        _exit(0);
++    }
++
+     bool failed = false;
+ 
+     const bool runningAsRoot = !getuid();  // true iff U QPR3 or V+
+@@ -1548,68 +1568,62 @@ static int doLoad(char** argv, char * const envp[]) {
          return 2;
      }
  
@@ -208,7 +228,7 @@ index 25cc01a..37814e9 100644
      }
  
      if (isAtLeastV) {
-@@ -1741,7 +1742,7 @@ static int doLoad(char** argv, char * const envp[]) {
+@@ -1741,7 +1755,7 @@ static int doLoad(char** argv, char * const envp[]) {
          // (this writeFile is known to fail on at least 4.19, but always defaults to 0 on
          // pre-5.13, on 5.13+ it depends on CONFIG_BPF_UNPRIV_DEFAULT_OFF)
          if (!writeFile("/proc/sys/kernel/unprivileged_bpf_disabled", "0\n")) {
@@ -217,7 +237,7 @@ index 25cc01a..37814e9 100644
          }
      }
  
-@@ -1758,14 +1759,14 @@ static int doLoad(char** argv, char * const envp[]) {
+@@ -1758,14 +1772,14 @@ static int doLoad(char** argv, char * const envp[]) {
          // BPF_JIT is required by R VINTF (which means 4.14/4.19/5.4 kernels),
          // but 4.14/4.19 were released with P & Q, and only 5.4 is new in R+.
          if (!writeFile("/proc/sys/net/core/bpf_jit_enable", "1\n")) {
@@ -234,7 +254,7 @@ index 25cc01a..37814e9 100644
          }
      }
  
-@@ -1804,13 +1805,15 @@ static int doLoad(char** argv, char * const envp[]) {
+@@ -1804,13 +1818,15 @@ static int doLoad(char** argv, char * const envp[]) {
          uint32_t progId = bpfGetNextProgId(0);  // expect 0 with errno == ENOENT
          if (progId || errno != ENOENT) {
              ALOGE("bpfGetNextProgId(zero) returned %u (errno %d)", progId, errno);
@@ -252,7 +272,7 @@ index 25cc01a..37814e9 100644
          }
      } else if (isAtLeastKernelVersion(4, 14)) {  // implies S through U QPR2
          // bpfGetNext{Prog,Map}Id require 4.14+
-@@ -1823,7 +1826,8 @@ static int doLoad(char** argv, char * const envp[]) {
+@@ -1823,7 +1839,8 @@ static int doLoad(char** argv, char * const envp[]) {
              if (!next && errno == ENOENT) break;
              if (next <= mapId) {
                  ALOGE("bpfGetNextMapId(%u) returned %u errno %d", mapId, next, errno);
@@ -262,7 +282,7 @@ index 25cc01a..37814e9 100644
              }
              mapId = next;
          }
-@@ -1836,12 +1840,19 @@ static int doLoad(char** argv, char * const envp[]) {
+@@ -1836,12 +1853,19 @@ static int doLoad(char** argv, char * const envp[]) {
              // which causes bpfGetNextMapId to behave as bpfGetNextProgId,
              // and thus it should return 0 with errno == ENOENT.
              ALOGE("bpfGetNextMapId(final %u) returned %u errno %d", mapId, next, errno);
@@ -285,7 +305,7 @@ index 25cc01a..37814e9 100644
              return 0;
          }
      } else {  // implies S/T with 4.9 kernel
-@@ -1862,7 +1873,10 @@ static int doLoad(char** argv, char * const envp[]) {
+@@ -1862,7 +1886,10 @@ static int doLoad(char** argv, char * const envp[]) {
          if (writeToMapEntry(bpfKernelStatsMapFd, &key, &timeTaken, BPF_ANY)) {
              ALOGE("Failed to write object load time to kernel stats map, err: [%d, %s]",
                    errno, strerror(errno));
@@ -297,7 +317,7 @@ index 25cc01a..37814e9 100644
          }
  
          uint32_t value = 123;
-@@ -1870,7 +1884,8 @@ static int doLoad(char** argv, char * const envp[]) {
+@@ -1870,7 +1897,8 @@ static int doLoad(char** argv, char * const envp[]) {
          if (writeToMapEntry(bpfKernelStatsMapFd, &key, &value, BPF_ANY)) {
              ALOGE("Critical kernel bug - failure to write into index 1 of 2 element bpf map array."
                    "[%d, %s]", errno, strerror(errno));
@@ -804,7 +824,7 @@ index 437e78f..01a0c2f 100644
  
  #undef V
 diff --git a/service/src/com/android/server/BpfNetMaps.java b/service/src/com/android/server/BpfNetMaps.java
-index be3b12b..1ebe274 100644
+index be3b12b..3094cf4 100644
 --- a/service/src/com/android/server/BpfNetMaps.java
 +++ b/service/src/com/android/server/BpfNetMaps.java
 @@ -1932,6 +1932,10 @@ public class BpfNetMaps {
@@ -840,43 +860,6 @@ index be3b12b..1ebe274 100644
          try {
              sLocalNetBlockedUidMap.deleteEntry(new U32(uid));
          } catch (ErrnoException e) {
-@@ -2039,6 +2051,8 @@ public class BpfNetMaps {
-     @RequiresApi(Build.VERSION_CODES.BAKLAVA)
-     public void removeLocalNetHostAllowlistForInterface(final int ifIndex) {
-         throwIfPre25Q2("removeLocalNetHostAllowlistForInterface is not available on pre-B devices");
-+        // [GSI] bpf-less vendor kernels never pin these maps; NPE here would kill system_server
-+        if (sLocalNetUidHostAllowlistMap == null || sLocalNetCacheGenerationIdMap == null) return;
-         synchronized (sLocalNetAccessLock) {
-             incrementLnpGenerationId(true);
-             try {
-@@ -2374,6 +2388,9 @@ public class BpfNetMaps {
-             throw new IllegalStateException(
-                     "Parity error in the local net cache generation ID. This should never happen.");
-         }
-+        // [GSI] the generation id map is not pinned on bpf-less vendor kernels;
-+        // dereferencing it here kills system_server on every connectivity change
-+        if (sLocalNetCacheGenerationIdMap == null) return;
-         try {
-             sLocalNetCacheGenerationIdMap.updateEntry(GENERATION_ID_KEY,
-                     new S64(++sLnpGenerationID));
-@@ -2384,6 +2401,8 @@ public class BpfNetMaps {
- 
-     @GuardedBy("sLocalNetAccessLock")
-     private void updateLocalNetAccessMap(final LocalNetAccessKey key, final boolean isAllowed) {
-+        // [GSI] tolerate bpf-less vendor kernels: no map, no bookkeeping
-+        if (sLocalNetAccessMap == null) return;
-         int eventType =
-                 CORE_NETWORKING_CRITICAL_COUNTS_EVENT_OCCURRED__EVENT_TYPE__CRITICAL_COUNTS_EVENT_TYPE_LNP_TRIE_NET_OK;
-         try {
-@@ -2405,6 +2424,8 @@ public class BpfNetMaps {
-     @GuardedBy("sLocalNetAccessLock")
-     private void updateLocalNetUidHostAllowlistMap(final LocalNetUidHostAllowlistKey key,
-             final boolean isAllowed) {
-+        // [GSI] tolerate bpf-less vendor kernels: no map, no bookkeeping
-+        if (sLocalNetUidHostAllowlistMap == null) return;
-         int eventType =
-                 CORE_NETWORKING_CRITICAL_COUNTS_EVENT_OCCURRED__EVENT_TYPE__CRITICAL_COUNTS_EVENT_TYPE_LNP_TRIE_HOST_OK;
-         try {
 -- 
 2.55.0
 
