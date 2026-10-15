@@ -2,8 +2,8 @@
 <manifest>
   <remote name="cawilliamson" fetch="https://github.com/cawilliamson/" />
   <remote name="cawilliamson_priv" fetch="ssh://git@github.com/cawilliamson/" />
-  <remote name="gitlab" fetch="https://gitlab.com/" />
   <remote name="lineage" fetch="https://github.com/LineageOS/" />
+  <remote name="pixelos" fetch="https://gitlab.com/PixelOS-AOSP/" />
 
   <!-- aosp: vndk-v28 -->
   <project path="prebuilts/vndk/v28" name="platform/prebuilts/vndk/v28" remote="aosp" revision="204f1bad00aaf480ba33233f7b8c2ddaa03155dd" clone-depth="1" />
@@ -48,5 +48,5 @@
   <project path="vendor/cawilliamson_keys" name="android_vendor_cawilliamson_keys" remote="cawilliamson_priv" revision="main" clone-depth="1" />
 
   <!-- pixel: google sans fonts -->
-  <project path="vendor/pixel/gsans" name="PixelOS-AOSP/proprietary_vendor_pixel_gsans" remote="gitlab" revision="seventeen" clone-depth="1" />
+  <project path="vendor/pixel/gsans" name="proprietary_vendor_pixel_gsans" remote="pixelos" revision="seventeen" clone-depth="1" />
 </manifest>
