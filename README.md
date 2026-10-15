@@ -164,6 +164,37 @@ for more information and discussion.
 
 [ALPS05247589]: https://gist.github.com/R0rt1z2/8af7735c6c3802148fa4da61b3cba506
 
+## Licensing
+
+The RestlessOS build system, patches, scripts and configuration in this
+repository are licensed under the [Apache License 2.0](LICENSE).
+
+The resulting system image is a larger, mixed-licence work: it is built
+substantially from third-party sources, and those sources remain under their
+own licences. Nothing here modifies, relicenses or supersedes any upstream
+licence. In particular:
+
+- **AOSP** — the bulk of the platform, Apache-2.0. Android is a trademark of
+  Google LLC.
+- **GrapheneOS** — our upstream, used and modified under the terms of its
+  component licences (predominantly MIT; see each upstream repository). Their
+  `COPPERHEAD-NOTICE`, shipped in the GrapheneOS manifests this repo syncs
+  from, applies to their contributions as published.
+- **TrebleDroid** — device trees, patches and build tooling, Apache-2.0
+  (earlier phhusson code WTFPL).
+- **Linux kernel** — GPL-2.0, as shipped by the vendor or Google's kernel
+  repositories.
+- **bundled applications** — Seedvault and similar carry their own licences
+  (e.g. AGPL-3.0); their complete licence texts ship in the source
+  repositories and corresponding source is offered with each release, as those
+  licences require.
+
+If you reuse this repository, the Apache-2.0 grant covers only the build
+orchestration here — comply with the upstream licences for the sources
+themselves. RestlessOS is an unofficial project and is not endorsed by or
+affiliated with the GrapheneOS, TrebleDroid or AOSP projects; all trademarks
+belong to their respective owners.
+
 ## Credits
 
 - **TrebleDroid team** — for all of their hard work in making all of this possible
