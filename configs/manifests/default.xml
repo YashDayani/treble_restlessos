@@ -2,6 +2,7 @@
 <manifest>
   <remote name="cawilliamson" fetch="https://github.com/cawilliamson/" />
   <remote name="cawilliamson_priv" fetch="ssh://git@github.com/cawilliamson/" />
+  <remote name="gitlab" fetch="https://gitlab.com/" />
   <remote name="lineage" fetch="https://github.com/LineageOS/" />
 
   <!-- aosp: vndk-v28 -->
