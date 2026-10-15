@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
-  <remote name="cawilliamson-priv" fetch="ssh://git@github.com/cawilliamson/" />
+  <remote name="cawilliamson" fetch="https://github.com/cawilliamson/" />
+  <remote name="cawilliamson_priv" fetch="ssh://git@github.com/cawilliamson/" />
   <remote name="lineage" fetch="https://github.com/LineageOS/" />
 
   <!-- aosp: vndk-v28 -->
@@ -12,9 +13,39 @@
   <!-- aosp: vndk-v30 -->
   <project path="prebuilts/vndk/v30" name="platform/prebuilts/vndk/v30" remote="aosp" revision="5f9884aa352825291757dfd6694b874ad8c1805e" clone-depth="1" />
 
+  <!-- cawilliamson: qcrilam -->
+  <project path="packages/apps/QcRilAm" name="android_packages_apps_QcRilAm" remote="cawilliamson" revision="main" clone-depth="1" />
+
+  <!-- cawilliamson: vendor_lptools -->
+  <project path="vendor/lptools" name="vendor_lptools" remote="cawilliamson" revision="main" clone-depth="1" />
+
   <!-- lineage: apn database -->
   <project path="vendor/apn" name="android_vendor_apn" remote="lineage" revision="main" clone-depth="1" />
 
-  <!-- vendor-priv -->
-  <project path="vendor/cawilliamson-priv" name="vendor_cawilliamson-priv" remote="cawilliamson-priv" revision="main" clone-depth="1" />
+  <!-- cawilliamson: device_phh_treble -->
+  <project path="device/phh/treble" name="device_phh_treble" remote="cawilliamson" revision="android-17.0" clone-depth="1" />
+
+  <!-- cawilliamson: treble_app -->
+  <project path="treble_app" name="treble_app" remote="cawilliamson" revision="main" clone-depth="1" />
+
+  <!-- cawilliamson: vendor_cawilliamson -->
+  <project path="vendor/cawilliamson" name="vendor_cawilliamson" remote="cawilliamson" revision="main" clone-depth="1" />
+
+  <!-- cawilliamson: vendor_hardware_overlay -->
+  <project path="vendor/hardware/overlay" name="vendor_hardware_overlay" remote="cawilliamson" revision="main" clone-depth="1" />
+
+  <!-- cawilliamson: vendor_interfaces -->
+  <project path="vendor/interfaces" name="vendor_interfaces" remote="cawilliamson" revision="android-17.0" clone-depth="1" />
+
+  <!-- cawilliamson: vendor_magisk -->
+  <project path="vendor/magisk" name="vendor_magisk" remote="cawilliamson" revision="main" clone-depth="1" />
+
+  <!-- cawilliamson: vendor_vndk-tests -->
+  <project path="vendor/vndk-tests" name="vendor_vndk-tests" remote="cawilliamson" revision="main" clone-depth="1" />
+
+  <!-- cawilliamson-priv: vendor_cawilliamson_keys -->
+  <project path="vendor/cawilliamson_keys" name="vendor_cawilliamson_keys" remote="cawilliamson_priv" revision="main" clone-depth="1" />
+
+  <!-- pixel: google sans fonts -->
+  <project path="vendor/pixel/gsans" name="PixelOS-AOSP/proprietary_vendor_pixel_gsans" remote="gitlab" revision="seventeen" clone-depth="1" />
 </manifest>

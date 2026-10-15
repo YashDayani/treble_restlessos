@@ -12,8 +12,7 @@ usage() {
 usage: $(basename "$0") [options]
 
 reset every repo referenced by a patch tier to its upstream base commit,
-discarding any applied patches and untracked files, and restore the
-overlaid snapshots under overlays/ to pristine. leaves src/ ready for a
+discarding any applied patches and untracked files. leaves src/ ready for a
 fresh patch apply pass, and fails loudly if any repo could not be reset.
 
 options:
@@ -70,12 +69,12 @@ for project in $projects; do
   # test/vts-testcase/hal/treble/vintf inside test/vts-testcase), so resolve
   # the enclosing work tree and reset that. never touch anything outside
   # the source tree -- a path that climbs to an ancestor work tree (the
-  # orchestration repo, or a vendored snapshot) is skipped instead.
+  # orchestration repo) is skipped instead.
   if ! top="$(git -C "$path" rev-parse --show-toplevel 2>/dev/null)"; then
-    continue # not synced; snapshots restored below
+    continue # not synced
   fi
   if [[ ! -d "$top/.git" || "$top" != "$SRC_DIR"* ]]; then
-    continue # vendored snapshot or outside the source tree
+    continue # outside the source tree
   fi
   if (
     cd "$top" || exit 1
@@ -94,13 +93,9 @@ for project in $projects; do
   fi
 done
 
-# vendored snapshots carry no .git so the loop never sees them; restore
-# them from overlays/ instead
-"$TOP_DIR/scripts/copy-overlays.sh" "$SRC_DIR" >/dev/null
-
 echo ""
 if [[ "$failures" -ne 0 ]]; then
   echo "reset FAILED for $failures repo(s); fix the errors above before applying patches" >&2
   exit 1
 fi
-echo "reset complete: all patch-tier repos verified at upstream base, snapshots restored."
+echo "reset complete: all patch-tier repos verified at upstream base."

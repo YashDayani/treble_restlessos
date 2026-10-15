@@ -4,9 +4,6 @@ set -e
 
 patches=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 tree="$2"
-# snapshot root: used as a git discovery ceiling so `git apply --no-index` in
-# vendored snapshots never resolves paths against a parent work tree
-srcroot=$(pwd)
 
 # empty tiers (or project dirs without .patch files) must no-op rather than
 # letting unexpanded globs leak through as literal paths
@@ -31,18 +28,10 @@ for project in "$patches"/"$tree"/*/; do
   pushd "$p" &>/dev/null
   for patch in "$patches"/"$tree"/"$project"/*.patch; do
     echo ">> ${patch}"
-    if test -d .git; then
-      git am "$patch" || {
-        git am --abort
-        exit 1
-      }
-    else
-      # overlaid snapshots under overlays/ have no .git; git apply handles binary hunks.
-      # --no-index plus a ceiling at the snapshot dir prevents git from discovering a
-      # parent work tree (e.g. when src/ lives inside this repo locally), where path
-      # resolution would silently skip patches
-      GIT_CEILING_DIRECTORIES="$srcroot" git apply --no-index -p1 "$patch" || exit 1
-    fi
+    git am "$patch" || {
+      git am --abort
+      exit 1
+    }
   done
   popd &>/dev/null
 done

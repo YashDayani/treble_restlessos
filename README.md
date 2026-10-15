@@ -124,9 +124,9 @@ The release image is signed using a private `vendor_cawilliamson-priv` repo
   `--extra_apks` / `--extra_apex_payload_key` mapping for every APK and APEX
   in the image
 
-Script-only copies of both are kept under
-[`overlays/cawilliamson/vendor_cawilliamson-priv/`](overlays/cawilliamson/vendor_cawilliamson-priv/)
-as a reference. To sign with your own keys:
+Script-only copies of both are kept in the
+[`vendor_cawilliamson_keys`](https://github.com/cawilliamson/vendor_cawilliamson_keys)
+repository as a reference. To sign with your own keys:
 
 1. generate a key set — adapt `make_keys.sh` (the `SUBJECT` line and the key
    list) to your own details and run it
@@ -138,7 +138,7 @@ as a reference. To sign with your own keys:
    the `Sign target files` step in the workflow to reference it
 
 Never commit the private key material (`.pk8` and `.pem` files) to a public
-repository — the copies under `overlays/` are deliberately scripts only.
+repository — keep scripts and keys in a dedicated private repo instead.
 
 ## Known Issues
 
