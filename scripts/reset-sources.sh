@@ -54,6 +54,21 @@ map_project_to_src() {
   echo "$p"
 }
 
+# the manifest-pinned revision is the real base: with a full (non-shallow)
+# history the first parentless commit can be an empty import root, not the
+# revision the patches were written against. the rev-list heuristic in the
+# loop is only a fallback for repos the manifest does not pin to a sha.
+manifest_xml="$(cd "$SRC_DIR" && repo manifest 2>/dev/null || true)"
+
+manifest_revision() {
+  local path="$1"
+  [[ -n "$manifest_xml" ]] || return 1
+  local tag
+  tag="$(grep -o '<project[^>]*' <<<"$manifest_xml" | grep "path=\"$path\"" | head -1)"
+  [[ -n "$tag" ]] || return 1
+  grep -oP 'revision="\K[0-9a-f]{40}' <<<"$tag"
+}
+
 # stale lock files and half-finished rebase/am state from interrupted runs
 # make later resets fail silently, so clear them before anything else
 find "$SRC_DIR" -name index.lock -delete 2>/dev/null || true
@@ -79,7 +94,8 @@ for project in $projects; do
   if (
     cd "$top" || exit 1
     git am --abort >/dev/null 2>&1 || true
-    base="$(git rev-list --max-parents=0 HEAD | tail -1)"
+    base="$(manifest_revision "${top#"$SRC_DIR"/}")"
+    [[ -n "$base" ]] || base="$(git rev-list --max-parents=0 HEAD | tail -1)"
     git reset --hard "$base" >/dev/null || exit 1
     git clean -fdx >/dev/null || exit 1
     head="$(git rev-parse HEAD)"
