@@ -356,7 +356,7 @@ jobs:
           . build/envsetup.sh
           V="user"; [ "${{ github.event.inputs.debug_build || 'false' }}" = "true" ] && V="userdebug"
           lunch "treble_arm64_bvN-${ANDROID_VERSION_TAG}-${V}"
-          bash vendor/cawilliamson-priv/keys/sign.sh
+          bash vendor/cawilliamson/scripts/sign.sh
           rm -fv "${OUT}/system.img"
           unzip -j -q "${OUT}/signed-target_files.zip" IMAGES/system.img -d "${OUT}/"
           rm -fv "${OUT}/signed-target_files.zip"
