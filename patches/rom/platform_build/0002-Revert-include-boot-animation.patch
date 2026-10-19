@@ -1,4 +1,4 @@
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From ff088313b9440ee44b4f1ea960fa81d842efb589 Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Mon, 19 Oct 2026 03:32:18 +0300
 Subject: [PATCH 2/2] Revert "include boot animation"
