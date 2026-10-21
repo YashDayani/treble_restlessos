@@ -1,0 +1,100 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Yash Dayani <52958495+YashDayani@users.noreply.github.com>
+Date: Wed, 21 Oct 2026 21:00:00 +0530
+Subject: [PATCH] Settings: add a network speed indicator toggle to Network & internet
+
+Adds a switch to Network & internet that turns the status bar network
+speed indicator on or off (Settings.System.NETWORK_TRAFFIC_ENABLED).
+When it is on, the current download and upload speed is shown in the
+status bar.
+
+The indicator is added by the "SystemUI: add a network speed indicator
+to the status bar" patch in platform_frameworks_base, which also adds
+the setting; this patch needs it. The other options (mode, units,
+refresh interval, auto-hide) stay available as settings and are not
+part of this screen.
+---
+ res/values/network_traffic_strings.xml | 5 +++++
+ res/xml/network_provider_internet.xml | 7 +++++++
+ src/com/android/settings/network/NetworkTrafficPreferenceController.kt | 45 ++++++++++++++++++++
+ 3 files changed, 57 insertions(+), 0 deletions(-)
+
+diff --git a/res/values/network_traffic_strings.xml b/res/values/network_traffic_strings.xml
+new file mode 100644
+--- /dev/null
++++ b/res/values/network_traffic_strings.xml
+@@ -0,0 +1,5 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="network_traffic_title">Network speed indicator</string>
++    <string name="network_traffic_summary">Show the current download and upload speed in the status bar</string>
++</resources>
+diff --git a/res/xml/network_provider_internet.xml b/res/xml/network_provider_internet.xml
+--- a/res/xml/network_provider_internet.xml
++++ b/res/xml/network_provider_internet.xml
+@@ -93,6 +93,13 @@
+         settings:isPreferenceVisible="@bool/config_show_data_saver"
+         android:fragment="com.android.settings.datausage.DataSaverSummary"/>
+ 
++    <SwitchPreferenceCompat
++        android:key="network_traffic_enabled"
++        android:title="@string/network_traffic_title"
++        android:summary="@string/network_traffic_summary"
++        android:order="12"
++        settings:controller="com.android.settings.network.NetworkTrafficPreferenceController" />
++
+     <com.android.settings.vpn2.VpnInfoPreference
+         android:fragment="com.android.settings.vpn2.VpnSettings"
+         android:key="vpn_settings"
+diff --git a/src/com/android/settings/network/NetworkTrafficPreferenceController.kt b/src/com/android/settings/network/NetworkTrafficPreferenceController.kt
+new file mode 100644
+--- /dev/null
++++ b/src/com/android/settings/network/NetworkTrafficPreferenceController.kt
+@@ -0,0 +1,45 @@
++package com.android.settings.network
++
++import android.content.Context
++import android.provider.Settings
++import androidx.annotation.VisibleForTesting
++import com.android.settings.R
++import com.android.settings.core.TogglePreferenceController
++
++/**
++ * Preference controller that turns the network speed indicator in the status bar on or off. The
++ * indicator itself lives in SystemUI and follows [Settings.System.NETWORK_TRAFFIC_ENABLED].
++ */
++class NetworkTrafficPreferenceController(context: Context, key: String) :
++    TogglePreferenceController(context, key) {
++
++    override fun getAvailabilityStatus(): Int {
++        return AVAILABLE
++    }
++
++    override fun isChecked(): Boolean {
++        return Settings.System.getInt(
++            mContext.contentResolver,
++            Settings.System.NETWORK_TRAFFIC_ENABLED,
++            SETTING_VALUE_OFF,
++        ) == SETTING_VALUE_ON
++    }
++
++    override fun setChecked(isChecked: Boolean): Boolean {
++        return Settings.System.putInt(
++            mContext.contentResolver,
++            Settings.System.NETWORK_TRAFFIC_ENABLED,
++            if (isChecked) SETTING_VALUE_ON else SETTING_VALUE_OFF,
++        )
++    }
++
++    override fun getSliceHighlightMenuRes(): Int {
++        return R.string.menu_key_network
++    }
++
++    companion object {
++        @VisibleForTesting const val SETTING_VALUE_OFF = 0
++
++        @VisibleForTesting const val SETTING_VALUE_ON = 1
++    }
++}
+-- 
+2.50.1
