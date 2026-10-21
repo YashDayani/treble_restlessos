@@ -33,15 +33,13 @@ switch in Settings is not part of this change.
  packages/SystemUI/res/drawable/stat_sys_network_traffic_up.xml | 33 ++++++++++++++++++++
  packages/SystemUI/res/drawable/stat_sys_network_traffic_updown.xml | 33 ++++++++++++++++++++
  packages/SystemUI/res/values/network_traffic_strings.xml | 25 ++++++++++++++++++++
- packages/SystemUI/src/com/android/systemui/shade/ShadeHeaderController.kt | 3 +++
- packages/SystemUI/src/com/android/systemui/statusbar/NetworkTraffic.java | 673 ++++++++++++++++++++
+ packages/SystemUI/src/com/android/systemui/statusbar/NetworkTraffic.java | 663 ++++++++++++++++++++
  packages/SystemUI/src/com/android/systemui/statusbar/phone/PhoneStatusBarPolicy.java | 6 ++++++
  packages/SystemUI/src/com/android/systemui/statusbar/phone/StatusBarIconHolder.kt | 20 +++++++++++++++++---
- packages/SystemUI/src/com/android/systemui/statusbar/phone/StatusIconContainer.java | 26 ++++++++++++++++++++
  packages/SystemUI/src/com/android/systemui/statusbar/phone/ui/IconManager.java | 10 ++++++++++
  packages/SystemUI/src/com/android/systemui/statusbar/phone/ui/StatusBarIconController.java | 6 ++++++
  packages/SystemUI/src/com/android/systemui/statusbar/phone/ui/StatusBarIconControllerImpl.java | 10 ++++++++++
- 18 files changed, 975 insertions(+), 3 deletions(-)
+ 16 files changed, 936 insertions(+), 3 deletions(-)
 
 diff --git a/core/java/android/provider/Settings.java b/core/java/android/provider/Settings.java
 --- a/core/java/android/provider/Settings.java
@@ -349,31 +347,11 @@ new file mode 100644
 +    <string name="megabytespersecond_short" translatable="false">MB/s</string>
 +    <string name="gigabytespersecond_short" translatable="false">GB/s</string>
 +</resources>
-diff --git a/packages/SystemUI/src/com/android/systemui/shade/ShadeHeaderController.kt b/packages/SystemUI/src/com/android/systemui/shade/ShadeHeaderController.kt
---- a/packages/SystemUI/src/com/android/systemui/shade/ShadeHeaderController.kt
-+++ b/packages/SystemUI/src/com/android/systemui/shade/ShadeHeaderController.kt
-@@ -354,6 +354,8 @@
- 
-         iconManager = tintedIconManagerFactory.create(iconContainer, StatusBarLocation.QS)
-         iconManager.setTint(fgColor, bgColor)
-+        iconContainer.setIsUsingQs(true)
-+        iconContainer.setNetworkTrafficColor(fgColor)
- 
-         // Configure the correct margins for the system icon container
-         val statusIcons = mView.requireViewById<AlphaOptimizedLinearLayout>(R.id.statusIcons)
-@@ -496,6 +498,7 @@
-             getBgColor(),
-         )
-         iconManager.setTint(getFgColor(), getBgColor())
-+        iconContainer.setNetworkTrafficColor(getFgColor())
-     }
- 
-     private fun updateCarrierGroupPadding() {
 diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/NetworkTraffic.java b/packages/SystemUI/src/com/android/systemui/statusbar/NetworkTraffic.java
 new file mode 100644
 --- /dev/null
 +++ b/packages/SystemUI/src/com/android/systemui/statusbar/NetworkTraffic.java
-@@ -0,0 +1,673 @@
+@@ -0,0 +1,663 @@
 +/**
 + * Copyright (C) 2019-2024 crDroid Android Project
 + *
@@ -515,8 +493,6 @@ new file mode 100644
 +    private int mVisibleState = STATE_ICON;
 +
 +    private String mSlot;
-+
-+    private boolean isUsingQs;
 +
 +    private int mCurrentWidth = -1;
 +
@@ -735,10 +711,6 @@ new file mode 100644
 +        mSlot = slot;
 +    }
 +
-+    public void setIsUsingQs(boolean value) {
-+        isUsingQs = value;
-+    }
-+
 +    @Override
 +    public void setTextColor(int color) {
 +        super.setTextColor(color);
@@ -750,15 +722,14 @@ new file mode 100644
 +
 +    @Override
 +    public void onDarkChanged(ArrayList<Rect> areas, float darkIntensity, int tint) {
-+        if (isUsingQs)
-+            return;
-+
 +        mTint = DarkIconDispatcher.getTint(areas, this, tint);
 +        setTextColor(mTint);
 +    }
 +
 +    @Override
-+    public void setStaticDrawableColor(int color) {}
++    public void setStaticDrawableColor(int color) {
++        setTextColor(color);
++    }
 +
 +    @Override
 +    public void setDecorColor(int color) {
@@ -876,8 +847,6 @@ new file mode 100644
 +            mConnectivityManager.registerNetworkCallback(mRequest, mNetworkCallback);
 +            mConnectivityManager.registerDefaultNetworkCallback(mDefaultNetworkCallback);
 +
-+            Dependency.get(DarkIconDispatcher.class).addDarkReceiver(this);
-+
 +            updateViews();
 +        }
 +    }
@@ -889,7 +858,6 @@ new file mode 100644
 +            clearHandlerCallbacks();
 +            mConnectivityManager.unregisterNetworkCallback(mDefaultNetworkCallback);
 +            mConnectivityManager.unregisterNetworkCallback(mNetworkCallback);
-+            Dependency.get(DarkIconDispatcher.class).removeDarkReceiver(this);
 +            Dependency.get(TunerService.class).removeTunable(this);
 +            mDrawable = null;
 +            setCompoundDrawables(null, null, null, null);
@@ -1141,63 +1109,6 @@ diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/phone/StatusBa
              return holder
          }
  
-diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/phone/StatusIconContainer.java b/packages/SystemUI/src/com/android/systemui/statusbar/phone/StatusIconContainer.java
---- a/packages/SystemUI/src/com/android/systemui/statusbar/phone/StatusIconContainer.java
-+++ b/packages/SystemUI/src/com/android/systemui/statusbar/phone/StatusIconContainer.java
-@@ -34,6 +34,7 @@
- 
- import com.android.keyguard.AlphaOptimizedLinearLayout;
- import com.android.systemui.res.R;
-+import com.android.systemui.statusbar.NetworkTraffic;
- import com.android.systemui.statusbar.StatusIconDisplayable;
- import com.android.systemui.statusbar.notification.stack.AnimationFilter;
- import com.android.systemui.statusbar.notification.stack.AnimationProperties;
-@@ -80,6 +81,8 @@
- 
-     private Configuration mConfiguration;
- 
-+    private int mNetworkTrafficColor = -1;
-+
-     public StatusIconContainer(Context context) {
-         this(context, null);
-     }
-@@ -98,6 +101,25 @@
- 
-     public void setQsExpansionTransitioning(boolean expansionTransitioning) {
-         mQsExpansionTransitioning = expansionTransitioning;
-+    }
-+
-+    /** Tells the network speed indicator, if present, that it is drawn on the QS header. */
-+    public void setIsUsingQs(boolean value) {
-+        for (int i = 0; i < getChildCount(); i++) {
-+            if (getChildAt(i) instanceof NetworkTraffic) {
-+                ((NetworkTraffic) getChildAt(i)).setIsUsingQs(value);
-+            }
-+        }
-+    }
-+
-+    /** Sets the color of the network speed indicator, if present. */
-+    public void setNetworkTrafficColor(int color) {
-+        mNetworkTrafficColor = color;
-+        for (int i = 0; i < getChildCount(); i++) {
-+            if (getChildAt(i) instanceof NetworkTraffic) {
-+                ((NetworkTraffic) getChildAt(i)).setTextColor(color);
-+            }
-+        }
-     }
- 
-     public void setShouldRestrictIcons(boolean should) {
-@@ -233,6 +255,10 @@
-         StatusIconState vs = new StatusIconState();
-         vs.justAdded = true;
-         child.setTag(R.id.status_bar_view_state_tag, vs);
-+
-+        if (child instanceof NetworkTraffic && mNetworkTrafficColor != -1) {
-+            ((NetworkTraffic) child).setTextColor(mNetworkTrafficColor);
-+        }
-     }
- 
-     @Override
 diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/phone/ui/IconManager.java b/packages/SystemUI/src/com/android/systemui/statusbar/phone/ui/IconManager.java
 --- a/packages/SystemUI/src/com/android/systemui/statusbar/phone/ui/IconManager.java
 +++ b/packages/SystemUI/src/com/android/systemui/statusbar/phone/ui/IconManager.java
