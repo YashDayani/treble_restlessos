@@ -1,8 +1,7 @@
 From 5b9c45774c574e100d86a7ef320e539865120b4c Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Tue, 29 Sep 2026 14:09:06 +0100
-Subject: [PATCH 1/1] drop the virtualization apexes from the crates availability
- lists
+Subject: [PATCH] drop the virtualization apexes from the crates availability lists
 
 the virtualization, compos and microfuchsia apexes are not built on the
 gsi, so apex_available validation rejects the stale entries across the

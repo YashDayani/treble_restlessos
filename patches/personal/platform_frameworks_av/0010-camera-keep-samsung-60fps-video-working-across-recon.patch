@@ -1,8 +1,7 @@
 From 06114316ba2f491b61756655d3618ed4df2bd928 Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Sun, 4 Oct 2026 23:12:07 +0300
-Subject: [PATCH 10/12] camera: keep samsung 60fps video working across
- reconfigures
+Subject: [PATCH 10/12] camera: keep samsung 60fps video working across reconfigures
 
 ---
  .../common/CameraDeviceBase.h                 |  3 +

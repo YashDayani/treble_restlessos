@@ -1,8 +1,7 @@
 From 0c49ed2a6095559b3ee8e14a2fb54b810bd1b073 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Mon, 15 Jun 2026 11:24:02 +0100
-Subject: [PATCH] securize: rework to property-based toggle with GSI 
- fingerprint tracking
+Subject: [PATCH 1/2] securize: rework to property-based toggle with GSI  fingerprint tracking
 
 release builds: add pstore-visible stage markers around the securize
 path so a boot that never dismisses the bootanimation leaves its last

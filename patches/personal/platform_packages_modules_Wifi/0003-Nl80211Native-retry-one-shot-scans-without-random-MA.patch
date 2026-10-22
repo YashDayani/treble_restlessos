@@ -1,8 +1,7 @@
 From 981fb2de088b19fdb5e4f47439449695d6c49e67 Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Fri, 16 Oct 2026 00:49:31 +0300
-Subject: [PATCH] Nl80211Native: retry one-shot scans without random MAC when
- the kernel rejects it
+Subject: [PATCH 3/3] Nl80211Native: retry one-shot scans without random MAC when the kernel rejects it
 
 ---
  .../server/wifi/nl80211/Nl80211Native.java    | 19 +++++++++++++++++--

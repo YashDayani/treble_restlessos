@@ -1,8 +1,7 @@
 From 3d3d3a014cfd6eb41a55f79a3c2962912a951bba Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Thu, 10 Apr 2026 12:00:00 +0100
-Subject: [PATCH 4/12] MediaProfiles: fall back to defaults when XML file cannot
- be opened
+Subject: [PATCH 4/12] MediaProfiles: fall back to defaults when XML file cannot be opened
 
 On GSI builds running via DSU, the vendor media_profiles XML file may
 exist on disk (passing the stat() check) but be inaccessible due to

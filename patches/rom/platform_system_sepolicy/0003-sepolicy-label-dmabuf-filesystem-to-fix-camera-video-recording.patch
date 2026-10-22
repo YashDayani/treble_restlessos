@@ -1,8 +1,7 @@
 From cf94772e2564109579c43db88a472eeb6c31350e Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Wed, 10 Jun 2026 12:36:10 +0100
-Subject: [PATCH 3/3] sepolicy: label dmabuf filesystem to fix camera video
- recording
+Subject: [PATCH 3/3] sepolicy: label dmabuf filesystem to fix camera video recording
 
 on some vendor kernels, the dma-buf heap is exposed as a mountable
 filesystem type ("dmabuf"). untrusted apps (including the camera)

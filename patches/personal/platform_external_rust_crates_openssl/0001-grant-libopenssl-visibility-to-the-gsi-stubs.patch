@@ -1,7 +1,7 @@
 From 2d16c79246c0916b49b966a78507b440055cfc96 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Tue, 29 Sep 2026 13:58:10 +0100
-Subject: [PATCH 1/1] grant libopenssl visibility to the gsi stubs
+Subject: [PATCH] grant libopenssl visibility to the gsi stubs
 
 the vendored apkverify crate under the phh treble gsi stubs links
 against libopenssl, which is otherwise restricted to the virtualization

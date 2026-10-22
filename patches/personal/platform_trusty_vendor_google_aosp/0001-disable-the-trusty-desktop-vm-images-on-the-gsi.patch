@@ -1,7 +1,7 @@
 From 59085d9fae8ba537e731802f1847d509706cc702 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Tue, 29 Sep 2026 13:50:01 +0100
-Subject: [PATCH 1/1] disable the trusty desktop vm images on the gsi
+Subject: [PATCH] disable the trusty desktop vm images on the gsi
 
 the desktop vm images embed microdroid kernel hashes and the platform
 security patch timestamp libraries built from the virtualization

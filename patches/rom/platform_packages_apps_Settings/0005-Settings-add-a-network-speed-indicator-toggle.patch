@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Yash Dayani <52958495+YashDayani@users.noreply.github.com>
 Date: Wed, 21 Oct 2026 21:00:00 +0530
-Subject: [PATCH] Settings: add a network speed indicator toggle to Network & internet
+Subject: [PATCH 5/5] Settings: add a network speed indicator toggle to Network & internet
 
 Adds a switch to Network & internet that turns the status bar network
 speed indicator on or off (Settings.System.NETWORK_TRAFFIC_ENABLED).

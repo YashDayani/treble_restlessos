@@ -1,8 +1,7 @@
 From ee33bd8a846c23d1fc1cbcc10a2ded302910c478 Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Wed, 21 Oct 2026 18:56:39 +0300
-Subject: [PATCH 5/5] tethering: allow the vpn as the upstream for tethered
- devices
+Subject: [PATCH 5/5] tethering: allow the vpn as the upstream for tethered devices
 
 ---
  .../networkstack/tethering/Tethering.java     | 21 ++++++

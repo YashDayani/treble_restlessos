@@ -1,8 +1,7 @@
 From 09da1758ec33cad336b284fd012d20729453a7b2 Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Wed, 21 Oct 2026 18:54:27 +0300
-Subject: [PATCH 6/6] init: keep the first stage in system init for legacy
- system-as-root devices
+Subject: [PATCH 6/6] init: keep the first stage in system init for legacy system-as-root devices
 
 ---
  init/Android.bp | 7 +++++++
