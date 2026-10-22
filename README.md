@@ -203,6 +203,6 @@ belong to their respective owners.
 - **@Nullvalue** — for providing the inspiration to start working on this in the first place
 - **@Gero** — for the idea of the previous name
 - **[@Ziednaga](https://github.com/Ziednaga)** — for the RestlessOS logo and boot animation artwork
-- **[@clangsdorff](https://github.com/clangsdorff)** — for endless debugging help and code merged into the ROM
+- **[@clangsdorff](https://github.com/clangsdorff)** — collaborator; endless debugging help and code merged into the ROM
 - **[@andycgyan](https://github.com/andycgyan)** — for QcRilAm, overlaid into the build
 - **[PixelOS](https://github.com/PixelOS-AOSP)** — for the gsans treble build scripts, overlaid into the build
