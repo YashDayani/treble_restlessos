@@ -956,20 +956,20 @@ new file mode 100644
 diff --git a/res/xml/network_provider_internet.xml b/res/xml/network_provider_internet.xml
 --- a/res/xml/network_provider_internet.xml
 +++ b/res/xml/network_provider_internet.xml
-@@ -93,6 +93,13 @@
-         settings:isPreferenceVisible="@bool/config_show_data_saver"
-         android:fragment="com.android.settings.datausage.DataSaverSummary"/>
+@@ -103,6 +103,13 @@
+         settings:userRestriction="no_config_vpn"
+         settings:useAdminDisabledSummary="true" />
  
 +    <SwitchPreferenceCompat
 +        android:key="network_traffic_enabled"
 +        android:title="@string/network_traffic_title"
 +        android:summary="@string/network_traffic_summary"
-+        android:order="12"
++        android:order="17"
 +        settings:controller="com.android.settings.network.NetworkTrafficPreferenceController" />
 +
-     <com.android.settings.vpn2.VpnInfoPreference
-         android:fragment="com.android.settings.vpn2.VpnSettings"
-         android:key="vpn_settings"
+     <com.android.settings.network.PrivateDnsModeDialogPreference
+         android:key="private_dns_settings"
+         android:title="@string/select_private_dns_configuration_title"
 diff --git a/src/com/android/settings/network/NetworkTrafficPreferenceController.kt b/src/com/android/settings/network/NetworkTrafficPreferenceController.kt
 new file mode 100644
 --- /dev/null
