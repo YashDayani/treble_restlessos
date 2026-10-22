@@ -70,6 +70,7 @@ jobs:
           echo "selected az: $(echo "$result" | jq -r .az)"
         env:
           EC2_LARGE_INSTANCE: ${{ env.EC2_LARGE_INSTANCE }}
+          EC2_SMALL_INSTANCE: ${{ env.EC2_SMALL_INSTANCE }}
           EC2_SUBNET_ID_A: ${{ steps.tofu.outputs.subnet_id_a }}
           EC2_SUBNET_ID_B: ${{ steps.tofu.outputs.subnet_id_b }}
           EC2_SUBNET_ID_C: ${{ steps.tofu.outputs.subnet_id_c }}

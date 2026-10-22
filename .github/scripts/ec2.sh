@@ -174,7 +174,8 @@ provision() {
 
 # --------------------------------------------------------------------------
 # select_az: pick the AZ with the best spot placement score for the large
-# instance type and print the corresponding subnet id.
+# instance type, restricted to AZs that actually offer every instance type
+# used this run, and print the corresponding subnet id.
 # --------------------------------------------------------------------------
 select_az() {
   local inst_type="${EC2_LARGE_INSTANCE:?}"
@@ -207,8 +208,35 @@ select_az() {
 
   echo "$scores" | jq -r '.SpotPlacementScores[] | "\(.AvailabilityZoneId): \(.Score)"' >&2
 
+  # hard availability: an AZ can only host the run if it sells every instance
+  # type used (large for build, small for sync/sign). spot placement scores
+  # say nothing about this.
+  local offered small="${EC2_SMALL_INSTANCE:-$inst_type}"
+  offered=$(aws ec2 describe-instance-type-offerings --region "$REGION" \
+    --location-type availability-zone \
+    --filters "Name=instance-type,Values=${inst_type},${small}" \
+    --query 'InstanceTypeOfferings[].{type:InstanceType,az:Location}' \
+    --output json) || {
+    echo "ERROR: failed to describe instance type offerings" >&2
+    exit 1
+  }
+
+  local eligible
+  eligible=$(echo "$az_map" | jq -c --argjson off "$offered" \
+    --arg big "$inst_type" --arg small "$small" '
+    [.[] | select(.name as $n
+      | (([$off[] | select(.az == $n) | .type] | index($big)) and
+         ([$off[] | select(.az == $n) | .type] | index($small))))
+      | .id] | unique')
+  echo "eligible az ids: ${eligible}" >&2
+  [ "$eligible" = "[]" ] && {
+    echo "ERROR: no remaining AZ offers both ${inst_type} and ${small}" >&2
+    exit 1
+  }
+
   local best
-  best=$(echo "$scores" | jq -r '.SpotPlacementScores | max_by(.Score)')
+  best=$(echo "$scores" | jq -c --argjson ids "$eligible" \
+    '.SpotPlacementScores | map(select(.AvailabilityZoneId | IN($ids[]))) | max_by(.Score)')
   local best_az_id score
   best_az_id=$(echo "$best" | jq -r '.AvailabilityZoneId')
   score=$(echo "$best" | jq -r '.Score')
