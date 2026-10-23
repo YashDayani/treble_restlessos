@@ -438,7 +438,7 @@ jobs:
         run: |
           TAG="${{ steps.compress.outputs.version_tag }}"
           PREV=$(git tag --sort=-version:refname | grep -v -- '-debug$' | grep -v "^${TAG}$" | head -1)
-          [ -n "$PREV" ] && RANGE="${PREV}..HEAD" || RANGE="HEAD"
+          [ -n "$PREV" ] && RANGE="${PREV}..${GITHUB_SHA}" || RANGE="${GITHUB_SHA}"
           {
             echo "Based on GrapheneOS \`${GRAPHENEOS_TAG}\`"
             echo ""
@@ -463,6 +463,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ steps.compress.outputs.version_tag }}
+          commit: ${{ github.sha }}
           name: "RestlessOS ${{ steps.compress.outputs.version_tag }}"
           bodyFile: /mnt/src/out/CHANGELOG.md
           artifacts: "/mnt/src/out/*.img.xz,/mnt/src/out/*.sha512sum"
