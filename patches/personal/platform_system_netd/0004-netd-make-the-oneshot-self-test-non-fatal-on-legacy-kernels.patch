@@ -1,7 +1,7 @@
 From 5d283474b56022af039fc0d020f914e695095ac0 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Wed, 14 Oct 2026 09:37:19 +0100
-Subject: [PATCH 4/4] netd: make the oneshot self test non-fatal on legacy kernels
+Subject: [PATCH 4/5] netd: make the oneshot self test non-fatal on legacy kernels
 
 the oneshot run exists to detect a broken mainline update, but on
 bpf-less vendor kernels libnetd_updatable_init legitimately fails, and

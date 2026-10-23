@@ -1,7 +1,7 @@
 From e8c51f68a6c3ce854bd5d96431782102d7d4b630 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Fri, 2 Oct 2026 18:55:41 +0100
-Subject: [PATCH 3/4] netd: don't restart zygote when netd restarts
+Subject: [PATCH 3/5] netd: don't restart zygote when netd restarts
 
 netd's onrestart hook restarts zygote so the framework rebinds after
 mainline netd module updates.  zygote's own onrestart restarts netd, so
