@@ -59,7 +59,7 @@ index 0000000..fa458d2
 @@ -0,0 +1,4 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<resources>
-+    <dimen name="status_bar_padding_start">35px</dimen>
++    <dimen name="status_bar_padding_start">41px</dimen>
 +</resources>
 diff --git a/Samsung/A14/Android.mk b/Samsung/A14/Android.mk
 new file mode 100644
