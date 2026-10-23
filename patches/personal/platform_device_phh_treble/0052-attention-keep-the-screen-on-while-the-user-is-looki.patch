@@ -1,31 +1,33 @@
-From f01ef993329ece20bef667f61f193137fbdc0a74 Mon Sep 17 00:00:00 2001
+From 15777478e9ee94b616dfd5ef66b4df048082e66e Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Fri, 23 Oct 2026 00:26:48 +0300
-Subject: [PATCH 52/53] attention: keep the screen on while the user is looking
- at it
+Subject: [PATCH 52/53] attention: keep the screen on while the user is looking at it
 
 ---
- attention/Android.bp                          |   9 +
+ attention/Android.bp                          |  10 +
  attention/AndroidManifest.xml                 |  21 +
- .../attention/FaceAttentionService.java       | 411 ++++++++++++++++++
- base.mk                                       |   4 +
+ ...p-permissions-com.restlessos.attention.xml |   7 +
+ .../attention/FaceAttentionService.java       | 419 ++++++++++++++++++
+ base.mk                                       |   6 +
  .../base/core/res/res/values/config.xml       |   5 +
- 5 files changed, 450 insertions(+)
+ 6 files changed, 468 insertions(+)
  create mode 100644 attention/Android.bp
  create mode 100644 attention/AndroidManifest.xml
+ create mode 100644 attention/privapp-permissions-com.restlessos.attention.xml
  create mode 100644 attention/src/com/restlessos/attention/FaceAttentionService.java
 
 diff --git a/attention/Android.bp b/attention/Android.bp
 new file mode 100644
-index 0000000..db712a7
+index 0000000..1e56be8
 --- /dev/null
 +++ b/attention/Android.bp
-@@ -0,0 +1,9 @@
+@@ -0,0 +1,10 @@
 +android_app {
 +    name: "RestlessAttention",
 +    srcs: ["src/**/*.java"],
 +    manifest: "AndroidManifest.xml",
 +    sdk_version: "system_current",
++    privileged: true,
 +    optimize: {
 +        enabled: true,
 +    },
@@ -57,12 +59,25 @@ index 0000000..c285a52
 +
 +    </application>
 +</manifest>
+diff --git a/attention/privapp-permissions-com.restlessos.attention.xml b/attention/privapp-permissions-com.restlessos.attention.xml
+new file mode 100644
+index 0000000..03e2dc7
+--- /dev/null
++++ b/attention/privapp-permissions-com.restlessos.attention.xml
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="utf-8"?>
++<permissions>
++    <privapp-permissions package="com.restlessos.attention">
++        <!-- PowerManagerService notes the attention user activity under our binder identity -->
++        <permission name="android.permission.UPDATE_DEVICE_STATS" />
++    </privapp-permissions>
++</permissions>
 diff --git a/attention/src/com/restlessos/attention/FaceAttentionService.java b/attention/src/com/restlessos/attention/FaceAttentionService.java
 new file mode 100644
-index 0000000..568680b
+index 0000000..d325a6c
 --- /dev/null
 +++ b/attention/src/com/restlessos/attention/FaceAttentionService.java
-@@ -0,0 +1,411 @@
+@@ -0,0 +1,419 @@
 +package com.restlessos.attention;
 +
 +import android.graphics.Bitmap;
@@ -87,6 +102,7 @@ index 0000000..568680b
 +import android.os.Handler;
 +import android.os.HandlerThread;
 +import android.os.SystemClock;
++import android.provider.Settings;
 +import android.service.attention.AttentionService;
 +import android.util.Log;
 +import android.util.Size;
@@ -100,12 +116,14 @@ index 0000000..568680b
 +public class FaceAttentionService extends AttentionService {
 +    private static final String TAG = "RestlessAttention";
 +
-+    private static final int MAX_WARMUP_FRAMES = 10;
-+    private static final int ANALYZED_FRAMES = 3;
++    private static final int MAX_WARMUP_FRAMES = 3;
++    private static final int ANALYZED_FRAMES = 6;
 +    private static final int MIN_SHORT_SIDE = 240;
 +    private static final int MIN_HAL_FACE_SCORE = 50;
 +    // the framework cancels after its own timeout, this only guards a stuck camera
 +    private static final long CHECK_TIMEOUT_MS = 3000;
++    // written by the screen attention page in Settings: "hal" or "system"
++    private static final String DETECTOR_SETTING = "restless_attention_detector";
 +
 +    private HandlerThread mThread;
 +    private Handler mHandler;
@@ -223,6 +241,8 @@ index 0000000..568680b
 +        private boolean mSettled;
 +        private int mFrames;
 +        private int mAnalyzed;
++        private int mBestScore = -1;
++        private long mStartTime;
 +        private boolean mDone;
 +        private final Runnable mTimeout = () -> fail(ATTENTION_FAILURE_TIMED_OUT);
 +
@@ -235,7 +255,9 @@ index 0000000..568680b
 +            }
 +            Integer sensor = c == null ? null : c.get(CameraCharacteristics.SENSOR_ORIENTATION);
 +            mBaseRotation = ((sensor == null ? 270 : sensor) + displayRotation()) % 360;
-+            mHalFaceMode = c == null ? 0 : halFaceMode(c);
++            boolean useSystem = "system".equals(
++                    Settings.Secure.getString(getContentResolver(), DETECTOR_SETTING));
++            mHalFaceMode = c == null || useSystem ? 0 : halFaceMode(c);
 +            mSize = c == null ? null : pickSize(c);
 +        }
 +
@@ -244,6 +266,7 @@ index 0000000..568680b
 +                fail(ATTENTION_FAILURE_UNKNOWN);
 +                return;
 +            }
++            mStartTime = SystemClock.uptimeMillis();
 +            mHandler.postDelayed(mTimeout, CHECK_TIMEOUT_MS);
 +            mReader = ImageReader.newInstance(mSize.getWidth(), mSize.getHeight(),
 +                    ImageFormat.YUV_420_888, 2);
@@ -328,10 +351,11 @@ index 0000000..568680b
 +                        || ae == CaptureResult.CONTROL_AE_STATE_LOCKED) {
 +                    mSettled = true;
 +                }
-+                if (mHalFaceMode == 0 || !mSettled) return;
++                if (mHalFaceMode == 0) return;
 +                Face[] faces = result.get(CaptureResult.STATISTICS_FACES);
 +                if (faces == null) return;
 +                for (Face f : faces) {
++                    mBestScore = Math.max(mBestScore, f.getScore());
 +                    if (f.getScore() >= MIN_HAL_FACE_SCORE) {
 +                        succeed(ATTENTION_SUCCESS_PRESENT);
 +                        return;
@@ -347,7 +371,7 @@ index 0000000..568680b
 +                if (mDone) return;
 +                mFrames++;
 +                if (!mSettled && mFrames < MAX_WARMUP_FRAMES) return;
-+                if (detect(image)) {
++                if (mHalFaceMode == 0 && detect(image)) {
 +                    succeed(ATTENTION_SUCCESS_PRESENT);
 +                } else if (++mAnalyzed >= ANALYZED_FRAMES) {
 +                    succeed(ATTENTION_SUCCESS_ABSENT);
@@ -372,23 +396,22 @@ index 0000000..568680b
 +                    luma[y * sw + x] = buf.get(row + x * step * pixelStride);
 +                }
 +            }
-+            // with auto-rotate off the phone may be sideways relative to the display
-+            int[] rotations = {mBaseRotation, (mBaseRotation + 90) % 360,
-+                    (mBaseRotation + 270) % 360};
-+            for (int rotation : rotations) {
-+                if (findFace(luma, sw, sh, rotation)) return true;
-+            }
-+            return false;
++            return findFace(luma, sw, sh, mBaseRotation);
 +        }
 +
 +        private void succeed(int result) {
 +            if (mDone) return;
++            Log.i(TAG, (result == ATTENTION_SUCCESS_PRESENT ? "present" : "absent") + " via "
++                    + (mHalFaceMode != 0 ? "hal, best score " + mBestScore : "system") + ", "
++                    + (SystemClock.uptimeMillis() - mStartTime) + " ms");
 +            finish();
 +            deliverSuccess(result);
 +        }
 +
 +        void fail(int error) {
 +            if (mDone) return;
++            Log.i(TAG, "failed with " + error + ", "
++                    + (SystemClock.uptimeMillis() - mStartTime) + " ms");
 +            finish();
 +            deliverFailure(error);
 +        }
@@ -475,16 +498,18 @@ index 0000000..568680b
 +    }
 +}
 diff --git a/base.mk b/base.mk
-index ee55992..c0c6586 100644
+index ee55992..d6fe086 100644
 --- a/base.mk
 +++ b/base.mk
-@@ -257,6 +257,10 @@ PRODUCT_PACKAGES += \
+@@ -257,6 +257,12 @@ PRODUCT_PACKAGES += \
      WallpaperPicker2 \
      RestlessWallpapers
  
 +# screen attention: keeps the screen on while a face is in front of the camera
 +PRODUCT_PACKAGES += \
 +    RestlessAttention
++PRODUCT_COPY_FILES += \
++    device/phh/treble/attention/privapp-permissions-com.restlessos.attention.xml:system/etc/permissions/privapp-permissions-com.restlessos.attention.xml
 +
  PRODUCT_PACKAGES += \
      xiaomi-touch
