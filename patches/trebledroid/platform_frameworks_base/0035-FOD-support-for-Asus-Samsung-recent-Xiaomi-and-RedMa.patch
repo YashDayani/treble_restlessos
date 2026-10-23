@@ -30,8 +30,8 @@ Change-Id: I7af81218276c60afbfea6dac702c7bcd584f397a
  .../systemui/biometrics/UdfpsController.java  |  78 ++++-
  services/core/Android.bp                      |   5 +
  .../server/biometrics/AuthService.java        | 304 +++++++++++++++++-
- .../fingerprint/aidl/FingerprintProvider.java |  23 ++
- 5 files changed, 403 insertions(+), 11 deletions(-)
+ .../fingerprint/aidl/FingerprintProvider.java |  24 ++
+ 5 files changed, 404 insertions(+), 11 deletions(-)
 
 diff --git a/packages/SystemUI/Android.bp b/packages/SystemUI/Android.bp
 index 60943cd27..8ed6a71cc 100644
@@ -620,7 +620,7 @@ index 4b197b362..5b6e8d13a 100644
              for (SensorProps prop : props) {
                  addAidlSensors(prop, gestureAvailabilityDispatcher, workaroundLocations,
                          resetLockoutRequiresHardwareAuthToken);
-@@ -253,6 +255,27 @@ public class FingerprintProvider implements IBinder.DeathRecipient, ServiceProvi
+@@ -253,6 +255,28 @@ public class FingerprintProvider implements IBinder.DeathRecipient, ServiceProvi
              @NonNull GestureAvailabilityDispatcher gestureAvailabilityDispatcher,
              boolean resetLockoutRequiresHardwareAuthToken) {
          final int sensorId = prop.commonProps.sensorId;
@@ -629,7 +629,8 @@ index 4b197b362..5b6e8d13a 100644
 +        for(SensorLocation loc: prop.sensorLocations) {
 +            android.util.Log.e("PHH-Enroll", " - " + loc.sensorLocationX + ", " + loc.sensorLocationY + ", " +loc.sensorRadius + ", disp =" + loc.display + ", shape " + loc.sensorShape);
 +        }
-+        if (prop.sensorLocations.length == 1 && prop.sensorLocations[0].sensorLocationX == 0) {
++        if (prop.sensorLocations.length == 1 && (prop.sensorLocations[0].sensorLocationX == 0
++                || !android.os.SystemProperties.get("persist.vendor.sys.fp.fod.location.X_Y").isEmpty())) {
 +            int[] otherValues = com.android.server.biometrics.AuthService.dynamicUdfpsProps(mContext);
 +            if (otherValues.length > 0) {
 +                SensorLocation loc = new SensorLocation();
