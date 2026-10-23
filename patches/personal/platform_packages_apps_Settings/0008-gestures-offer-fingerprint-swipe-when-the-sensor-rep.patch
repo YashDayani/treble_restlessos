@@ -1,7 +1,7 @@
 From 5e0d562211d76ad96590d5f9d91d2b8efa4dfa96 Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Fri, 23 Oct 2026 00:41:49 +0300
-Subject: [PATCH 8/8] gestures: offer fingerprint swipe when the sensor reports
+Subject: [PATCH 8/9] gestures: offer fingerprint swipe when the sensor reports
  navigation keys
 
 ---
