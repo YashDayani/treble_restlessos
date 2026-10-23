@@ -1,4 +1,4 @@
-From d6b04ff6526936e64cf82e0aa5995d6be6a039f9 Mon Sep 17 00:00:00 2001
+From d5390c51faea7c984d040d76dddb8b9309ce991d Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Sun, 18 Dec 2022 18:20:40 -0500
 Subject: [PATCH 35/53] FOD support for Asus, Samsung recent Xiaomi and RedMagic 8 devices
@@ -31,8 +31,8 @@ Change-Id: I7af81218276c60afbfea6dac702c7bcd584f397a
  services/core/Android.bp                      |   5 +
  .../server/biometrics/AuthService.java        | 305 +++++++++++++++++-
  .../biometrics/sensors/SensorOverlays.java    |  18 ++
- .../fingerprint/aidl/FingerprintProvider.java |  24 ++
- 6 files changed, 423 insertions(+), 11 deletions(-)
+ .../fingerprint/aidl/FingerprintProvider.java |  28 ++
+ 6 files changed, 427 insertions(+), 11 deletions(-)
 
 diff --git a/packages/SystemUI/Android.bp b/packages/SystemUI/Android.bp
 index 60943cd278f0..8ed6a71ccbda 100644
@@ -639,7 +639,7 @@ index f5a2f347364f..40f863e26fcc 100644
      }
 
 diff --git a/services/core/java/com/android/server/biometrics/sensors/fingerprint/aidl/FingerprintProvider.java b/services/core/java/com/android/server/biometrics/sensors/fingerprint/aidl/FingerprintProvider.java
-index 4b197b3627de..c1b7b4b1fbd8 100644
+index 4b197b3627de..c1fe49c07655 100644
 --- a/services/core/java/com/android/server/biometrics/sensors/fingerprint/aidl/FingerprintProvider.java
 +++ b/services/core/java/com/android/server/biometrics/sensors/fingerprint/aidl/FingerprintProvider.java
 @@ -36,6 +36,7 @@ import android.hardware.biometrics.SensorLocationInternal;
@@ -658,7 +658,7 @@ index 4b197b3627de..c1b7b4b1fbd8 100644
              for (SensorProps prop : props) {
                  addAidlSensors(prop, gestureAvailabilityDispatcher, workaroundLocations,
                          resetLockoutRequiresHardwareAuthToken);
-@@ -253,6 +255,28 @@ public class FingerprintProvider implements IBinder.DeathRecipient, ServiceProvi
+@@ -253,6 +255,32 @@ public class FingerprintProvider implements IBinder.DeathRecipient, ServiceProvi
              @NonNull GestureAvailabilityDispatcher gestureAvailabilityDispatcher,
              boolean resetLockoutRequiresHardwareAuthToken) {
          final int sensorId = prop.commonProps.sensorId;
@@ -676,6 +676,10 @@ index 4b197b3627de..c1b7b4b1fbd8 100644
 +                loc.sensorLocationY = otherValues[1];
 +                loc.sensorRadius = otherValues[2];
 +                prop.sensorLocations[0] = loc;
++                if (prop.sensorType == android.hardware.biometrics.fingerprint.FingerprintSensorType.REAR
++                        || prop.sensorType == android.hardware.biometrics.fingerprint.FingerprintSensorType.UNKNOWN) {
++                    prop.sensorType = android.hardware.biometrics.fingerprint.FingerprintSensorType.UNDER_DISPLAY_OPTICAL;
++                }
 +            }
 +        }
 +
