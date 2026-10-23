@@ -1,4 +1,4 @@
-From 75124c1e863d2f15b87f747a0f57fb61086de2f1 Mon Sep 17 00:00:00 2001
+From 2f16ba537832dfd6d3ae5eb19a5d7883f244b2d2 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Wed, 17 Apr 2024 04:49:18 -0400
 Subject: [PATCH 47/53] Don't crash system_server if we fail to parse dynamic udfps position
@@ -8,11 +8,10 @@ Subject: [PATCH 47/53] Don't crash system_server if we fail to parse dynamic udf
  1 file changed, 11 insertions(+), 7 deletions(-)
 
 diff --git a/services/core/java/com/android/server/biometrics/sensors/fingerprint/aidl/FingerprintProvider.java b/services/core/java/com/android/server/biometrics/sensors/fingerprint/aidl/FingerprintProvider.java
-index 5fc5a57bd1ef..b13beef51177 100644
+index c1b7b4b1fbd8..bd6c41730dac 100644
 --- a/services/core/java/com/android/server/biometrics/sensors/fingerprint/aidl/FingerprintProvider.java
 +++ b/services/core/java/com/android/server/biometrics/sensors/fingerprint/aidl/FingerprintProvider.java
-@@ -278,14 +278,18 @@ public class FingerprintProvider implements IBinder.DeathRecipient, ServiceProvi
-             android.util.Log.e("PHH-Enroll", " - " + loc.sensorLocationX + ", " + loc.sensorLocationY + ", " +loc.sensorRadius + ", disp =" + loc.display + ", shape " + loc.sensorShape);
+@@ -262,13 +262,17 @@ public class FingerprintProvider implements IBinder.DeathRecipient, ServiceProvi
          }
          if (prop.sensorLocations.length == 1 && (prop.sensorLocations[0].sensorLocationX == 0
                  || !android.os.SystemProperties.get("persist.vendor.sys.fp.fod.location.X_Y").isEmpty())) {
