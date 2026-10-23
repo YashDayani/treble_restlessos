@@ -61,7 +61,10 @@ jobs:
           restore-keys: gradle-trebleapp-
 
       - name: Clone treble_app
-        run: git clone --depth 1 --branch "${TREBLE_APP_REF}" "${TREBLE_APP_REPO}" treble_app
+        run: |
+          git clone --depth 1 --branch "${TREBLE_APP_REF}" "${TREBLE_APP_REPO}" treble_app
+          git -C treble_app config user.name "treble-app-build"
+          git -C treble_app config user.email "build@chrisaw.io"
 
       - name: Checkout ROM signing keys
         uses: actions/checkout@v6
