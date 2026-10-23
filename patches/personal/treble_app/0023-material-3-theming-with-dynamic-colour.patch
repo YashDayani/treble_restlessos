@@ -1,0 +1,257 @@
+From da1fe09afe3a68215907fe266b9d616d2afe7476 Mon Sep 17 00:00:00 2001
+From: "Christopher A. Williamson" <contact@chrisaw.io>
+Date: Fri, 23 Oct 2026 20:06:06 +0100
+Subject: [PATCH 23/23] material 3 theming with dynamic colour
+
+---
+ app/build.gradle                              |  1 +
+ .../me/phh/treble/app/MainSettingsFragment.kt |  7 +++++
+ .../main/java/me/phh/treble/app/Settings.kt   |  8 ++++++
+ .../me/phh/treble/app/SettingsActivity.kt     |  4 +++
+ .../java/me/phh/treble/app/UpdaterActivity.kt |  9 +++++++
+ app/src/main/res/drawable/ic_arrow_back.xml   | 10 +++++++
+ app/src/main/res/layout/activity_settings.xml | 20 +++++++++++---
+ app/src/main/res/layout/activity_updater.xml  | 27 ++++++++++++++-----
+ app/src/main/res/values/styles.xml            | 14 ++++++++--
+ 9 files changed, 89 insertions(+), 11 deletions(-)
+ create mode 100644 app/src/main/res/drawable/ic_arrow_back.xml
+
+diff --git a/app/build.gradle b/app/build.gradle
+index c146e9d..6492f4f 100644
+--- a/app/build.gradle
++++ b/app/build.gradle
+@@ -44,6 +44,7 @@ dependencies {
+     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+     implementation 'org.tukaani:xz:1.9'
+     implementation 'androidx.appcompat:appcompat:1.6.1'
++    implementation 'com.google.android.material:material:1.9.0'
+     implementation 'androidx.preference:preference-ktx:1.2.0'
+     implementation 'com.squareup.okhttp3:okhttp:4.9.0'
+ }
+diff --git a/app/src/main/java/me/phh/treble/app/MainSettingsFragment.kt b/app/src/main/java/me/phh/treble/app/MainSettingsFragment.kt
+index a20396c..f7e8408 100644
+--- a/app/src/main/java/me/phh/treble/app/MainSettingsFragment.kt
++++ b/app/src/main/java/me/phh/treble/app/MainSettingsFragment.kt
+@@ -41,6 +41,13 @@ class MainSettingsFragment : SettingsFragment() {
+         }
+         if (SystemProperties.get("ro.system.ota.json_url", "").trim() == "")
+             findPreference<Preference>("updater")?.isVisible = false
++        // collapse categories whose entries are all hidden
++        for (i in 0 until preferenceScreen.preferenceCount) {
++            val group = preferenceScreen.getPreference(i)
++            if (group is androidx.preference.PreferenceGroup) {
++                group.isVisible = (0 until group.preferenceCount).any { j -> group.getPreference(j).isVisible }
++            }
++        }
+     }
+ 
+     override fun onPreferenceTreeClick(preference: Preference): Boolean {
+diff --git a/app/src/main/java/me/phh/treble/app/Settings.kt b/app/src/main/java/me/phh/treble/app/Settings.kt
+index d95ba44..b49115b 100644
+--- a/app/src/main/java/me/phh/treble/app/Settings.kt
++++ b/app/src/main/java/me/phh/treble/app/Settings.kt
+@@ -1,6 +1,7 @@
+ package me.phh.treble.app
+ 
+ import android.os.Bundle
++import android.view.View
+ import androidx.annotation.XmlRes
+ import androidx.preference.ListPreference
+ import androidx.preference.Preference
+@@ -40,6 +41,13 @@ abstract class SettingsFragment : PreferenceFragmentCompat() {
+         addPreferencesFromResource(preferencesResId)
+     }
+ 
++    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
++        super.onViewCreated(view, savedInstanceState)
++        // flat list: no separators between preferences or categories
++        setDivider(null)
++        setDividerHeight(0)
++    }
++
+     override fun onResume() {
+         super.onResume()
+         activity?.title = arguments?.getString("title")
+diff --git a/app/src/main/java/me/phh/treble/app/SettingsActivity.kt b/app/src/main/java/me/phh/treble/app/SettingsActivity.kt
+index a55f1d9..843da66 100644
+--- a/app/src/main/java/me/phh/treble/app/SettingsActivity.kt
++++ b/app/src/main/java/me/phh/treble/app/SettingsActivity.kt
+@@ -4,22 +4,26 @@ import android.content.Intent
+ import android.os.Bundle
+ import android.os.UserHandle
+ import androidx.appcompat.app.AppCompatActivity
++import com.google.android.material.color.DynamicColors
+ 
+ class SettingsActivity : AppCompatActivity() {
+ 
+     override fun onCreate(savedInstanceState: Bundle?) {
++        DynamicColors.applyToActivityIfAvailable(this)
+         super.onCreate(savedInstanceState)
+         applicationContext.startServiceAsUser(
+             Intent(applicationContext, EntryService::class.java),
+             UserHandle.SYSTEM
+         )
+         setContentView(R.layout.activity_settings)
++        setSupportActionBar(findViewById(R.id.action_bar))
+         if (supportFragmentManager.findFragmentById(R.id.settings_container) == null) {
+             supportFragmentManager.beginTransaction()
+                 .replace(R.id.settings_container, MainSettingsFragment())
+                 .commit()
+         }
+         supportActionBar?.setDisplayHomeAsUpEnabled(true)
++        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_arrow_back)
+     }
+ 
+     override fun onSupportNavigateUp(): Boolean {
+diff --git a/app/src/main/java/me/phh/treble/app/UpdaterActivity.kt b/app/src/main/java/me/phh/treble/app/UpdaterActivity.kt
+index be32ad6..dac3ef4 100644
+--- a/app/src/main/java/me/phh/treble/app/UpdaterActivity.kt
++++ b/app/src/main/java/me/phh/treble/app/UpdaterActivity.kt
+@@ -13,6 +13,7 @@ import android.view.MenuItem
+ import android.view.View
+ import androidx.activity.OnBackPressedCallback
+ import androidx.appcompat.app.AppCompatActivity
++import com.google.android.material.color.DynamicColors
+ import java.io.File
+ import java.io.FileOutputStream
+ import java.io.InputStream
+@@ -38,9 +39,12 @@ class UpdaterActivity : AppCompatActivity() {
+     private var otaJson = JSONObject()
+ 
+     override fun onCreate(savedInstanceState: Bundle?) {
++        DynamicColors.applyToActivityIfAvailable(this)
+         super.onCreate(savedInstanceState)
+         setContentView(R.layout.activity_updater)
++        setSupportActionBar(findViewById(R.id.action_bar))
+         supportActionBar?.setDisplayHomeAsUpEnabled(true)
++        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_arrow_back)
+ 
+         updateUiElements(false)
+         checkUpdate()
+@@ -75,6 +79,11 @@ class UpdaterActivity : AppCompatActivity() {
+         })
+     }
+ 
++    override fun onSupportNavigateUp(): Boolean {
++        finish()
++        return true
++    }
++
+     override fun onCreateOptionsMenu(menu: Menu): Boolean {
+         menuInflater.inflate(R.menu.menu_main, menu)
+         return super.onCreateOptionsMenu(menu)
+diff --git a/app/src/main/res/drawable/ic_arrow_back.xml b/app/src/main/res/drawable/ic_arrow_back.xml
+new file mode 100644
+index 0000000..e698002
+--- /dev/null
++++ b/app/src/main/res/drawable/ic_arrow_back.xml
+@@ -0,0 +1,10 @@
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="24dp"
++    android:height="24dp"
++    android:viewportWidth="24"
++    android:viewportHeight="24"
++    android:tint="?attr/colorControlNormal">
++    <path
++        android:fillColor="@android:color/white"
++        android:pathData="M20,11H7.83l5.59,-5.59L12,4l-8,8 8,8 1.41,-1.41L7.83,13H20v-2z" />
++</vector>
+diff --git a/app/src/main/res/layout/activity_settings.xml b/app/src/main/res/layout/activity_settings.xml
+index 92a5e0a..79d306c 100644
+--- a/app/src/main/res/layout/activity_settings.xml
++++ b/app/src/main/res/layout/activity_settings.xml
+@@ -1,5 +1,19 @@
+ <?xml version="1.0" encoding="utf-8"?>
+-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+-    android:id="@+id/settings_container"
++<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:app="http://schemas.android.com/apk/res-auto"
+     android:layout_width="match_parent"
+-    android:layout_height="match_parent" />
++    android:layout_height="match_parent"
++    android:orientation="vertical">
++
++    <com.google.android.material.appbar.MaterialToolbar
++        android:id="@+id/action_bar"
++        style="@style/Widget.Material3.Toolbar.Surface"
++        android:layout_width="match_parent"
++        android:layout_height="?attr/actionBarSize" />
++
++    <FrameLayout
++        android:id="@+id/settings_container"
++        android:layout_width="match_parent"
++        android:layout_height="0dp"
++        android:layout_weight="1" />
++</LinearLayout>
+diff --git a/app/src/main/res/layout/activity_updater.xml b/app/src/main/res/layout/activity_updater.xml
+index 0104eef..616e56b 100644
+--- a/app/src/main/res/layout/activity_updater.xml
++++ b/app/src/main/res/layout/activity_updater.xml
+@@ -1,14 +1,27 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:app="http://schemas.android.com/apk/res-auto"
+     xmlns:tools="http://schemas.android.com/tools"
+-    android:layout_width="fill_parent"
+-    android:layout_height="fill_parent"
+-    android:layout_marginLeft="20dp"
+-    android:layout_marginRight="20dp"
+-    android:layout_gravity="center_vertical"
+-    android:layout_weight="1"
++    android:layout_width="match_parent"
++    android:layout_height="match_parent"
+     android:orientation="vertical"
+     tools:context=".UpdaterActivity">
++
++    <com.google.android.material.appbar.MaterialToolbar
++        android:id="@+id/action_bar"
++        style="@style/Widget.Material3.Toolbar.Surface"
++        android:layout_width="match_parent"
++        android:layout_height="?attr/actionBarSize" />
++
++    <LinearLayout
++        android:layout_width="match_parent"
++        android:layout_height="0dp"
++        android:layout_weight="1"
++        android:layout_marginLeft="20dp"
++        android:layout_marginRight="20dp"
++        android:layout_gravity="center_vertical"
++        android:orientation="vertical">
++
+     <LinearLayout
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+@@ -68,4 +81,6 @@
+             android:layout_height="wrap_content"
+             android:layout_gravity="bottom|right" />
+     </FrameLayout>
++</LinearLayout>
++    </LinearLayout>
+ </LinearLayout>
+diff --git a/app/src/main/res/values/styles.xml b/app/src/main/res/values/styles.xml
+index 4c9c546..37cda33 100644
+--- a/app/src/main/res/values/styles.xml
++++ b/app/src/main/res/values/styles.xml
+@@ -1,7 +1,17 @@
+ <resources>
+ 
+-    <style name="Base.Theme.TrebleApp" parent="Theme.AppCompat.DayNight">
+-        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
++    <style name="PreferenceThemeOverlay.TrebleApp" parent="@style/PreferenceThemeOverlay">
++        <item name="android:divider">@null</item>
++    </style>
++
++    <style name="Base.Theme.TrebleApp" parent="Theme.Material3.DayNight.NoActionBar">
++        <item name="preferenceTheme">@style/PreferenceThemeOverlay.TrebleApp</item>
++        <item name="checkboxStyle">@style/Widget.Material3.CompoundButton.CheckBox</item>
++        <item name="switchStyle">@style/Widget.Material3.CompoundButton.Switch</item>
++        <item name="android:checkboxStyle">@style/Widget.Material3.CompoundButton.CheckBox</item>
++        <item name="android:switchStyle">@style/Widget.Material3.CompoundButton.Switch</item>
++        <item name="android:listDivider">@null</item>
++        <item name="android:divider">@null</item>
+     </style>
+     <style name="Theme.TrebleApp" parent="Base.Theme.TrebleApp" />
+ 
+-- 
+2.56.0
+
