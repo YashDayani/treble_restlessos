@@ -1,0 +1,107 @@
+name: Build TrebleApp
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: treble-app-build
+  cancel-in-progress: true
+
+env:
+  TREBLE_APP_REPO: https://github.com/cawilliamson/android_treble_app.git
+  TREBLE_APP_REF: main
+
+jobs:
+  build:
+    name: Build and Sign TrebleApp
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Android SDK
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends unzip zip
+          mkdir --parents "${HOME}/android-sdk/cmdline-tools"
+          tools_zip="$(curl --silent --show-error https://developer.android.com/studio \
+            | grep --only-matching 'commandlinetools-linux-[0-9]*_latest\.zip' | head --lines=1)"
+          [ -n "$tools_zip" ] || { echo "ERROR: failed to resolve latest commandlinetools zip"; exit 1; }
+          echo "resolved commandlinetools: ${tools_zip}"
+          wget --quiet --output-document=/tmp/cmdline-tools.zip "https://dl.google.com/android/repository/${tools_zip}"
+          unzip -q /tmp/cmdline-tools.zip -d "${HOME}/android-sdk/cmdline-tools"
+          mv "${HOME}/android-sdk/cmdline-tools/cmdline-tools" "${HOME}/android-sdk/cmdline-tools/latest"
+          {
+            echo "ANDROID_HOME=${HOME}/android-sdk"
+            echo "${HOME}/android-sdk/cmdline-tools/latest/bin" >> "${GITHUB_PATH}"
+            echo "${HOME}/android-sdk/platform-tools" >> "${GITHUB_PATH}"
+          } >> "${GITHUB_ENV}"
+      - name: Install SDK packages
+        run: |
+          yes | "${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+          "${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager" "platform-tools" "platforms;android-33" "build-tools;30.0.3" > /dev/null
+
+      - name: Cache gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-trebleapp-${{ runner.os }}
+          restore-keys: gradle-trebleapp-
+
+      - name: Clone treble_app
+        run: git clone --depth 1 --branch "${TREBLE_APP_REF}" "${TREBLE_APP_REPO}" treble_app
+
+      - name: Checkout ROM signing keys
+        uses: actions/checkout@v6
+        with:
+          repository: cawilliamson/android_vendor_cawilliamson_keys
+          token: ${{ secrets.GH_PAT }}
+          path: keys_rom
+
+      - name: Install ROM signing keys
+        run: |
+          # the fork's committed keys are a different cert from the one the ROM
+          # ships with; sign_target_files_apks re-signs with these, so the
+          # standalone apk must match them to update in place
+          cp --force --verbose keys_rom/platform.pk8 keys_rom/platform.x509.pem treble_app/keys/
+
+      - name: Apply treble_app patches
+        run: |
+          set -e
+          for tier in rom personal; do
+            for patch in patches/"${tier}"/treble_app/*.patch; do
+              [ -e "$patch" ] || continue
+              echo ">> ${patch}"
+              (cd treble_app && git am "${OLDPWD}/${patch}") || {
+                (cd treble_app && git am --abort) || true
+                exit 1
+              }
+            done
+          done
+          git -C treble_app log --oneline origin/main..HEAD
+
+      - name: Build and sign
+        working-directory: treble_app
+        run: |
+          bash build.sh release
+          sha256sum TrebleApp.apk
+          ls -l --human-readable TrebleApp.apk
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: TrebleApp
+          path: treble_app/TrebleApp.apk
+          if-no-files-found: error
