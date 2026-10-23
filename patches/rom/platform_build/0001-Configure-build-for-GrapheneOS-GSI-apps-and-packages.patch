@@ -1,4 +1,4 @@
-From bb9c81d62130b91adc2e51670a2a2762d158c525 Mon Sep 17 00:00:00 2001
+From 72a8f09641e682334221b3399418a2f636d0bc94 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Fri, 25 Sep 2026 18:15:31 +0100
 Subject: [PATCH 1/2] Configure build for GrapheneOS GSI: apps and packages
@@ -29,12 +29,12 @@ packages' and 'Use GrapheneOS Messaging module name in GSI system
 image' patches.
 ---
  target/product/base_system.mk         | 3 ---
- target/product/generic/Android.bp     | 4 +---
+ target/product/generic/Android.bp     | 5 +----
  target/product/gsi/Android.bp         | 9 +++------
  target/product/handheld_product.mk    | 5 -----
  target/product/handheld_system.mk     | 4 ----
  target/product/handheld_system_ext.mk | 1 -
- 6 files changed, 4 insertions(+), 22 deletions(-)
+ 6 files changed, 4 insertions(+), 23 deletions(-)
 
 diff --git a/target/product/base_system.mk b/target/product/base_system.mk
 index 8f2cc28..0c4d1e4 100644
@@ -58,7 +58,7 @@ index 8f2cc28..0c4d1e4 100644
  
  # The set of packages whose code can be loaded by the system server.
 diff --git a/target/product/generic/Android.bp b/target/product/generic/Android.bp
-index 413a9e6..8003515 100644
+index 413a9e6..36db8d0 100644
 --- a/target/product/generic/Android.bp
 +++ b/target/product/generic/Android.bp
 @@ -426,7 +426,7 @@ android_filesystem_defaults {
@@ -70,7 +70,15 @@ index 413a9e6..8003515 100644
          "preinstalled-packages-media-product.xml",
          ///////////////////////////////////////////
          // base_product
-@@ -859,11 +859,9 @@ system_image_defaults {
+@@ -741,7 +741,6 @@ system_image_defaults {
+         default: [],
+     }) + select(product_variable("debuggable"), {
+         true: [
+-            "HardeningTestApp", // base_system
+             "SecurePasteTestSystemApp", // base_system
+             "alloctop",
+             "adevice_fingerprint",
+@@ -859,11 +858,9 @@ system_image_defaults {
                  "KeyChain", // handheld_system
                  "LiveWallpapersPicker", // generic_system, full_base
                  "LocalTransport", // base_system
@@ -177,5 +185,5 @@ index 529fa6f..cf9b894 100644
      SystemUI \
      WallpaperCropper \
 -- 
-2.56.0
+2.50.1 (Apple Git-155)
 
