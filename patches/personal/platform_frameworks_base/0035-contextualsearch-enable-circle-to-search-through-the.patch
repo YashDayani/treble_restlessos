@@ -1,18 +1,20 @@
-From f0638e0819188d5b6ce925ca9f9028d81d33efec Mon Sep 17 00:00:00 2001
+From 2ad39fef233462d22e455451f92de1d56318562b Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Sun, 18 Oct 2026 02:38:59 +0300
-Subject: [PATCH 35/38] contextualsearch: enable circle to search through the google app
+Subject: [PATCH 35/38] contextualsearch: enable circle to search through the
+ google app
 
 ---
- core/res/res/values/config.xml   | 2 +-
- data/etc/framework-sysconfig.xml | 2 ++
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ core/res/res/values/config.xml     | 2 +-
+ data/etc/com.android.launcher3.xml | 1 +
+ data/etc/framework-sysconfig.xml   | 2 ++
+ 3 files changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/core/res/res/values/config.xml b/core/res/res/values/config.xml
-index c53d2c8..8d043ae 100644
+index 0ed95ca..19ee607 100644
 --- a/core/res/res/values/config.xml
 +++ b/core/res/res/values/config.xml
-@@ -7739,7 +7739,7 @@
+@@ -7742,7 +7742,7 @@
      <bool name="config_watchlistUseFileHashesCache">false</bool>
  
      <!-- Name of the package responsible to handle Contextual Search. -->
@@ -21,6 +23,18 @@ index c53d2c8..8d043ae 100644
  
      <!-- The key containing the entrypoint for Contextual Search. -->
      <string name="config_defaultContextualSearchKey" translatable="false" />
+diff --git a/data/etc/com.android.launcher3.xml b/data/etc/com.android.launcher3.xml
+index 9594194..c6fe978 100644
+--- a/data/etc/com.android.launcher3.xml
++++ b/data/etc/com.android.launcher3.xml
+@@ -29,6 +29,7 @@
+         <permission name="android.permission.ACCESS_HIDDEN_PROFILES_FULL"/>
+         <permission name="android.permission.READ_REMOTE_TASKS"/>
+         <permission name="android.permission.REQUEST_TASK_HANDOFF"/>
++        <permission name="android.permission.ACCESS_CONTEXTUAL_SEARCH"/>
+         <!-- Permissions for showing personal context results in cue bar -->
+         <permission name="android.permission.PERSONAL_CONTEXT_PUBLISH_HINTS"/>
+         <permission name="android.permission.PERSONAL_CONTEXT_RECEIVE_INSIGHTS"/>
 diff --git a/data/etc/framework-sysconfig.xml b/data/etc/framework-sysconfig.xml
 index 2162ec4..6334c2a 100644
 --- a/data/etc/framework-sysconfig.xml
