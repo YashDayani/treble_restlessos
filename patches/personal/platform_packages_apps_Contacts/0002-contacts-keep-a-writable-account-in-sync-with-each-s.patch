@@ -1,4 +1,4 @@
-From 339b49dec3c45f11306307f67a5e0143a3b7aff3 Mon Sep 17 00:00:00 2001
+From e5c32092ef1b606ea9fea8af82cf24a32d860c38 Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Sun, 25 Oct 2026 04:07:40 +0300
 Subject: [PATCH 2/2] contacts: keep a writable account in sync with each sim
@@ -9,7 +9,7 @@ Subject: [PATCH 2/2] contacts: keep a writable account in sync with each sim
  .../android/contacts/ContactSaveService.java  |   7 +
  .../contacts/activities/PeopleActivity.java   |   7 +
  .../contacts/database/SimContactDaoImpl.java  |  85 +++-
- .../contacts/database/SimContactSync.java     | 438 ++++++++++++++++++
+ .../contacts/database/SimContactSync.java     | 447 ++++++++++++++++++
  .../contacts/editor/SimNameLengthFilter.java  | 116 +++++
  .../contacts/editor/TextFieldsEditorView.java |   7 +
  .../interactions/OnBootOrUpgradeReceiver.java |  15 +
@@ -99,7 +99,7 @@ Subject: [PATCH 2/2] contacts: keep a writable account in sync with each sim
  res/values-zh-rHK/strings.xml                 |   5 +
  res/values-zh-rTW/strings.xml                 |   5 +
  res/values-zu/strings.xml                     |   5 +
- 94 files changed, 1094 insertions(+), 16 deletions(-)
+ 94 files changed, 1103 insertions(+), 16 deletions(-)
  create mode 100644 src/com/android/contacts/database/SimContactSync.java
  create mode 100644 src/com/android/contacts/editor/SimNameLengthFilter.java
 
@@ -301,10 +301,10 @@ index 2c01a2e..6f56a5d 100644
                  new String[]{ElementaryFiles.NAME_MAX_LENGTH}, null, null);
 diff --git a/src/com/android/contacts/database/SimContactSync.java b/src/com/android/contacts/database/SimContactSync.java
 new file mode 100644
-index 0000000..313e925
+index 0000000..d662899
 --- /dev/null
 +++ b/src/com/android/contacts/database/SimContactSync.java
-@@ -0,0 +1,438 @@
+@@ -0,0 +1,447 @@
 +/*
 + * Copyright (C) 2026 The Android Open Source Project
 + *
@@ -324,6 +324,7 @@ index 0000000..313e925
 +
 +import android.content.ContentProviderOperation;
 +import android.content.ContentResolver;
++import android.content.ContentValues;
 +import android.content.Context;
 +import android.content.OperationApplicationException;
 +import android.content.pm.PackageManager;
@@ -525,9 +526,17 @@ index 0000000..313e925
 +                final int recordNumber = mSimDao.writeAdnRecord(subscriptionId,
 +                        unchanged ? contact.recordNumber : -1, contact.name, contact.number);
 +                wrote = true;
-+                if (recordNumber > 0) {
++                if (recordNumber > 0 && recordNumber != contact.recordNumber) {
++                    // Stored right away so a sync that fails later doesn't add the record again.
++                    final ContentValues values = new ContentValues();
++                    values.put(RawContacts.SOURCE_ID, String.valueOf(recordNumber));
++                    values.putNull(RawContacts.SYNC1);
++                    values.putNull(RawContacts.SYNC2);
++                    mResolver.update(RAW_CONTACTS_URI.buildUpon()
++                            .appendPath(String.valueOf(contact.rawContactId)).build(),
++                            values, null, null);
 +                    contact.recordNumber = recordNumber;
-+                } else {
++                } else if (recordNumber <= 0) {
 +                    failures++;
 +                }
 +            }
