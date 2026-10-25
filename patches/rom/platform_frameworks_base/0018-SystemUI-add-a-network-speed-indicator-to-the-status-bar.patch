@@ -32,9 +32,12 @@ the status bar icon pipeline of this tree:
   shows or hides itself from the settings, so it needs no new
   constructor dependencies.
 
-Known limitations: the slot stays reserved while the indicator is
-enabled, even when it is hidden for lack of internet, and it is not
-shown when the Compose system icons flags are enabled.
+- The slot only counts as visible while there is a speed to show, and
+  the view keeps its width when StatusIconContainer hides it, so the
+  container never lays out the neighbouring icons from a stale width.
+
+Known limitation: it is not shown when the Compose system icons flags
+are enabled.
 ---
  core/java/android/provider/Settings.java | 49 ++++++++++++++++++++
  core/res/res/values/config.xml | 2 ++
@@ -46,13 +49,13 @@ shown when the Compose system icons flags are enabled.
  packages/SystemUI/res/drawable/stat_sys_network_traffic_up.xml | 33 ++++++++++++++++++++
  packages/SystemUI/res/drawable/stat_sys_network_traffic_updown.xml | 33 ++++++++++++++++++++
  packages/SystemUI/res/values/network_traffic_strings.xml | 25 ++++++++++++++++++++
- packages/SystemUI/src/com/android/systemui/statusbar/NetworkTraffic.java | 697 ++++++++++++++++++++
+ packages/SystemUI/src/com/android/systemui/statusbar/NetworkTraffic.java | 698 ++++++++++++++++++++
  packages/SystemUI/src/com/android/systemui/statusbar/phone/PhoneStatusBarPolicy.java | 6 ++++++
  packages/SystemUI/src/com/android/systemui/statusbar/phone/StatusBarIconHolder.kt | 20 +++++++++++++++++---
  packages/SystemUI/src/com/android/systemui/statusbar/phone/ui/IconManager.java | 10 ++++++++++
  packages/SystemUI/src/com/android/systemui/statusbar/phone/ui/StatusBarIconController.java | 6 ++++++
  packages/SystemUI/src/com/android/systemui/statusbar/phone/ui/StatusBarIconControllerImpl.java | 10 ++++++++++
- 16 files changed, 970 insertions(+), 3 deletions(-)
+ 16 files changed, 971 insertions(+), 3 deletions(-)
 
 diff --git a/core/java/android/provider/Settings.java b/core/java/android/provider/Settings.java
 --- a/core/java/android/provider/Settings.java
@@ -364,7 +367,7 @@ diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/NetworkTraffic
 new file mode 100644
 --- /dev/null
 +++ b/packages/SystemUI/src/com/android/systemui/statusbar/NetworkTraffic.java
-@@ -0,0 +1,697 @@
+@@ -0,0 +1,698 @@
 +/**
 + * Copyright (C) 2019-2024 crDroid Android Project
 + *
@@ -492,6 +495,7 @@ new file mode 100644
 +    private boolean mBlocked;
 +
 +    private boolean mVisible;
++    private boolean mHasContent;
 +
 +    private ConnectivityManager mConnectivityManager;
 +    private final Handler mTrafficHandler;
@@ -758,7 +762,7 @@ new file mode 100644
 +
 +    @Override
 +    public boolean isIconVisible() {
-+        return mEnabled;
++        return mHasContent;
 +    }
 +
 +    @Override
@@ -904,22 +908,22 @@ new file mode 100644
 +    }
 +
 +    private void updateVisibility() {
-+        boolean visible = mEnabled && mIsActive
-+                && !TextUtils.isEmpty(getText())
-+                && mVisibleState == STATE_ICON;
-+
-+        if (visible != mVisible) {
-+            mVisible = visible;
++        boolean hasContent = mEnabled && mIsActive && !TextUtils.isEmpty(getText());
++        // StatusIconContainer positions the icons from their current width, so the width only
++        // follows hasContent and a hide from the container keeps it (INVISIBLE, not GONE).
++        if (hasContent != mHasContent) {
++            mHasContent = hasContent;
 +            setFixedWidth();
-+            setVisibility(mVisible ? View.VISIBLE : View.GONE);
 +        }
++        mVisible = mHasContent && mVisibleState == STATE_ICON;
++        setVisibility(mVisible ? View.VISIBLE : mHasContent ? View.INVISIBLE : View.GONE);
 +    }
 +
 +    private void setFixedWidth() {
 +        int requiredWidth = 0;
-+        if (mVisible && !mHideArrows) {
++        if (mHasContent && !mHideArrows) {
 +            requiredWidth = (int) (30 * getResources().getDisplayMetrics().density);
-+        } else if (mVisible) {
++        } else if (mHasContent) {
 +            requiredWidth = (int) (18 * getResources().getDisplayMetrics().density);
 +        }
 +        if (requiredWidth == mCurrentWidth) return;
