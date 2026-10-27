@@ -1,7 +1,8 @@
-From 07e110ff146cff3a16bc28f2708a0d38a8b5efe9 Mon Sep 17 00:00:00 2001
+From 96da494469072b3635fdf37ba9a1aa55ef96f5f9 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Wed, 20 May 2026 09:04:51 +0100
-Subject: [PATCH 3/11] Settings: remove View Logs option and dead controller code
+Subject: [PATCH 5/13] Settings: remove View Logs option and dead controller
+ code
 
 The log viewer apk has been removed from the build, so the View Logs
 preference in the System dashboard and per-app info screen crashes on
@@ -18,10 +19,10 @@ LogcatLinkPrefController and AppLogcatPreference code.
  delete mode 100644 src/com/android/settings/system/LogcatLinkPrefController.java
 
 diff --git a/res/values/strings_ext.xml b/res/values/strings_ext.xml
-index 18de9b0..c285471 100644
+index 0ac5bf5..5d5daf4 100644
 --- a/res/values/strings_ext.xml
 +++ b/res/values/strings_ext.xml
-@@ -159,8 +159,6 @@ There are HTTP, HTTPS, DNS, DNS-over-TLS and DNS-over-HTTPS connectivity checks.
+@@ -161,8 +161,6 @@ There are HTTP, HTTPS, DNS, DNS-over-TLS and DNS-over-HTTPS connectivity checks.
      <string name="show_system_process_crash_notifs_title">Notify about system process crashes</string>
      <string name="show_system_process_crash_notifs_summary">Such crashes may indicate exploitation attempts</string>
 
@@ -48,7 +49,7 @@ index f2aa636..9ccd385 100644
              android:key="developer_options"
              settings:controller="com.android.settings.system.DeveloperOptionsController"/>
 diff --git a/src/com/android/settings/spa/app/appinfo/AppInfoSettings.kt b/src/com/android/settings/spa/app/appinfo/AppInfoSettings.kt
-index 92fe7f4..7122dd9 100644
+index c7e60a9..c617324 100644
 --- a/src/com/android/settings/spa/app/appinfo/AppInfoSettings.kt
 +++ b/src/com/android/settings/spa/app/appinfo/AppInfoSettings.kt
 @@ -176,7 +176,6 @@ private fun AppInfoSettings(packageInfoPresenter: PackageInfoPresenter) {
@@ -134,5 +135,6 @@ index e56f57d..0000000
 -        return true;
 -    }
 -}
---
-2.55.0
+-- 
+2.56.0
+

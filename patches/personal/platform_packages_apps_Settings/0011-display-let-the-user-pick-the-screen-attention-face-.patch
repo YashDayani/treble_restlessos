@@ -1,7 +1,8 @@
-From 7fec2ca2286de40d9f471abf18709bc7ba9053f2 Mon Sep 17 00:00:00 2001
+From fff473b7f77d377f170d6e2639f7e601af936fec Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Fri, 23 Oct 2026 17:42:56 +0300
-Subject: [PATCH 9/11] display: let the user pick the screen attention face detector
+Subject: [PATCH 11/13] display: let the user pick the screen attention face
+ detector
 
 ---
  .../adaptive_sleep_detector_strings.xml       |  7 +++
@@ -1351,11 +1352,11 @@ index e6f3949..fe12585 100644
 @@ -125,6 +125,8 @@ public class ScreenTimeoutSettings extends RadioButtonPickerFragment
      @VisibleForTesting
      AdaptiveSleepBatterySaverPreferenceController mAdaptiveSleepBatterySaverPreferenceController;
- 
+
 +    private AdaptiveSleepDetectorPreferenceController mAdaptiveSleepDetectorController;
 +
      @Nullable TogglePreferenceController mAdditionalTogglePreferenceController;
- 
+
      public ScreenTimeoutSettings() {
 @@ -143,9 +145,10 @@ public class ScreenTimeoutSettings extends RadioButtonPickerFragment
                  new AdaptiveSleepCameraStatePreferenceController(context, getLifecycle());
@@ -1370,7 +1371,7 @@ index e6f3949..fe12585 100644
          mPrivacyPreference.setLayoutResource(
                  com.android.settingslib.widget.preference.footer.R.layout.preference_footer);
 @@ -258,7 +261,7 @@ public class ScreenTimeoutSettings extends RadioButtonPickerFragment
- 
+
          mPrivacyPreference = new FooterPreference(mContext);
          mPrivacyPreference.setIcon(R.drawable.ic_privacy_shield_24dp);
 -        mPrivacyPreference.setTitle(R.string.adaptive_sleep_privacy);
@@ -1387,5 +1388,5 @@ index e6f3949..fe12585 100644
              screen.addPreference(mPrivacyPreference);
          }
 -- 
-2.50.1 (Apple Git-155)
+2.56.0
 

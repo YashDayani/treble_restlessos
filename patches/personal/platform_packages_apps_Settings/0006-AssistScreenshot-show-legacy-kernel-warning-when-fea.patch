@@ -1,7 +1,8 @@
-From 99034257beeed9475e6e0c693e631f045c9fe9af Mon Sep 17 00:00:00 2001
+From 4f039e2b16b08cfb923933e5f43e8012ce5e892b Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Sat, 30 May 2026 08:28:18 +0100
-Subject: [PATCH 4/11] AssistScreenshot: show legacy kernel warning when feature is unavailable
+Subject: [PATCH 6/13] AssistScreenshot: show legacy kernel warning when
+ feature is unavailable
 
 On kernel < 4.14 devices, the GPU-based screenshot capture path
 requires sync-fence / dma-buf primitives not available in the vendor
@@ -13,15 +14,15 @@ disable the toggle and show a summary explaining why.
  2 files changed, 28 insertions(+)
 
 diff --git a/res/values/strings.xml b/res/values/strings.xml
-index 1d76e61..0f4e57d 100644
+index 121b0e2..53fe3c7 100644
 --- a/res/values/strings.xml
 +++ b/res/values/strings.xml
-@@ -11103,6 +11103,7 @@
- 
+@@ -11329,6 +11329,7 @@
+
      <!-- Summary for the "screenshot" preference to determine whether assist can access the screenshot of your screen [CHAR LIMIT=NONE] -->
      <string name="assist_access_screenshot_summary">Allow the assist app to access an image of the screen</string>
 +    <string name="assist_screenshot_legacy_kernel_summary">Screenshot unavailable — device kernel does not support required graphics features</string>
- 
+
      <!-- Title for the "flash" preference to determine whether a flash is shown on screen when an assistant accesses the contents of the screeen. [CHAR LIMIT=40] -->
      <string name="assist_flash_title">Flash screen</string>
 diff --git a/src/com/android/settings/applications/assist/AssistScreenshotPreferenceController.java b/src/com/android/settings/applications/assist/AssistScreenshotPreferenceController.java
@@ -30,7 +31,7 @@ index 5947943..37bd71f 100644
 +++ b/src/com/android/settings/applications/assist/AssistScreenshotPreferenceController.java
 @@ -26,6 +26,7 @@ import androidx.preference.PreferenceScreen;
  import androidx.preference.TwoStatePreference;
- 
+
  import com.android.internal.app.AssistUtils;
 +import com.android.settings.R;
  import com.android.settings.core.PreferenceControllerMixin;
@@ -67,8 +68,8 @@ index 5947943..37bd71f 100644
 +            return sIsLegacyKernel = false;
 +        }
      }
- 
+
      class SettingObserver extends AssistSettingObserver {
 -- 
-2.54.0
+2.56.0
 
