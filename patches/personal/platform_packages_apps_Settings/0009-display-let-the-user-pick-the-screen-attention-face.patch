@@ -1,7 +1,7 @@
 From 7fec2ca2286de40d9f471abf18709bc7ba9053f2 Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Fri, 23 Oct 2026 17:42:56 +0300
-Subject: [PATCH 9/10] display: let the user pick the screen attention face detector
+Subject: [PATCH 9/11] display: let the user pick the screen attention face detector
 
 ---
  .../adaptive_sleep_detector_strings.xml       |  7 +++
