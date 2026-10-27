@@ -1,7 +1,7 @@
 From 38eb6d0e237cd98b2c4fb5d8c389527cf820213e Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Mon, 28 Sep 2026 16:57:51 +0100
-Subject: [PATCH] appsearch: neuter the isolated storage service
+Subject: [PATCH 1/1] appsearch: neuter the isolated storage service
 
 the isolated storage service runs appsearch icing inside an avf vm,
 which the gsi does not ship. replace the manager with a shell that

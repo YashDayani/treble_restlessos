@@ -1,7 +1,7 @@
 From f329285e69c9e62e93e894e11919d9792cdf1438 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Mon, 12 Oct 2026 20:26:30 +0100
-Subject: [PATCH] init: mark first stage phases on the kernel log
+Subject: [PATCH 1/1] init: mark first stage phases on the kernel log
 
 first stage aborts before the logger is up are completely silent: the
 boot runs init, init exits without a single logged line, and the kernel

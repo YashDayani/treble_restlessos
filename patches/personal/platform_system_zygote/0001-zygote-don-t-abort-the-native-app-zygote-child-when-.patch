@@ -1,7 +1,7 @@
 From 52fd4958f6391001dc17944e31447344ed8dba5d Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Sun, 18 Oct 2026 02:19:44 +0300
-Subject: [PATCH] zygote: don't abort the native app zygote child when cgroup setup fails on legacy kernels
+Subject: [PATCH 1/1] zygote: don't abort the native app zygote child when cgroup setup fails on legacy kernels
 
 ---
  zygote/src/child_process.rs          |  2 +-

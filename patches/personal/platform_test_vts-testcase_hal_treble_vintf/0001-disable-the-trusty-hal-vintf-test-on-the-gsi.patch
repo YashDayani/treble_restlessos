@@ -1,7 +1,7 @@
 From 043195dc5d16cd8658a90a581e5805db4fab8036 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Tue, 29 Sep 2026 13:41:32 +0100
-Subject: [PATCH] disable the trusty hal vintf test on the gsi
+Subject: [PATCH 1/1] disable the trusty hal vintf test on the gsi
 
 the test packages trusty virtual machine scripts and artifacts built
 from the virtualization sources, which are excluded from the gsi
