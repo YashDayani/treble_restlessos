@@ -1,7 +1,7 @@
-From 776d2de4585aac7ba9abf0eb85a5a829bf5811ad Mon Sep 17 00:00:00 2001
+From 72d2db580bdb7caa9a011c17c44ffe75048136ed Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Tue, 17 Mar 2026 23:16:26 +0000
-Subject: [PATCH 5/40] Add system property overrides for status bar and corner
+Subject: [PATCH 5/39] Add system property overrides for status bar and corner
  geometry
 
 Allow overriding status bar padding (start, end, top, bottom),

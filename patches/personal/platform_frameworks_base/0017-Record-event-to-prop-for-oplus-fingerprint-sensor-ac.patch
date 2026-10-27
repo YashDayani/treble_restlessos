@@ -1,7 +1,7 @@
-From b2bca261a09c844677b3b3e0eac37fd58b635bdf Mon Sep 17 00:00:00 2001
+From 3fe06788fd840097b85edd1d701a369350ca2e2e Mon Sep 17 00:00:00 2001
 From: dozeofffff <dozeoffff@dozeoffff>
 Date: Sun, 10 May 2026 23:55:47 +0000
-Subject: [PATCH 17/40] Record event to prop for oplus fingerprint sensor
+Subject: [PATCH 17/39] Record event to prop for oplus fingerprint sensor
  actuation
 
 ---

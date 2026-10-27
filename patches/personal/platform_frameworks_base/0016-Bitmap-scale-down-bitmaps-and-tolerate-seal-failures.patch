@@ -1,7 +1,7 @@
-From 1fc9c08ef5f8d5ac11b08896b2d08e993da95ec0 Mon Sep 17 00:00:00 2001
+From fa5bc328d6c4d937605310a171df7625ce7fbf6f Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Fri, 25 Sep 2026 18:22:21 +0100
-Subject: [PATCH 16/40] Bitmap: scale down bitmaps and tolerate seal failures
+Subject: [PATCH 16/39] Bitmap: scale down bitmaps and tolerate seal failures
  on legacy kernels
 
 On legacy kernels the binder transaction buffer cannot carry large

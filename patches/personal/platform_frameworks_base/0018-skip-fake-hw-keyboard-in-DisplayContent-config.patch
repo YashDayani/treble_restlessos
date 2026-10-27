@@ -1,7 +1,7 @@
-From f61d0cb53f8ee12ab8446ebf8923cc6b23253014 Mon Sep 17 00:00:00 2001
+From 0c3a6e5aed64c014bdc707af824fc9a3e880526e Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Sun, 21 Jun 2026 21:50:07 +0100
-Subject: [PATCH 18/40] skip fake hw-keyboard in DisplayContent config
+Subject: [PATCH 18/39] skip fake hw-keyboard in DisplayContent config
 
 DisplayContent.computeConfiguration sets Configuration.keyboard=KEYBOARD_QWERTY
 for any input device whose keyboardType is ALPHABETIC. on the xiaomi pad6

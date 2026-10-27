@@ -1,7 +1,7 @@
-From 3af51709e1d3a21555a1b44489cd026191e9bd34 Mon Sep 17 00:00:00 2001
+From b8c00dabb6a34bccced7ad5fb6d29bca2c6de0a4 Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Sat, 3 Oct 2026 01:22:57 +0300
-Subject: [PATCH 27/40] inputmethod: drop the ime navigation bar when it has no
+Subject: [PATCH 26/39] inputmethod: drop the ime navigation bar when it has no
  visible buttons
 
 ---

@@ -1,7 +1,7 @@
-From 53f81583187cf46397e1b4d5a6d1d8da3434cb03 Mon Sep 17 00:00:00 2001
+From adf1158ffa5ff5eadb6a169843b4c5e542888fcc Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Tue, 22 Sep 2026 18:46:51 +0100
-Subject: [PATCH 19/40] core api: add entries for restored FDE and network
+Subject: [PATCH 19/39] core api: add entries for restored FDE and network
  class APIs
 
 trebledroid patches restore StorageManager FDE methods and

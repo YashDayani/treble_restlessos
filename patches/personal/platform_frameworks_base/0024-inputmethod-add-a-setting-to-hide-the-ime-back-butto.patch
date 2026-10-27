@@ -1,7 +1,7 @@
-From a893b7a94a4345aaa5e804cecf0126d435420cae Mon Sep 17 00:00:00 2001
+From 0e454a93d4c9224c13dbdb30ff184e433ee13dc8 Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Fri, 2 Oct 2026 21:16:15 +0300
-Subject: [PATCH 25/40] inputmethod: add a setting to hide the ime back button
+Subject: [PATCH 24/39] inputmethod: add a setting to hide the ime back button
  in the ime navigation bar
 
 ---

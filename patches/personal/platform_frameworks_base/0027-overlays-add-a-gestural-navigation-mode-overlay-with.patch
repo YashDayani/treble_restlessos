@@ -1,7 +1,7 @@
-From 9803c25074a20de3a4aa9fe71b36219d02babef6 Mon Sep 17 00:00:00 2001
+From 67f1d372494834514b47d4ba0c8ad2a089fd235d Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Sat, 3 Oct 2026 02:20:24 +0300
-Subject: [PATCH 28/40] overlays: add a gestural navigation mode overlay
+Subject: [PATCH 27/39] overlays: add a gestural navigation mode overlay
  without the gesture handle
 
 ---

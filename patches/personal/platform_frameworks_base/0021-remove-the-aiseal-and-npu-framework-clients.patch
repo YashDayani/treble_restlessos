@@ -1,7 +1,7 @@
-From 297426e023322d8d6f6e2cf0d7ad62b6110b9f28 Mon Sep 17 00:00:00 2001
+From a0c3ec915114ce52d04b98d1bd8f3152a1c0d2f7 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
-Date: Mon, 28 Sep 2026 15:58:46 +0100
-Subject: [PATCH 21/40] remove aiseal and npu framework clients
+Date: Tue, 29 Sep 2026 12:44:36 +0100
+Subject: [PATCH 21/39] remove the aiseal and npu framework clients
 
 neither the aiseal host service nor the npu manager service exists on
 the gsi: both mainline modules are flag-disabled and their system
@@ -13,6 +13,10 @@ flag declarations stay because Context and PackageManager feature and
 service constants still carry FlaggedApi annotations on them, and the
 manifest permission definitions stay because the shell package
 requests one of them.
+
+the aiseal test payload links against the virtualization vm payload
+library, which is not built on the gsi, so disable the aiseal test
+modules too.
 ---
  core/api/system-current.txt                   |  11 -
  core/java/Android.bp                          |  23 --
@@ -27,7 +31,10 @@ requests one of them.
  services/aiseal/OWNERS                        |   7 -
  .../server/aiseal/AiSealSystemService.java    | 233 ------------------
  .../java/com/android/server/SystemServer.java |  21 --
- 13 files changed, 582 deletions(-)
+ tests/aiseal/Android.bp                       |   2 +
+ tests/aiseal/tenants/config/Android.bp        |  10 +
+ tests/aiseal/tenants/odim/Android.bp          |   4 +
+ 16 files changed, 16 insertions(+), 582 deletions(-)
  delete mode 100644 core/java/android/aiseal/AiSealException.java
  delete mode 100644 core/java/android/aiseal/AiSealManager.java
  delete mode 100644 core/java/android/aiseal/OWNERS
@@ -786,6 +793,90 @@ index 193c48be8..274b3d1fa 100644
          // Profiling
          t.traceBegin("StartProfilingCompanion");
          mSystemServiceManager.startServiceFromJar(PROFILING_SERVICE_LIFECYCLE_CLASS,
+diff --git a/tests/aiseal/Android.bp b/tests/aiseal/Android.bp
+index b0af6bfbd..766cdb204 100644
+--- a/tests/aiseal/Android.bp
++++ b/tests/aiseal/Android.bp
+@@ -21,6 +21,8 @@ filegroup {
+ 
+ android_test {
+     name: "AiSealTestCases",
++    // the aiseal payload is not built on the gsi
++    enabled: false,
+     team: "trendy_team_machine_learning",
+     srcs: ["src/**/*.java"],
+     platform_apis: true,
+diff --git a/tests/aiseal/tenants/config/Android.bp b/tests/aiseal/tenants/config/Android.bp
+index ea9194316..ddbb992c4 100644
+--- a/tests/aiseal/tenants/config/Android.bp
++++ b/tests/aiseal/tenants/config/Android.bp
+@@ -18,6 +18,8 @@ package {
+ 
+ genrule {
+     name: "aiseal_test_odim_version",
++    // the aiseal payload is not built on the gsi
++    enabled: false,
+     device_first_srcs: [
+         "//frameworks/base/tests/aiseal/tenants/odim:AiSealTestHelperAppOdim",
+     ],
+@@ -28,6 +30,8 @@ genrule {
+ 
+ genrule {
+     name: "aiseal_test_odim_expected_authority",
++    // the aiseal payload is not built on the gsi
++    enabled: false,
+     device_first_srcs: [
+         "//frameworks/base/tests/aiseal/tenants/odim:AiSealTestHelperAppOdim",
+     ],
+@@ -39,6 +43,8 @@ genrule {
+ 
+ genrule {
+     name: "aiseal_test_vm_config_json",
++    // the aiseal payload is not built on the gsi
++    enabled: false,
+     srcs: [
+         "assets/vm_config.json",
+         ":aiseal_test_odim_expected_authority",
+@@ -51,6 +57,8 @@ genrule {
+ 
+ genrule {
+     name: "aiseal_test_aiseal_config_json",
++    // the aiseal payload is not built on the gsi
++    enabled: false,
+     srcs: ["assets/aiseal_config.json"],
+     out: ["aiseal_config.json"],
+     cmd: "cp -f $(in) $(out)",
+@@ -58,6 +66,8 @@ genrule {
+ 
+ android_test_helper_app {
+     name: "AiSealTestTenantConfig",
++    // the aiseal payload is not built on the gsi
++    enabled: false,
+     asset_dirs: [],
+     assets: [
+         ":aiseal_test_vm_config_json",
+diff --git a/tests/aiseal/tenants/odim/Android.bp b/tests/aiseal/tenants/odim/Android.bp
+index 5ece36795..a29262f32 100644
+--- a/tests/aiseal/tenants/odim/Android.bp
++++ b/tests/aiseal/tenants/odim/Android.bp
+@@ -34,6 +34,8 @@ aidl_interface {
+ rust_ffi {
+     name: "libtest_aiseal_odim_payload",
+     crate_name: "test_aiseal_odim_payload",
++    // the virtualization stack is not built on the gsi
++    enabled: false,
+     srcs: ["native/main.rs"],
+     edition: "2021",
+     prefer_rlib: true,
+@@ -50,6 +52,8 @@ rust_ffi {
+ 
+ android_test_helper_app {
+     name: "AiSealTestHelperAppOdim",
++    // the aiseal payload is not built on the gsi
++    enabled: false,
+     srcs: ["java/**/*.java"],
+     platform_apis: true,
+     certificate: "platform",
 -- 
 2.56.0
 

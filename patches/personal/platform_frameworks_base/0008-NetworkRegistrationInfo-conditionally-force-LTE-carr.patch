@@ -1,7 +1,7 @@
-From da45b4802f86723adb05c3a319016c9aea1189a0 Mon Sep 17 00:00:00 2001
+From f75c33c5cb290afb3b71063f96db97e82f692357 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Mon, 16 Feb 2026 09:45:15 +0000
-Subject: [PATCH 8/40] NetworkRegistrationInfo: conditionally force LTE
+Subject: [PATCH 8/39] NetworkRegistrationInfo: conditionally force LTE
  carrier aggregation
 
 Add persist.sys.radio.force_lte_ca property to force the carrier

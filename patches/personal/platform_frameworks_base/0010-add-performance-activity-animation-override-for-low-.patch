@@ -1,7 +1,7 @@
-From d1ef577f0a43bf763b1bdfdd968e200f22badbdc Mon Sep 17 00:00:00 2001
+From c38b749df4c750faaa7aa76f5efe8d9e4ab5e667 Mon Sep 17 00:00:00 2001
 From: rmp22 <195054967+rmp22@users.noreply.github.com>
 Date: Wed, 25 Mar 2026 23:09:40 +0000
-Subject: [PATCH 10/40] add performance activity animation override for low-end
+Subject: [PATCH 10/39] add performance activity animation override for low-end
  MTK devices
 
 on MTK and other low-end devices running android 16, the stock AOSP
