@@ -1,7 +1,7 @@
-From 9da5970a0d7b6e21e0e4bed36a23b55b69922f35 Mon Sep 17 00:00:00 2001
+From b51d4557ceaa27c7010231ea34b9c809fda2fd7f Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Tue, 17 Mar 2026 23:12:58 +0000
-Subject: [PATCH 12/52] Add safe lmkd defaults and heap floor for GSI builds
+Subject: [PATCH 12/50] Add safe lmkd defaults and heap floor for GSI builds
 
 Disable critical_upgrade and enable kill_heaviest_task for more
 predictable memory management across diverse hardware.

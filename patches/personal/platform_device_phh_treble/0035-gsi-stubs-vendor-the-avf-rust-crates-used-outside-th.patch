@@ -1,7 +1,7 @@
-From c5a3ff68beaa53439fd0898da4bfb0540a69a36d Mon Sep 17 00:00:00 2001
+From addc0c17ada580e0e4ef2e2b01442bb41698ba28 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Mon, 28 Sep 2026 22:37:59 +0100
-Subject: [PATCH 35/52] gsi stubs: vendor the avf rust crates used outside the
+Subject: [PATCH 35/50] gsi stubs: vendor the avf rust crates used outside the
  virtualization tree
 
 ---

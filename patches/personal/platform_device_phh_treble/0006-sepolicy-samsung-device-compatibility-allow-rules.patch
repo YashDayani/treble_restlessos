@@ -1,7 +1,7 @@
-From 2064c37577604381c84e45ecca4692fe5abe908d Mon Sep 17 00:00:00 2001
+From b18cab7e547ed26c6978412c22b789f1dbfe97bc Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Fri, 25 Sep 2026 18:25:53 +0100
-Subject: [PATCH 6/52] sepolicy: samsung device compatibility allow rules
+Subject: [PATCH 6/50] sepolicy: samsung device compatibility allow rules
 
 several samsung vendor daemons need allow rules the GSI policy does
 not provide:

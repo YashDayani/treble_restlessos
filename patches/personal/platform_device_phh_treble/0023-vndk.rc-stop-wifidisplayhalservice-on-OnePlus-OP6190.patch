@@ -1,7 +1,7 @@
-From 2907b0672a67d41620973ab50da4eb29a50189b2 Mon Sep 17 00:00:00 2001
+From a696d44ea0e2b089a29962ac5760ebbcf0be8bf2 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Sat, 20 Jun 2026 20:30:00 +0100
-Subject: [PATCH 23/52] vndk.rc: stop wifidisplayhalservice on OnePlus OP6190L1
+Subject: [PATCH 23/50] vndk.rc: stop wifidisplayhalservice on OnePlus OP6190L1
  to fix boot stall
 
 ---

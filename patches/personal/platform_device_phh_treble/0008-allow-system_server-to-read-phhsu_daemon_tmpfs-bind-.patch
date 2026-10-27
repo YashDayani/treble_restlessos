@@ -1,7 +1,7 @@
-From 259e0565e9f085a60d06e908286249df6285a8b5 Mon Sep 17 00:00:00 2001
+From 7b5204944d3e2fb9373a51f4796e65c53d51f7d0 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Sat, 28 Mar 2026 19:23:05 +0000
-Subject: [PATCH 8/52] allow system_server to read phhsu_daemon_tmpfs bind
+Subject: [PATCH 8/50] allow system_server to read phhsu_daemon_tmpfs bind
  mounts
 
 rw-system.sh bind-mounts empty files from /mnt/phh/empty over feature

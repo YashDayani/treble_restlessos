@@ -1,7 +1,7 @@
-From 9b1bf942d0e23d7428d31482c702e57566e9cb4f Mon Sep 17 00:00:00 2001
+From 92cdcd6c762a428a8006364c9bb3fc91c6b6ecbf Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Sun, 29 Mar 2026 16:15:32 +0100
-Subject: [PATCH 9/52] vndk: remove lcd_density surfaceflinger restart
+Subject: [PATCH 9/50] vndk: remove lcd_density surfaceflinger restart
 
 rw-system.sh sets ro.sf.lcd_density during post-fs, before class_start
 core launches surfaceflinger.  the property trigger that restarted SF
