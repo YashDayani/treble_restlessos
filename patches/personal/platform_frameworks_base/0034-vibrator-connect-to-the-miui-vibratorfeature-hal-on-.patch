@@ -1,7 +1,7 @@
-From 778d858e1f2c717e06ead86a65ff805314a30681 Mon Sep 17 00:00:00 2001
+From 0c1009f8bdd6f5bfd69e4e62e1b23e97af2c7924 Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Tue, 27 Oct 2026 17:08:17 +0300
-Subject: [PATCH 35/38] vibrator: connect to the miui vibratorfeature hal on
+Subject: [PATCH 34/37] vibrator: connect to the miui vibratorfeature hal on
  the vintf path
 
 ---

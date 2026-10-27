@@ -1,7 +1,7 @@
-From 3f4f2105c6bab5e947855a5042d2c6345abd6c1e Mon Sep 17 00:00:00 2001
+From 1d7da024339b947e584cc72e1fb2d8b78f9149e0 Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Fri, 23 Oct 2026 00:41:48 +0300
-Subject: [PATCH 32/38] fingerprint: turn vendor reported sensor swipes into
+Subject: [PATCH 31/37] fingerprint: turn vendor reported sensor swipes into
  system navigation keys
 
 ---
