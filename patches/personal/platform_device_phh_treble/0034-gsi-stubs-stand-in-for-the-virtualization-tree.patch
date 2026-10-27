@@ -1,10 +1,21 @@
-From addc0c17ada580e0e4ef2e2b01442bb41698ba28 Mon Sep 17 00:00:00 2001
+From 7d514e993695f82e456c759f0a3ec47b4ea05f39 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Mon, 28 Sep 2026 22:37:59 +0100
-Subject: [PATCH 35/50] gsi stubs: vendor the avf rust crates used outside the
- virtualization tree
+Subject: [PATCH 34/49] gsi stubs: stand in for the virtualization tree
 
+the virtualization sources are excluded from the gsi manifest sync, but
+modules elsewhere in the tree (system/core init microdroid variant,
+system/librustutils, system/secretkeeper, external/gsc-utils and the
+trusty generic-arm64 reference dt) reference the soong defaults defined
+in packages/modules/Virtualization. reproduce those definitions with
+every feature flag in its default (disabled) state so soong analysis
+resolves without the virtualization tree present.
+the dtc host tool is unaffected; it lives in external/dtc.
+
+also vendor the avf rust crates, aidl interfaces and vm payload headers
+that modules outside the virtualization tree still build against.
 ---
+ gsi_stubs/Android.bp                          |   59 +
  gsi_stubs/android_display_backend/Android.bp  |   78 +
  .../aidl/android/crosvm/DisplayConfig.aidl    |   25 +
  .../crosvm/ICrosvmAndroidDisplayService.aidl  |   41 +
@@ -48,6 +59,7 @@ Subject: [PATCH 35/50] gsi stubs: vendor the avf rust crates used outside the
  gsi_stubs/dm/src/sys.rs                       |   99 +
  gsi_stubs/dm/src/util.rs                      |   77 +
  gsi_stubs/dm/src/verity.rs                    |  201 +
+ gsi_stubs/empty.placeholder                   |    0
  .../microdroid_payload_metadata/Android.bp    |   32 +
  .../include/microdroid/metadata.h             |   33 +
  .../microdroid_payload_metadata/metadata.cc   |   74 +
@@ -69,7 +81,8 @@ Subject: [PATCH 35/50] gsi stubs: vendor the avf rust crates used outside the
  gsi_stubs/vm_payload/Android.bp               |   17 +
  gsi_stubs/vm_payload/include/vm_main.h        |   39 +
  gsi_stubs/vm_payload/include/vm_payload.h     |  320 ++
- 64 files changed, 10428 insertions(+)
+ 66 files changed, 10487 insertions(+)
+ create mode 100644 gsi_stubs/Android.bp
  create mode 100644 gsi_stubs/android_display_backend/Android.bp
  create mode 100644 gsi_stubs/android_display_backend/aidl/android/crosvm/DisplayConfig.aidl
  create mode 100644 gsi_stubs/android_display_backend/aidl/android/crosvm/ICrosvmAndroidDisplayService.aidl
@@ -113,6 +126,7 @@ Subject: [PATCH 35/50] gsi stubs: vendor the avf rust crates used outside the
  create mode 100644 gsi_stubs/dm/src/sys.rs
  create mode 100644 gsi_stubs/dm/src/util.rs
  create mode 100644 gsi_stubs/dm/src/verity.rs
+ create mode 100644 gsi_stubs/empty.placeholder
  create mode 100644 gsi_stubs/microdroid_payload_metadata/Android.bp
  create mode 100644 gsi_stubs/microdroid_payload_metadata/include/microdroid/metadata.h
  create mode 100644 gsi_stubs/microdroid_payload_metadata/metadata.cc
@@ -135,6 +149,71 @@ Subject: [PATCH 35/50] gsi stubs: vendor the avf rust crates used outside the
  create mode 100644 gsi_stubs/vm_payload/include/vm_main.h
  create mode 100644 gsi_stubs/vm_payload/include/vm_payload.h
 
+diff --git a/gsi_stubs/Android.bp b/gsi_stubs/Android.bp
+new file mode 100644
+index 0000000..14d7281
+--- /dev/null
++++ b/gsi_stubs/Android.bp
+@@ -0,0 +1,59 @@
++// stub soong defaults for modules outside the virtualization tree that
++// reference the android virtualization framework build flags. the
++// virtualization sources are excluded from the gsi manifest sync, so the
++// definitions that normally live in packages/modules/Virtualization are
++// reproduced here with every feature flag in its default (disabled) state.
++
++cc_defaults {
++    name: "avf_build_flags_cc",
++}
++
++rust_defaults {
++    name: "avf_build_flags_rust",
++}
++
++genrule_defaults {
++    name: "dts_to_dtb",
++    tools: ["dtc"],
++    cmd: "FILES=($(in)) && $(location dtc) -@ -I dts -O dtb $${FILES[-1]} -o $(out)",
++}
++
++// stub trusty dirgroup for the tree that used to live at
++// packages/modules/Virtualization/libs. the trusty build aggregates these
++// dirgroups to detect source changes; the virtualization sources are
++// excluded from the gsi manifest sync, so the group points at the vendored
++// stubs directory instead.
++
++dirgroup {
++    name: "trusty_dirgroup_packages_modules_virtualization_libs",
++    dirs: ["."],
++    visibility: ["//trusty/vendor/google/aosp/scripts"],
++}
++
++// stub apexes for the virtualization apex names. the apexes themselves are
++// never built or installed on the gsi, but modules across the tree still
++// list the names in apex_available and soong validates those against
++// existing modules, so the names are registered as disabled stubs.
++
++apex {
++    name: "com.android.virt",
++    enabled: false,
++}
++
++apex {
++    name: "com.android.compos",
++    enabled: false,
++}
++
++apex {
++    name: "com.android.microfuchsia",
++    enabled: false,
++}
++
++// the virtualization tree defined the empty_file filegroup consumed by the
++// trusty vm image modules; reproduce it here with a placeholder file.
++
++filegroup {
++    name: "empty_file",
++    srcs: ["empty.placeholder"],
++}
 diff --git a/gsi_stubs/android_display_backend/Android.bp b/gsi_stubs/android_display_backend/Android.bp
 new file mode 100644
 index 0000000..ce24733
@@ -9296,6 +9375,9 @@ index 0000000..8780b24
 +        Ok(DmVerityTarget(buf.into_boxed_slice()))
 +    }
 +}
+diff --git a/gsi_stubs/empty.placeholder b/gsi_stubs/empty.placeholder
+new file mode 100644
+index 0000000..e69de29
 diff --git a/gsi_stubs/microdroid_payload_metadata/Android.bp b/gsi_stubs/microdroid_payload_metadata/Android.bp
 new file mode 100644
 index 0000000..ab899df
