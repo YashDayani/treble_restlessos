@@ -14,7 +14,7 @@ index 08bc23645..a3d66a0ff 100644
 @@ -1168,8 +1168,24 @@ public class AuthService extends SystemService {
      private void registerAuthenticators() {
          BiometricHandlerProvider handlerProvider = mInjector.getBiometricHandlerProvider();
- 
+
 +        String[] configStrings = mInjector.getFingerprintConfiguration(getContext());
 +        if (configStrings == null || configStrings.length == 0) {
 +            Slog.i("PHH", "Attempting to generate config_biometric_sensors for fingerprint");
@@ -40,7 +40,7 @@ index 08bc23645..a3d66a0ff 100644
 @@ -1292,12 +1308,27 @@ public class AuthService extends SystemService {
              return;
          }
- 
+
 +        final boolean preferHidlSensor;
 +        if (!SystemProperties.getBoolean("persist.sys.phh.virtual_sensors_are_real", false)) {
 +            if (hidlConfigStrings != null && hidlConfigStrings.length > 0
@@ -61,7 +61,7 @@ index 08bc23645..a3d66a0ff 100644
                      new FingerprintSensorConfigurations(fingerprintAidlInstances != null
 -                            && fingerprintAidlInstances.length > 0);
 +                            && fingerprintAidlInstances.length > 0 && !preferHidlSensor);
- 
+
 -            if (fingerprintAidlInstances != null && fingerprintAidlInstances.length > 0) {
 +            if (fingerprintAidlInstances != null && fingerprintAidlInstances.length > 0 && !preferHidlSensor) {
                  mFingerprintSensorConfigurations.addAidlSensors(fingerprintAidlInstances);

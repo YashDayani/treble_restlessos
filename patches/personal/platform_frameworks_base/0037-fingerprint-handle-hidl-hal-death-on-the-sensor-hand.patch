@@ -22,7 +22,7 @@ index 1d4e8b8c1..b410b4714 100644
 @@ -312,12 +312,16 @@ public class BiometricScheduler<T, U> {
              return;
          }
- 
+
 +        final BiometricSchedulerOperation nextOperation = mPendingOperations.peekFirst();
 +        if (nextOperation == null) {
 +            return;
@@ -33,7 +33,7 @@ index 1d4e8b8c1..b410b4714 100644
          final boolean shouldStartNextOperationIfMarkedCancelling =
 -                mPendingOperations.getFirst().isMarkedCanceling();
 +                nextOperation.isMarkedCanceling();
- 
+
 -        if (nextUserId == currentUserId || mPendingOperations.getFirst().isStartUserOperation()
 +        if (nextUserId == currentUserId || nextOperation.isStartUserOperation()
                  || shouldStartNextOperationIfMarkedCancelling) {
@@ -58,7 +58,7 @@ index 98fc293d4..afa85aaff 100644
 +            onBinderDied();
 +        });
      }
- 
+
      @Override
 -- 
 2.56.0

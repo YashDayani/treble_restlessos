@@ -26,13 +26,13 @@ index caf8ca94f..c49b65e1e 100644
 @@ -86,6 +86,9 @@ final class NavigationBarController implements Window.DecorCallback,
       */
      private boolean mImeSwitcherButtonEnabled;
- 
+
 +    /** Whether the IME back (dismiss) button is hidden on the IME Navigation bar. */
 +    private boolean mImeBackButtonHidden;
 +
      /** Whether a custom IME Switcher button should be visible. */
      private boolean mCustomImeSwitcherButtonRequestedVisible;
- 
+
 @@ -166,6 +169,7 @@ final class NavigationBarController implements Window.DecorCallback,
                  // TODO(b/213337792): Set NAVBAR_IME_VISIBLE only when necessary.
                  final int flags = NAVBAR_BACK_DISMISS_IME | NAVBAR_IME_VISIBLE | (
@@ -43,7 +43,7 @@ index caf8ca94f..c49b65e1e 100644
              }
 @@ -413,12 +417,16 @@ final class NavigationBarController implements Window.DecorCallback,
          }
- 
+
          final boolean prevShowImeSwitcherButtonInNavBar = showImeSwitcherButtonInNavBar();
 -        mImeDrawsImeNavBar =
 -                (navButtonFlags & InputMethodNavButtonFlags.IME_DRAWS_IME_NAV_BAR) != 0;
@@ -57,7 +57,7 @@ index caf8ca94f..c49b65e1e 100644
 +        mImeDrawsImeNavBar =
 +                (navButtonFlags & InputMethodNavButtonFlags.IME_DRAWS_IME_NAV_BAR) != 0
 +                && (!mImeBackButtonHidden || showImeSwitcherButtonInNavBar());
- 
+
          mService.mWindow.getWindow().getDecorView().getWindowInsetsController()
                  .setImeCaptionBarInsetsHeight(getImeCaptionBarHeight(mImeDrawsImeNavBar));
 @@ -426,10 +434,12 @@ final class NavigationBarController implements Window.DecorCallback,
@@ -84,12 +84,12 @@ index 32b9dc2f8..f268f7bb9 100644
      private int mNavbarFlags;
 +    private boolean mBackButtonHidden;
      private final int mNavBarMode = NAV_BAR_MODE_GESTURAL;
- 
+
      private KeyButtonDrawable mBackIcon;
 @@ -275,6 +276,14 @@ public final class NavigationBarView extends FrameLayout {
          super.setLayoutDirection(layoutDirection);
      }
- 
+
 +    public void setBackButtonHidden(boolean hidden) {
 +        if (hidden == mBackButtonHidden) {
 +            return;
@@ -104,11 +104,11 @@ index 32b9dc2f8..f268f7bb9 100644
 @@ -316,7 +325,7 @@ public final class NavigationBarView extends FrameLayout {
          getImeSwitchButton()
                  .setVisibility(isImeSwitcherButtonVisible ? View.VISIBLE : View.INVISIBLE);
- 
+
 -        getBackButton().setVisibility(View.VISIBLE);
 +        getBackButton().setVisibility(mBackButtonHidden ? View.INVISIBLE : View.VISIBLE);
          getHomeHandle().setVisibility(View.INVISIBLE);
- 
+
          // We used to be reporting the touch regions via notifyActiveTouchRegions() here.
 diff --git a/core/java/android/provider/Settings.java b/core/java/android/provider/Settings.java
 index 5f6b1387a..ef2fc878c 100644
@@ -117,7 +117,7 @@ index 5f6b1387a..ef2fc878c 100644
 @@ -8568,6 +8568,15 @@ public final class Settings {
          public static final String IME_SWITCHER_BUTTON_IN_NAVBAR_ENABLED =
                  "ime_switcher_in_navbar_enabled";
- 
+
 +        /**
 +         * Toggle for showing the IME back (dismiss) button in the IME navigation bar.
 +         *
@@ -141,7 +141,7 @@ index f32c135a4..fe1ed2aef 100644
 +        InputMethodNavButtonFlags.IME_BACK_BUTTON_HIDDEN,
  })
  public @interface InputMethodNavButtonFlags {
- 
+
 @@ -54,4 +55,9 @@ public @interface InputMethodNavButtonFlags {
       * from {@link #SHOW_IME_SWITCHER_BUTTON}.
       */
@@ -214,7 +214,7 @@ index 76bbdd306..6297beffa 100644
 +                ? 0
 +                : InputMethodNavButtonFlags.IME_BACK_BUTTON_HIDDEN);
      }
- 
+
      /**
 diff --git a/services/core/java/com/android/server/inputmethod/InputMethodSettings.java b/services/core/java/com/android/server/inputmethod/InputMethodSettings.java
 index 339645d69..13bcdbbab 100644
@@ -223,7 +223,7 @@ index 339645d69..13bcdbbab 100644
 @@ -664,6 +664,10 @@ final class InputMethodSettings {
          return getInt(Settings.Secure.IME_SWITCHER_BUTTON_IN_NAVBAR_ENABLED, 1) == 1;
      }
- 
+
 +    boolean isImeBackButtonInNavBarEnabled() {
 +        return getInt(Settings.Secure.IME_BACK_BUTTON_IN_NAVBAR_ENABLED, 1) == 1;
 +    }

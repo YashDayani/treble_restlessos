@@ -36,16 +36,16 @@ index 497756418..998ad9818 100644
 +import android.util.DisplayMetrics;
  import android.util.Xml;
  import android.view.InflateException;
- 
+
 +import com.android.internal.R;
 +
  import org.xmlpull.v1.XmlPullParser;
  import org.xmlpull.v1.XmlPullParserException;
- 
+
 @@ -145,6 +149,20 @@ public class AnimationUtils {
      public static Animation loadAnimation(Context context, @AnimRes int id)
              throws NotFoundException {
- 
+
 +        if (SystemProperties.getBoolean("persist.sys.activity_anim_perf_override", false)) {
 +            ActivityAnimations.maybeInit(context);
 +            switch (id) {

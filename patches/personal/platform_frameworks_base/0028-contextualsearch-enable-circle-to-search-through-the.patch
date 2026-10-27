@@ -16,11 +16,11 @@ index 0ed95ca0d..19ee6077b 100644
 +++ b/core/res/res/values/config.xml
 @@ -7742,7 +7742,7 @@
      <bool name="config_watchlistUseFileHashesCache">false</bool>
- 
+
      <!-- Name of the package responsible to handle Contextual Search. -->
 -    <string name="config_defaultContextualSearchPackageName" translatable="false" />
 +    <string name="config_defaultContextualSearchPackageName" translatable="false">com.google.android.googlequicksearchbox</string>
- 
+
      <!-- The key containing the entrypoint for Contextual Search. -->
      <string name="config_defaultContextualSearchKey" translatable="false" />
 diff --git a/data/etc/com.android.launcher3.xml b/data/etc/com.android.launcher3.xml
@@ -42,12 +42,12 @@ index 2162ec421..6334c2a6e 100644
 @@ -51,6 +51,8 @@
      <backup-transport-whitelisted-service
          service="com.android.encryptedlocaltransport/.EncryptedLocalTransportService" />
- 
+
 +    <feature name="com.google.android.feature.CONTEXTUAL_SEARCH" />
 +
      <!-- Whitelist Shell to use the bugreport API -->
      <bugreport-whitelisted package="com.android.shell" />
- 
+
 -- 
 2.56.0
 

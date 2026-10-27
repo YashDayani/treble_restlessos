@@ -19,14 +19,14 @@ index d68c938ed..030265567 100644
 @@ -30,11 +30,21 @@ import android.os.RemoteException;
  import android.os.ServiceManager;
  import android.util.Slog;
- 
+
 +import com.android.server.utils.LazyJniRegistrar;
 +
  public class ConsumerIrService extends IConsumerIrService.Stub {
      private static final String TAG = "ConsumerIrService";
- 
+
      private static final int MAX_XMIT_TIME = 2000000; /* in microseconds */
- 
+
 +    private static native boolean getHidlHalService();
 +    private static native int halTransmit(int carrierFrequency, int[] pattern);
 +    private static native int[] halGetCarrierFrequencies();
@@ -50,7 +50,7 @@ index d68c938ed..030265567 100644
 +        // Fall back to the HIDL HAL service
 +        return getHidlHalService();
      }
- 
+
      private void throwIfNoIrEmitter() {
 @@ -100,6 +115,12 @@ public class ConsumerIrService extends IConsumerIrService.Stub {
                  } catch (RemoteException ignore) {
@@ -83,13 +83,13 @@ index da25c0cc3..7ad99bcaf 100644
 @@ -39,6 +39,9 @@ public final class LazyJniRegistrar {
      // Note: {@link SystemServer#run} loads the native "android_servers" lib, so no need to do so
      // explicitly here. Classes that use this registration must not be initialized before this.
- 
+
 +    /** Registers native methods for ConsumerIrService. */
 +    public static native void registerConsumerIrService();
 +
      /** Registers native methods for GameManagerService. */
      public static native void registerGameManagerService();
- 
+
 diff --git a/services/core/jni/Android.bp b/services/core/jni/Android.bp
 index 4a2a813a1..d0ceecfbf 100644
 --- a/services/core/jni/Android.bp
@@ -219,7 +219,7 @@ index 934b5ee0d..c9c6e00f6 100644
 +++ b/services/core/jni/com_android_server_utils_LazyJniRegistrar.cpp
 @@ -21,6 +21,7 @@
  namespace android {
- 
+
  // Forward declared per-class registration methods.
 +int register_android_server_ConsumerIrService(JNIEnv* env);
  int register_android_server_app_GameManagerService(JNIEnv* env);
@@ -228,7 +228,7 @@ index 934b5ee0d..c9c6e00f6 100644
 @@ -31,6 +32,10 @@ namespace {
  // registrar implementation. Instead, just update the called methods to take a
  // class arg, and hand those methods to jniRegisterNativeMethods directly.
- 
+
 +void registerConsumerIrService(JNIEnv* env, jclass) {
 +    register_android_server_ConsumerIrService(env);
 +}
@@ -238,7 +238,7 @@ index 934b5ee0d..c9c6e00f6 100644
  }
 @@ -44,6 +49,7 @@ void registerVpn(JNIEnv* env, jclass) {
  }
- 
+
  static const JNINativeMethod sJniRegistrarMethods[] = {
 +        {"registerConsumerIrService", "()V", (void*)registerConsumerIrService},
          {"registerGameManagerService", "()V", (void*)registerGameManagerService},

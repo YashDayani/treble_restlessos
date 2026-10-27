@@ -23,7 +23,7 @@ index 052e98506..37fb159fb 100644
 @@ -227,6 +228,10 @@ public class AuthController implements
          }
      };
- 
+
 +    private void oplusFpUiReady(boolean fingerDown) {
 +        SystemProperties.set("sys.phh.oplus.fppress", fingerDown ? "1" : "0");
 +    }
@@ -37,7 +37,7 @@ index 052e98506..37fb159fb 100644
                  public void onFingerUp() {
 +                    oplusFpUiReady(false);
                  }
- 
+
                  @Override
                  public void onFingerDown() {
 +                    oplusFpUiReady(true);

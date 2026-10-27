@@ -29,7 +29,7 @@ index c94ba5dfe..cbf0fff96 100644
 +        }
 +
          if (!isDeviceVoiceCapable() && !isDeviceSmsCapable() && !isDataCapable()) return 0;
- 
+
          return switch(TelephonyProperties.multi_sim_config().orElse("").toLowerCase(Locale.ROOT)) {
 @@ -684,6 +689,11 @@ public class TelephonyManager {
       * {@link #getActiveModemCount} returns 1 while this API returns 2.
@@ -42,7 +42,7 @@ index c94ba5dfe..cbf0fff96 100644
 +
          return TelephonyProperties.max_active_modems().orElse(getActiveModemCount());
      }
- 
+
 -- 
 2.56.0
 

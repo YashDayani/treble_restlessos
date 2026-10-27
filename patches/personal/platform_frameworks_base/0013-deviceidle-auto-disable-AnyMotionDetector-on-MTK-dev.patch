@@ -32,7 +32,7 @@ index 5fd06150a..8ad2bf59a 100644
  import android.os.PowerManagerInternal;
 @@ -2610,6 +2611,15 @@ public class DeviceIdleController extends SystemService
          }
- 
+
          boolean useMotionSensor() {
 +            // MTK vendor HALs on A16 kernels continuously fire motion events,
 +            // preventing doze and burning battery. Auto-disable AnyMotionDetector

@@ -42,7 +42,7 @@ index c55085d3e..d017a20d9 100644
  import android.os.UserManager;
 @@ -2960,6 +2961,16 @@ class DisplayContent extends RootDisplayArea implements WindowManagerPolicy.Disp
              }
- 
+
              if (device.getKeyboardType() == InputDevice.KEYBOARD_TYPE_ALPHABETIC) {
 +                // some devices ship a vendor nanoapp that registers an alphabetic input
 +                // device even with no physical keyboard attached, which forces

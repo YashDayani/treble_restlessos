@@ -71,7 +71,7 @@ index f3cc76b73..43b1a334f 100644
 -var non_updatable_modules = []string{virtualization, location, platformCrashrecovery, ondeviceintelligence, platformTelephony}
 +// the virtualization module is not built on the gsi, so it is excluded
 +var non_updatable_modules = []string{location, platformCrashrecovery, ondeviceintelligence, platformTelephony}
- 
+
  // Map of RELEASE_ flags and the module associated with the flag.
  type moduleFlagInfo struct {
 diff --git a/boot/Android.bp b/boot/Android.bp
@@ -87,7 +87,7 @@ index ab80e8b0e..ed53664ea 100644
 -            module: "com.android.virt-bootclasspath-fragment",
 -        },
      ],
- 
+
      soong_config_variables: {
 diff --git a/core/java/android/app/SystemServiceRegistry.java b/core/java/android/app/SystemServiceRegistry.java
 index e407f3e4f..f9f571e81 100644
@@ -107,7 +107,7 @@ index e407f3e4f..f9f571e81 100644
              NpuManagerFrameworkInitializer.registerServiceWrappers();
 -            VirtualizationFrameworkInitializer.registerServiceWrappers();
              ConnectivityFrameworkInitializerBaklava.registerServiceWrappers();
- 
+
              if (TelecomDependencies.isMainlineBuildFlagEnabled()) {
 diff --git a/services/core/Android.bp b/services/core/Android.bp
 index 007eed63f..baa6a9132 100644
@@ -132,11 +132,11 @@ index 1a16ddbe1..ef795aa0e 100644
 -import android.system.virtualmachine.BuildFlags;
  import android.text.TextUtils;
  import android.util.Slog;
- 
+
 @@ -84,10 +83,6 @@ final class PackageManagerNative extends IPackageManagerNative.Stub {
          PackageInfoNative result = new PackageInfoNative();
          result.packageName = packageName;
- 
+
 -        if (BuildFlags.SUPPORT_AVF_ADVANCE_MULTITENANCY && pInfo.applicationInfo != null) {
 -            result.sourceDir = pInfo.applicationInfo.sourceDir;
 -            result.splitSourceDirs = pInfo.applicationInfo.splitSourceDirs;

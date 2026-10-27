@@ -37,7 +37,7 @@ index a11b40ea4..e2354dbc9 100644
 @@ -83,13 +87,61 @@ static void setPowerBoost(Boost boost, int32_t durationMs) {
      SurfaceComposerClient::notifyPowerBoost(static_cast<int32_t>(boost));
  }
- 
+
 +static const std::unordered_set<int>& getBlockedPowerModes() {
 +    // re-read property when it changes. the property is populated
 +    // incrementally by power-mode-monitor.sh after boot -- new mode IDs
@@ -95,7 +95,7 @@ index a11b40ea4..e2354dbc9 100644
 +    }
      return result.isOk();
  }
- 
+
 -- 
 2.56.0
 

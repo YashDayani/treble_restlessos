@@ -17,7 +17,7 @@ index ef2fc878c..c18ae72cc 100644
 @@ -8974,6 +8974,15 @@ public final class Settings {
          @Readable
          public static final String ALWAYS_ON_VPN_LOCKDOWN = "always_on_vpn_lockdown";
- 
+
 +        /**
 +         * Whether tethering is allowed to use the VPN as its upstream (0 = false, 1 = true).
 +         * The key is mirrored in Tethering.java and UpstreamNetworkMonitor.java.

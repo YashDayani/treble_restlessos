@@ -55,7 +55,7 @@ index 33d432a27..7e0ff4edd 100644
          private ISehSysInputDev samsungSysinput = null;
 +        private vendor.samsung.hardware.sysinput.ISehSysInputDev samsungSysinputAidl = null;
 +        private long samsungTspLateOnUptime;
- 
+
          LocalDisplayDevice(IBinder displayToken, long physicalDisplayId,
                  SurfaceControl.StaticDisplayInfo staticDisplayInfo,
 @@ -998,6 +1001,20 @@ final class LocalDisplayAdapter extends DisplayAdapter {
@@ -97,7 +97,7 @@ index 33d432a27..7e0ff4edd 100644
 +                                Log.d("PHH", "Failed to activate Samsung tsp early", t);
 +                            }
 +                        }
- 
+
                          try {
                              final long start = SystemClock.uptimeMillis();
 @@ -1031,6 +1062,65 @@ final class LocalDisplayAdapter extends DisplayAdapter {
@@ -163,9 +163,9 @@ index 33d432a27..7e0ff4edd 100644
 +                                Log.d("PHH", "Failed to re-enable tsp input", t);
 +                            }
 +                        }
- 
+
                          setCommittedState(state);
- 
+
 -- 
 2.56.0
 

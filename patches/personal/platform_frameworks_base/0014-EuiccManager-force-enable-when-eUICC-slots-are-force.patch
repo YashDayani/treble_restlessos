@@ -43,7 +43,7 @@ index ae7346eb6..695dfc283 100644
 +        }
          return getIEuiccController() != null && refreshCardIdIfUninitialized();
      }
- 
+
 -- 
 2.56.0
 

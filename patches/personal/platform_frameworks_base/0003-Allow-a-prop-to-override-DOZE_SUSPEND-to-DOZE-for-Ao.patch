@@ -21,7 +21,7 @@ index 1a24d607f..ab1ae2f9c 100644
 +        if (disableDisplayDozeSuspend && state == Display.STATE_DOZE_SUSPEND) {
 +            state = Display.STATE_DOZE;
 +        }
- 
+
          // Initialize things the first time the power state is changed.
          if (mustInitialize) {
 -- 

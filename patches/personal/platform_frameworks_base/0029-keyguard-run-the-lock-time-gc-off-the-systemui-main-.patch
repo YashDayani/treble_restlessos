@@ -35,14 +35,14 @@ index 81c072be1..9021433a4 100644
 @@ -38,6 +38,7 @@ import android.util.Log;
  import android.util.Slog;
  import android.util.proto.ProtoOutputStream;
- 
+
 +import com.android.internal.os.BackgroundThread;
  import com.android.internal.policy.IKeyguardDismissCallback;
  import com.android.internal.policy.IKeyguardDrawnCallback;
  import com.android.internal.policy.IKeyguardExitCallback;
 @@ -234,9 +235,11 @@ public class KeyguardServiceDelegate {
          }
- 
+
          if (showing) {
 -            System.gc();
 -            System.runFinalization();
@@ -54,7 +54,7 @@ index 81c072be1..9021433a4 100644
 +            });
          }
      }
- 
+
 -- 
 2.56.0
 

@@ -38,7 +38,7 @@ index ac9ebe58e..a8b8beda0 100644
 +                // on GSI builds with old kernels (< 5.4), fs-verity is not available --
 +                // skip the consistency check rather than failing the install.
 +                needsConsistencyCheck = VerityUtils.isFsVeritySupported();
- 
+
                  final File idsig = new File(apk.getAbsolutePath() + V4Signature.EXT);
                  try (var fis = new FileInputStream(idsig.getAbsolutePath())) {
 diff --git a/core/java/com/android/internal/security/VerityUtils.java b/core/java/com/android/internal/security/VerityUtils.java
@@ -47,7 +47,7 @@ index ac186d0a2..ff818b01f 100644
 +++ b/core/java/com/android/internal/security/VerityUtils.java
 @@ -56,7 +56,11 @@ public abstract class VerityUtils {
      private static final int HASH_SIZE_BYTES = 32;
- 
+
      public static boolean isFsVeritySupported() {
 -        return Build.VERSION.DEVICE_INITIAL_SDK_INT >= Build.VERSION_CODES.R;
 +        // on GSI builds the system partition is modern but the vendor kernel may
@@ -56,7 +56,7 @@ index ac186d0a2..ff818b01f 100644
 +        return Build.VERSION.DEVICE_INITIAL_SDK_INT >= Build.VERSION_CODES.R
 +                && new java.io.File("/sys/fs/verity").exists();
      }
- 
+
      /** Enables fs-verity for the file without signature. */
 diff --git a/services/core/java/com/android/server/pm/InstallPackageHelper.java b/services/core/java/com/android/server/pm/InstallPackageHelper.java
 index 7c7e9c4a0..a56cb8202 100644
@@ -72,7 +72,7 @@ index 7c7e9c4a0..a56cb8202 100644
  import com.android.server.EventLogTags;
 @@ -2144,7 +2145,9 @@ final class InstallPackageHelper {
              // this is an update to a system package
- 
+
              try {
 -                PackageVerityExt.checkFsVerity(parsedPackage);
 +                if (VerityUtils.isFsVeritySupported()) {
@@ -86,14 +86,14 @@ index ce13d1054..454547423 100644
 --- a/services/core/java/com/android/server/pm/PackageInstallerSession.java
 +++ b/services/core/java/com/android/server/pm/PackageInstallerSession.java
 @@ -4594,7 +4594,7 @@ public class PackageInstallerSession extends IPackageInstallerSession.Stub {
- 
+
          // Needs to happen before the first v4 signature verification, which happens in
          // getAddedApkLitesLocked.
 -        if (!isIncrementalInstallation()) {
 +        if (!isIncrementalInstallation() && VerityUtils.isFsVeritySupported()) {
              enableFsVerityToAddedApksWithIdsig();
          }
- 
+
 diff --git a/services/core/java/com/android/server/pm/PackageVerityExt.java b/services/core/java/com/android/server/pm/PackageVerityExt.java
 index 83972db25..e16de1dca 100644
 --- a/services/core/java/com/android/server/pm/PackageVerityExt.java
@@ -101,12 +101,12 @@ index 83972db25..e16de1dca 100644
 @@ -133,7 +133,7 @@ public class PackageVerityExt {
              }
          }
- 
+
 -        if (checkFsVerity) {
 +        if (checkFsVerity && VerityUtils.isFsVeritySupported()) {
              checkFsVerity(systemPkgUpdate);
          }
- 
+
 -- 
 2.56.0
 

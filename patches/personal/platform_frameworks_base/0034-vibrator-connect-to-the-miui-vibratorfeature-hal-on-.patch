@@ -14,7 +14,7 @@ index a8d922415..c74904467 100644
 --- a/services/core/java/com/android/server/vibrator/VintfHalVibrator.java
 +++ b/services/core/java/com/android/server/vibrator/VintfHalVibrator.java
 @@ -97,11 +97,21 @@ class VintfHalVibrator {
- 
+
      /** {@link VintfSupplier} for default {@link IVibrator} service. */
      static final class DefaultVibratorSupplier extends VintfSupplier<IVibrator> {
 +        private final String mInstance;
@@ -34,7 +34,7 @@ index a8d922415..c74904467 100644
 -                    IVibrator.DESCRIPTOR + "/default"));
 +                    IVibrator.DESCRIPTOR + "/" + mInstance));
          }
- 
+
          @NonNull
 diff --git a/services/core/java/com/android/server/vibrator/VintfHalVibratorManager.java b/services/core/java/com/android/server/vibrator/VintfHalVibratorManager.java
 index 6350d05e4..d0cdc3980 100644

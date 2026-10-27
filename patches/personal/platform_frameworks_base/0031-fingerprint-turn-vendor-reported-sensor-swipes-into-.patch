@@ -18,7 +18,7 @@ index df05a181a..86c6890e2 100644
 --- a/services/core/java/com/android/server/biometrics/sensors/fingerprint/aidl/AidlResponseHandler.java
 +++ b/services/core/java/com/android/server/biometrics/sensors/fingerprint/aidl/AidlResponseHandler.java
 @@ -133,8 +133,11 @@ public class AidlResponseHandler extends ISessionCallback.Stub {
- 
+
      @Override
      public void onAcquired(byte info, int vendorCode) {
 -        handleResponse(AcquisitionClient.class, (c) -> c.onAcquired(
@@ -29,7 +29,7 @@ index df05a181a..86c6890e2 100644
 +        }
 +        handleResponse(AcquisitionClient.class, (c) -> c.onAcquired(acquiredInfo, vendorCode));
      }
- 
+
      /**
 diff --git a/services/core/java/com/android/server/biometrics/sensors/fingerprint/aidl/FingerprintNavigation.java b/services/core/java/com/android/server/biometrics/sensors/fingerprint/aidl/FingerprintNavigation.java
 new file mode 100644
@@ -237,7 +237,7 @@ index e5bbb7467..48a1764b1 100644
 @@ -373,6 +373,12 @@ public class FingerprintProvider implements IBinder.DeathRecipient, ServiceProvi
              Slog.e(getTag(), "Unable to linkToDeath", e);
          }
- 
+
 +        if (!mHalInstanceNameCurrent.contains("virtual") && mFingerprintSensors.size() > 0
 +                && !mFingerprintSensors.valueAt(0).getSensorProperties().isAnyUdfpsType()) {
 +            FingerprintNavigation.attach(mContext, mHandler, mDaemon,

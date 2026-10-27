@@ -38,13 +38,13 @@ index c98a04336..0c012924b 100644
 +        if (isLegacyKernel()) {
 +            flags |= VoiceInteractionSession.SHOW_WITH_SCREENSHOT;
 +        }
- 
+
          // If this session should restrict access to AssistStructure screen content and the
          // associated permission flag is enabled then READ_ASSIST_STRUCTURE_SCREEN_CONTENT must be
 @@ -307,6 +314,23 @@ final class VoiceInteractionSessionConnection implements ServiceConnection,
          return flags;
      }
- 
+
 +    private static boolean isLegacyKernel() {
 +        String kv = System.getProperty("os.version");
 +        if (kv == null || kv.isEmpty()) return false;
