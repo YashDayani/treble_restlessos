@@ -1,7 +1,7 @@
-From 63ed987e0db295aad03c53a566edec49622dc2e0 Mon Sep 17 00:00:00 2001
+From 0d67054df8df5fd4a06723b77d1d8bd742e6d857 Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Sat, 3 Oct 2026 04:11:06 +0300
-Subject: [PATCH 14/25] treble_app: add a samsung 60fps video toggle
+Subject: [PATCH 9/20] treble_app: add a samsung 60fps video toggle
 
 ---
  app/src/main/java/me/phh/treble/app/Samsung.kt         | 4 ++++
@@ -53,5 +53,5 @@ index 4d7c726..c7b5e25 100644
              android:defaultValue="1"
              android:key="key_samsung_flash_strength"
 -- 
-2.39.2 (Apple Git-143)
+2.56.0
 

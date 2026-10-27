@@ -1,7 +1,7 @@
-From da1fe09afe3a68215907fe266b9d616d2afe7476 Mon Sep 17 00:00:00 2001
+From 5857fa143474348260c9e91e2ea956976f9f8a41 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Fri, 23 Oct 2026 20:06:06 +0100
-Subject: [PATCH 23/25] material 3 theming with dynamic colour
+Subject: [PATCH 18/20] material 3 theming with dynamic colour
 
 ---
  app/build.gradle                              |  1 +
@@ -44,7 +44,7 @@ index a20396c..f7e8408 100644
 +            }
 +        }
      }
- 
+
      override fun onPreferenceTreeClick(preference: Preference): Boolean {
 diff --git a/app/src/main/java/me/phh/treble/app/Settings.kt b/app/src/main/java/me/phh/treble/app/Settings.kt
 index d95ba44..b49115b 100644
@@ -52,7 +52,7 @@ index d95ba44..b49115b 100644
 +++ b/app/src/main/java/me/phh/treble/app/Settings.kt
 @@ -1,6 +1,7 @@
  package me.phh.treble.app
- 
+
  import android.os.Bundle
 +import android.view.View
  import androidx.annotation.XmlRes
@@ -61,7 +61,7 @@ index d95ba44..b49115b 100644
 @@ -40,6 +41,13 @@ abstract class SettingsFragment : PreferenceFragmentCompat() {
          addPreferencesFromResource(preferencesResId)
      }
- 
+
 +    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 +        super.onViewCreated(view, savedInstanceState)
 +        // flat list: no separators between preferences or categories
@@ -81,9 +81,9 @@ index a55f1d9..843da66 100644
  import android.os.UserHandle
  import androidx.appcompat.app.AppCompatActivity
 +import com.google.android.material.color.DynamicColors
- 
+
  class SettingsActivity : AppCompatActivity() {
- 
+
      override fun onCreate(savedInstanceState: Bundle?) {
 +        DynamicColors.applyToActivityIfAvailable(this)
          super.onCreate(savedInstanceState)
@@ -101,7 +101,7 @@ index a55f1d9..843da66 100644
          supportActionBar?.setDisplayHomeAsUpEnabled(true)
 +        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_arrow_back)
      }
- 
+
      override fun onSupportNavigateUp(): Boolean {
 diff --git a/app/src/main/java/me/phh/treble/app/UpdaterActivity.kt b/app/src/main/java/me/phh/treble/app/UpdaterActivity.kt
 index be32ad6..dac3ef4 100644
@@ -117,7 +117,7 @@ index be32ad6..dac3ef4 100644
  import java.io.InputStream
 @@ -38,9 +39,12 @@ class UpdaterActivity : AppCompatActivity() {
      private var otaJson = JSONObject()
- 
+
      override fun onCreate(savedInstanceState: Bundle?) {
 +        DynamicColors.applyToActivityIfAvailable(this)
          super.onCreate(savedInstanceState)
@@ -125,13 +125,13 @@ index be32ad6..dac3ef4 100644
 +        setSupportActionBar(findViewById(R.id.action_bar))
          supportActionBar?.setDisplayHomeAsUpEnabled(true)
 +        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_arrow_back)
- 
+
          updateUiElements(false)
          checkUpdate()
 @@ -75,6 +79,11 @@ class UpdaterActivity : AppCompatActivity() {
          })
      }
- 
+
 +    override fun onSupportNavigateUp(): Boolean {
 +        finish()
 +        return true
@@ -234,7 +234,7 @@ index 4c9c546..37cda33 100644
 +++ b/app/src/main/res/values/styles.xml
 @@ -1,7 +1,17 @@
  <resources>
- 
+
 -    <style name="Base.Theme.TrebleApp" parent="Theme.AppCompat.DayNight">
 -        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
 +    <style name="PreferenceThemeOverlay.TrebleApp" parent="@style/PreferenceThemeOverlay">
@@ -251,7 +251,7 @@ index 4c9c546..37cda33 100644
 +        <item name="android:divider">@null</item>
      </style>
      <style name="Theme.TrebleApp" parent="Base.Theme.TrebleApp" />
- 
+
 -- 
 2.56.0
 

@@ -1,7 +1,7 @@
-From a69fdabe4bc0b4c21a8892be33dd7678391447ec Mon Sep 17 00:00:00 2001
+From f1c7e039f1d9254bb15a358db258ae839fad6b46 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Mon, 5 Oct 2026 09:43:44 +0100
-Subject: [PATCH 16/25] treble_app: add a GNSS time fallback toggle
+Subject: [PATCH 11/20] treble_app: add a GNSS time fallback toggle
 
 gnss time fallback is enabled by default on the framework side; the
 toggle writes persist.sys.phh.hardening.gnss_time which gates
@@ -29,7 +29,7 @@ index 1d55932..9422995 100644
 +            }
          }
      }
- 
+
 @@ -28,5 +32,6 @@ object Hardening : EntryStartup {
          // Re-apply on boot
          spListener.onSharedPreferenceChanged(sp, HardeningSettings.mteVendor)
@@ -46,7 +46,7 @@ index 389d44c..2f37e02 100644
      val mteVendor = "key_hardening_mte_vendor"
      val stackHardening = "key_hardening_stack_hardening"
 +    val gnssTime = "key_hardening_gnss_time"
- 
+
      override fun enabled() = true
  }
 diff --git a/app/src/main/res/xml/pref_hardening.xml b/app/src/main/res/xml/pref_hardening.xml
@@ -65,5 +65,5 @@ index de0fca1..33672c7 100644
      </PreferenceCategory>
  </PreferenceScreen>
 -- 
-2.55.0
+2.56.0
 

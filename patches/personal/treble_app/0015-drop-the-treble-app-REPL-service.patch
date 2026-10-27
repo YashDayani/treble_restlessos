@@ -1,7 +1,7 @@
-From 8eb5015ed1e0c0cac51599c5762cc39dde52c6e0 Mon Sep 17 00:00:00 2001
+From 031b600529d338da7e15f957b04538ce10b64b09 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Thu, 22 Oct 2026 22:14:18 +0100
-Subject: [PATCH 20/25] drop the treble app REPL service
+Subject: [PATCH 15/20] drop the treble app REPL service
 
 the unauthenticated reflection REPL bound to localhost:8800 served no
 purpose in restlessos and widened the system attack surface; any holder
@@ -19,7 +19,7 @@ index cf72b3d..ede41e3 100644
 @@ -126,12 +126,6 @@
              </intent-filter>
          </activity>
- 
+
 -        <service
 -            android:name=".REPL"
 -            android:exported="true"

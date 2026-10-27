@@ -1,7 +1,7 @@
-From be0e882853d6f3780edb752f20ccb526709c6b3f Mon Sep 17 00:00:00 2001
+From db1dd0af382b58357b6fe99bd52a88881187fc28 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Fri, 23 Oct 2026 20:16:54 +0100
-Subject: [PATCH 24/25] match status bar colour to the surface
+Subject: [PATCH 19/20] match status bar colour to the surface
 
 ---
  app/src/main/res/values/styles.xml | 1 +
@@ -18,7 +18,7 @@ index 37cda33..6b34101 100644
 +        <item name="android:statusBarColor">?attr/colorSurface</item>
      </style>
      <style name="Theme.TrebleApp" parent="Base.Theme.TrebleApp" />
- 
+
 -- 
 2.56.0
 

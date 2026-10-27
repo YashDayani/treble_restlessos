@@ -1,20 +1,21 @@
-From fda63189e2fbd25c39afb3b84225a633de3743e5 Mon Sep 17 00:00:00 2001
+From f58bc8dca6e0cc4bfc0dfec380886befd57f5cf5 Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Wed, 7 Oct 2026 20:36:16 +0300
-Subject: [PATCH 17/25] treble_app: default the a14 camera, display and wifi toggles on first boot
+Subject: [PATCH 12/20] treble_app: default the a14 camera, display and wifi
+ toggles on first boot
 
 ---
- app/src/main/java/me/phh/treble/app/Samsung.kt | 25 +++++++++++++++++++++++++
+ .../main/java/me/phh/treble/app/Samsung.kt    | 25 +++++++++++++++++++
  1 file changed, 25 insertions(+)
 
 diff --git a/app/src/main/java/me/phh/treble/app/Samsung.kt b/app/src/main/java/me/phh/treble/app/Samsung.kt
-index ca9d0f0..92fa1e2 100644
+index ca9d0f0..d4d8118 100644
 --- a/app/src/main/java/me/phh/treble/app/Samsung.kt
 +++ b/app/src/main/java/me/phh/treble/app/Samsung.kt
 @@ -141,6 +141,30 @@ class Samsung: EntryStartup {
- 
+
          sp.registerOnSharedPreferenceChangeListener(spListener)
- 
+
 +        val fpDevice = Tools.vendorFpLow.split("/").getOrNull(2)?.substringBefore(":")
 +        if (Tools.vendorFpLow.startsWith("samsung/") && fpDevice == "a14" && !sp.getBoolean(a14DefaultsApplied, false)) {
 +            sp.edit()
@@ -44,12 +45,12 @@ index ca9d0f0..92fa1e2 100644
          spListener.onSharedPreferenceChanged(sp, SamsungSettings.gloveMode)
 @@ -164,6 +188,7 @@ class Samsung: EntryStartup {
      }
- 
+
      companion object: EntryStartup {
 +        val a14DefaultsApplied = "key_samsung_a14_defaults_applied"
          val tspBase = "/sys/devices/virtual/sec/tsp"
          fun tsCmd(cmd: String): String {
              File("${tspBase}/cmd").writeText(cmd+"\n")
 -- 
-2.39.2 (Apple Git-143)
+2.56.0
 

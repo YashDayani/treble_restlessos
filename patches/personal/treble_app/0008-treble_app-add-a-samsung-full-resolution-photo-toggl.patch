@@ -1,7 +1,7 @@
-From eadb22311a01d5b7fb59f1598ababbc0019bcaed Mon Sep 17 00:00:00 2001
+From 485c4ed3309b5dbd9a05dcbffbfa8dbf866825ee Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Sat, 3 Oct 2026 01:45:45 +0300
-Subject: [PATCH 13/25] treble_app: add a samsung full resolution photo toggle
+Subject: [PATCH 8/20] treble_app: add a samsung full resolution photo toggle
 
 ---
  app/src/main/java/me/phh/treble/app/Samsung.kt         | 4 ++++
@@ -53,5 +53,5 @@ index a83bc13..4d7c726 100644
              android:defaultValue="1"
              android:key="key_samsung_flash_strength"
 -- 
-2.39.2 (Apple Git-143)
+2.56.0
 

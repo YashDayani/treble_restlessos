@@ -1,7 +1,8 @@
-From aa1cdc14aefbcb006731c83ecc1ed9bb80e2a3fa Mon Sep 17 00:00:00 2001
+From 8cf4a85f79d518f3c759706a13e24a2f954b432a Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Thu, 8 Oct 2026 00:08:11 +0300
-Subject: [PATCH 18/25] treble_app: let the ims install button pick the phh or alternative floss apk
+Subject: [PATCH 13/20] treble_app: let the ims install button pick the phh or
+ alternative floss apk
 
 ---
  app/src/main/java/me/phh/treble/app/Ims.kt    |  20 ++-
@@ -13,16 +14,16 @@ index 1dc9880..aee7d35 100644
 --- a/app/src/main/java/me/phh/treble/app/Ims.kt
 +++ b/app/src/main/java/me/phh/treble/app/Ims.kt
 @@ -88,15 +88,28 @@ object Ims: EntryStartup {
- 
+
      override fun startup(ctxt: Context) {
          if (!ImsSettings.enabled()) return
 -        val gotFloss = ctxt.packageManager.getInstalledPackages(0).find { it.packageName == "me.phh.ims" } != null
- 
+
          val sp = PreferenceManager.getDefaultSharedPreferences(ctxt)
          sp.registerOnSharedPreferenceChangeListener(spListener)
- 
+
          this.ctxt = WeakReference(ctxt.applicationContext)
- 
+
 -        val allOverlays = listOf("me.phh.treble.overlay.mtkims_telephony", "me.phh.treble.overlay.cafims_telephony", "me.phh.treble.overlay.hwims_telephony")
 +        selectImsOverlay(ctxt)
 +
@@ -61,7 +62,7 @@ index 37d87b7..ad06e05 100644
      val forceEnableSettings = "key_ims_force_enable_setting"
      val installImsApk = "key_ims_install_apn"
 +    val flossLangsdorffUrl = "https://github.com/clangsdorff/ims/releases/latest/download/FlossIms.apk"
- 
+
      fun checkHasPhhSignature(): Boolean {
          try {
 @@ -130,82 +131,99 @@ class ImsSettingsFragment : SettingsFragment() {
@@ -71,7 +72,7 @@ index 37d87b7..ad06e05 100644
 -                    else -> Pair("https://treble.phh.me/floss-ims-resigned.apk", "Floss IMS (EXPERIMENTAL)")
 +                    else -> Pair("https://treble.phh.me/floss-ims-resigned.apk", "phh FlossIMS")
                  }
- 
+
          installIms!!.title = "Install IMS APK for $message"
          installIms!!.setOnPreferenceClickListener {
 -            val dm = activity.getSystemService(DownloadManager::class.java)
@@ -85,18 +86,18 @@ index 37d87b7..ad06e05 100644
 +            return@setOnPreferenceClickListener true
 +        }
 +    }
- 
+
 -            val downloadRequest = DownloadManager.Request(Uri.parse(url))
 -            downloadRequest.setTitle("IMS APK")
 -            downloadRequest.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
 +    private fun downloadAndInstallIms(url: String) {
 +        val dm = activity.getSystemService(DownloadManager::class.java)
- 
+
 -            downloadRequest.setDestinationInExternalFilesDir(activity, Environment.DIRECTORY_DOWNLOADS, "ims.apk")
 +        val downloadRequest = DownloadManager.Request(Uri.parse(url))
 +        downloadRequest.setTitle("IMS APK")
 +        downloadRequest.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
- 
+
 -            val myId: Long
 -            try {
 -                myId = dm!!.enqueue(downloadRequest)
@@ -105,7 +106,7 @@ index 37d87b7..ad06e05 100644
 -                return@setOnPreferenceClickListener true
 -            }
 +        downloadRequest.setDestinationInExternalFilesDir(activity, Environment.DIRECTORY_DOWNLOADS, "ims.apk")
- 
+
 -            activity.registerReceiver(object: BroadcastReceiver() {
 -                override fun onReceive(context: Context, intent: Intent) {
 -                    Log.d("PHH", "Received download completed with intent $intent ${intent.data}")
@@ -117,7 +118,7 @@ index 37d87b7..ad06e05 100644
 +            Toast.makeText(activity, "IMS download failed: " + e.message, Toast.LENGTH_LONG).show()
 +            return
 +        }
- 
+
 -                    val query = DownloadManager.Query().setFilterById(myId)
 -                    val cursor = dm.query(query)
 -                    if(!cursor.moveToFirst()) {
@@ -128,7 +129,7 @@ index 37d87b7..ad06e05 100644
 +            override fun onReceive(context: Context, intent: Intent) {
 +                Log.d("PHH", "Received download completed with intent $intent ${intent.data}")
 +                if(intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1L) != myId) return
- 
+
 -                    val localUri = Uri.parse(cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI)))
 -                    Log.d("PHH", "Got localURI = $localUri")
 -                    val filename = localUri.lastPathSegment
@@ -192,7 +193,7 @@ index 37d87b7..ad06e05 100644
 -                                    PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE).intentSender)
 -                    activity.unregisterReceiver(this)
                  }
- 
+
 -            }, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
 +                activity.registerReceiver(
 +                        object: BroadcastReceiver() {
@@ -220,12 +221,12 @@ index 37d87b7..ad06e05 100644
 +                                PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_MUTABLE).intentSender)
 +                activity.unregisterReceiver(this)
 +            }
- 
+
 -            return@setOnPreferenceClickListener true
 -        }
 +        }, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE), Context.RECEIVER_EXPORTED)
      }
  }
 -- 
-2.39.2 (Apple Git-143)
+2.56.0
 

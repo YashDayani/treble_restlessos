@@ -1,7 +1,8 @@
-From 821cc7b7d6002bf6961fb7e3d18ea9731ad33a62 Mon Sep 17 00:00:00 2001
+From 8387eb5ce9e50be2995495cd3d3bdfed9bb9e8dc Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Fri, 23 Oct 2026 20:44:39 +0100
-Subject: [PATCH 25/25] use switch preferences throughout and fix switch styling
+Subject: [PATCH 20/20] use switch preferences throughout and fix switch
+ styling
 
 ---
  .../java/me/phh/treble/app/AudioEffects.kt    |  4 +-
@@ -35,11 +36,11 @@ index 0393ebe..91493d0 100644
 -import androidx.preference.SwitchPreference
 +import androidx.preference.SwitchPreferenceCompat
  import java.util.UUID
- 
+
  class AudioEffectsFragment : PreferenceFragmentCompat() {
 @@ -30,7 +30,7 @@ class AudioEffectsFragment : PreferenceFragmentCompat() {
              android.util.Log.d("PHH", "Effect ${it.name} is supported: $isSupported, connectMode ${it.connectMode}")
- 
+
              if (!isSupported) return@forEach
 -            val pref = SwitchPreference(requireContext())
 +            val pref = SwitchPreferenceCompat(requireContext())
@@ -57,7 +58,7 @@ index 54d0795..5e66250 100644
 -import androidx.preference.SwitchPreference
 +import androidx.preference.SwitchPreferenceCompat
  import me.phh.treble.app.DozeSettings.chopchopkey
- 
+
  object DozeSettings : Settings {
 @@ -23,7 +23,7 @@ class DozeSettingsFragment : SettingsFragment() {
      //Checking for ChopChop Sensor
@@ -73,7 +74,7 @@ index 6b34101..9cb5c4d 100644
 --- a/app/src/main/res/values/styles.xml
 +++ b/app/src/main/res/values/styles.xml
 @@ -6,10 +6,8 @@
- 
+
      <style name="Base.Theme.TrebleApp" parent="Theme.Material3.DayNight.NoActionBar">
          <item name="preferenceTheme">@style/PreferenceThemeOverlay.TrebleApp</item>
 -        <item name="checkboxStyle">@style/Widget.Material3.CompoundButton.CheckBox</item>
@@ -206,7 +207,7 @@ index 3b3d45b..6fb12c1 100644
 +++ b/app/src/main/res/xml/pref_lenovo.xml
 @@ -2,14 +2,14 @@
  <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
- 
+
      <PreferenceCategory android:title="Other">
 -        <SwitchPreference
 +        <SwitchPreferenceCompat
@@ -215,7 +216,7 @@ index 3b3d45b..6fb12c1 100644
              android:defaultValue="false"
              android:key="lenovo_double_tap_to_wake"
              android:title="Enable DT2W" />
- 
+
 -        <SwitchPreference
 +        <SwitchPreferenceCompat
              android:layout_width="wrap_content"
@@ -567,7 +568,7 @@ index 28224c3..5c97fb8 100644
 +++ b/app/src/main/res/xml/pref_oneplus.xml
 @@ -16,11 +16,11 @@
      </PreferenceCategory>
- 
+
      <PreferenceCategory android:title="Other">
 -        <SwitchPreference
 +        <SwitchPreferenceCompat
@@ -585,7 +586,7 @@ index 392350f..42591d6 100644
 +++ b/app/src/main/res/xml/pref_oppo.xml
 @@ -2,13 +2,13 @@
  <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
- 
+
      <PreferenceCategory android:title="Touchscreen">
 -        <SwitchPreference
 +        <SwitchPreferenceCompat
@@ -743,7 +744,7 @@ index 0fdfb2f..7640639 100644
 +++ b/app/src/main/res/xml/pref_transsion.xml
 @@ -2,13 +2,13 @@
  <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
- 
+
      <PreferenceCategory android:title="Display">
 -        <SwitchPreference
 +        <SwitchPreferenceCompat
@@ -762,7 +763,7 @@ index 09f24d0..ad53549 100644
 --- a/app/src/main/res/xml/pref_unihertz8849.xml
 +++ b/app/src/main/res/xml/pref_unihertz8849.xml
 @@ -19,7 +19,7 @@
- 
+
      </PreferenceCategory>
      <PreferenceCategory android:title="Projector">
 -        <CheckBoxPreference

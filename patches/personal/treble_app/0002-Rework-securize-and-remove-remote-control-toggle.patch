@@ -1,7 +1,7 @@
-From 39cbfa53c13bbeef121491d481435b32bcd3f469 Mon Sep 17 00:00:00 2001
+From cb6f3439e5ba19fdf84e6c81e42dc23b247ee5df Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Thu, 10 Apr 2025 22:48:35 +0100
-Subject: [PATCH 2/25] Rework securize and remove remote control toggle
+Subject: [PATCH 2/20] Rework securize and remove remote control toggle
 
 Replace the old securize click-action (which ran shell commands to remove
 root via phh-securize.sh) with a simple on/off SwitchPreference that sets
@@ -135,5 +135,5 @@ index bb46832..2016122 100644
      </PreferenceCategory>
  </PreferenceScreen>
 -- 
-2.53.0
+2.56.0
 

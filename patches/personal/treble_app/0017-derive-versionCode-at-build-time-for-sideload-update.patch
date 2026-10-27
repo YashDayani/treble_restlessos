@@ -1,7 +1,7 @@
-From c03a66666fb72423b8d972b54e972373d973daeb Mon Sep 17 00:00:00 2001
+From dc7fec78018ff460f7c14056ac4c9555d70611dc Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Fri, 23 Oct 2026 19:40:12 +0100
-Subject: [PATCH 22/25] derive versionCode at build time for sideload updates
+Subject: [PATCH 17/20] derive versionCode at build time for sideload updates
 
 ---
  app/build.gradle | 8 +++++++-
@@ -12,9 +12,9 @@ index 4f9efbd..c146e9d 100644
 --- a/app/build.gradle
 +++ b/app/build.gradle
 @@ -2,6 +2,10 @@ apply plugin: 'com.android.application'
- 
+
  apply plugin: 'kotlin-android'
- 
+
 +// seconds since epoch: strictly increasing so sideloaded test builds always
 +// count as an update over the shipped system app
 +def buildVersionCode = (int) (System.currentTimeMillis().intdiv(1000))

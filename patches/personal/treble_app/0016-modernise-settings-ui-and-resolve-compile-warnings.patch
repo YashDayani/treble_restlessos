@@ -1,7 +1,7 @@
-From 3da2146eeefee60c55f3f1947faa244db9f43370 Mon Sep 17 00:00:00 2001
+From 6591f0044ec90856ff115d6c58a72238b050f93c Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Fri, 23 Oct 2026 19:16:32 +0100
-Subject: [PATCH 21/25] modernise settings ui and resolve compile warnings
+Subject: [PATCH 16/20] modernise settings ui and resolve compile warnings
 
 ---
  app/build.gradle                              |   2 +
@@ -77,14 +77,14 @@ index 4c3e6dd..4f9efbd 100644
 +++ b/app/build.gradle
 @@ -3,6 +3,7 @@ apply plugin: 'com.android.application'
  apply plugin: 'kotlin-android'
- 
+
  android {
 +    namespace 'me.phh.treble.app'
      compileSdkVersion 33
      defaultConfig {
          applicationId "me.phh.treble.app"
 @@ -36,6 +37,7 @@ dependencies {
- 
+
      implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
      implementation 'org.tukaani:xz:1.9'
 +    implementation 'androidx.appcompat:appcompat:1.6.1'
@@ -113,13 +113,13 @@ index ede41e3..12b6dc0 100644
 -    package="me.phh.treble.app"
      android:persistent="true"
      android:sharedUserId="android.uid.system">
- 
+
 diff --git a/app/src/main/java/me/phh/treble/app/Asus.kt b/app/src/main/java/me/phh/treble/app/Asus.kt
 index 351224b..c73884d 100644
 --- a/app/src/main/java/me/phh/treble/app/Asus.kt
 +++ b/app/src/main/java/me/phh/treble/app/Asus.kt
 @@ -2,7 +2,7 @@ package me.phh.treble.app
- 
+
  import android.content.Context
  import android.content.SharedPreferences
 -import android.preference.PreferenceManager
@@ -139,16 +139,16 @@ index c787506..0393ebe 100644
 +import androidx.preference.PreferenceFragmentCompat
  import androidx.preference.SwitchPreference
  import java.util.UUID
- 
+
 -class AudioEffectsFragment : PreferenceFragment() {
 +class AudioEffectsFragment : PreferenceFragmentCompat() {
      val effects = AudioEffect.queryEffects()
- 
+
      override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
          // First create preferencemanager instance
 -        preferenceScreen = preferenceManager.createPreferenceScreen(context)
 +        preferenceScreen = preferenceManager.createPreferenceScreen(requireContext())
- 
+
 -        preferenceScreen.addPreference(Preference(context).apply {
 +        preferenceScreen.addPreference(Preference(requireContext()).apply {
              title = "Restart media app to apply change"
@@ -156,7 +156,7 @@ index c787506..0393ebe 100644
          })
 @@ -30,7 +30,7 @@ class AudioEffectsFragment : PreferenceFragment() {
              android.util.Log.d("PHH", "Effect ${it.name} is supported: $isSupported, connectMode ${it.connectMode}")
- 
+
              if (!isSupported) return@forEach
 -            val pref = SwitchPreference(context)
 +            val pref = SwitchPreference(requireContext())
@@ -164,14 +164,14 @@ index c787506..0393ebe 100644
              pref.key = "audio_effect_" + it.uuid.toString()
              pref.summary = "By ${it.implementor}"
 @@ -41,12 +41,12 @@ class AudioEffectsFragment : PreferenceFragment() {
- 
+
  object AudioEffects: SharedPreferences.OnSharedPreferenceChangeListener {
      // map of audio uuid => to-be-introspected android.media.audiofx.DefaultEffect
 -    val takenEffects = mutableMapOf<UUID, Object>()
 +    val takenEffects = mutableMapOf<UUID, Any>()
      val effects = AudioEffect.queryEffects()
      val effectNull = AudioEffect::class.java.getField("EFFECT_TYPE_NULL").get(null) as UUID
- 
+
      fun startup(context: Context) {
 -        val sp = android.preference.PreferenceManager.getDefaultSharedPreferences(context)
 +        val sp = androidx.preference.PreferenceManager.getDefaultSharedPreferences(context)
@@ -198,7 +198,7 @@ index 3a1c5e1..a6987f3 100644
 -import android.preference.PreferenceManager
 +import androidx.preference.PreferenceManager
  import java.lang.ref.WeakReference
- 
+
  @SuppressLint("StaticFieldLeak")
 diff --git a/app/src/main/java/me/phh/treble/app/CustomSettings.kt b/app/src/main/java/me/phh/treble/app/CustomSettings.kt
 index 870fee1..dd3e806 100644
@@ -207,15 +207,15 @@ index 870fee1..dd3e806 100644
 @@ -21,7 +21,7 @@ class CustomSettingsFragment : SettingsFragment() {
      override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
          super.onCreatePreferences(savedInstanceState, rootKey)
- 
+
 -        packages = activity.packageManager.getInstalledPackages(0)
 +        packages = Tools.getInstalledPackages(requireActivity().packageManager)
- 
+
          val accentColorPref = findPreference<ListPreference>(CustomSettings.accentColor)!!
          val accentColorOverlays = OverlayPicker.getThemeOverlays(OverlayPicker.ThemeOverlay.AccentColor)
 @@ -59,10 +59,10 @@ class CustomSettingsFragment : SettingsFragment() {
      }
- 
+
      fun getTargetName(p: String): String {
 -        var targetName = p.substringAfterLast(".").capitalize()
 +        var targetName = p.substringAfterLast(".").replaceFirstChar { it.uppercase() }
@@ -231,7 +231,7 @@ index cf0e333..d5e5b79 100644
 --- a/app/src/main/java/me/phh/treble/app/Desktop.kt
 +++ b/app/src/main/java/me/phh/treble/app/Desktop.kt
 @@ -165,15 +165,15 @@ class DesktopInput : Activity() {
- 
+
          AlertDialog.Builder(this)
                  .setMessage("You connected a new input device ($deviceName) while having a secondary screen.\nDo you want to assign that device to the screen called ${secondaryDisplay.name}?")
 -                .setPositiveButton("Yes") { p0, p1 ->
@@ -281,22 +281,22 @@ index 7d1d9bc..f95d6a4 100644
 +                @Suppress("DEPRECATION")
 +                ctxt.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 +            }
- 
+
          } catch (e: Exception){}
- 
+
 diff --git a/app/src/main/java/me/phh/treble/app/DozeSettings.kt b/app/src/main/java/me/phh/treble/app/DozeSettings.kt
 index 4ccebbd..54d0795 100644
 --- a/app/src/main/java/me/phh/treble/app/DozeSettings.kt
 +++ b/app/src/main/java/me/phh/treble/app/DozeSettings.kt
 @@ -2,7 +2,7 @@ package me.phh.treble.app
- 
+
  import android.hardware.Sensor
  import android.os.Bundle
 -import android.preference.PreferenceManager
 +import androidx.preference.PreferenceManager
  import androidx.preference.SwitchPreference
  import me.phh.treble.app.DozeSettings.chopchopkey
- 
+
 @@ -24,16 +24,14 @@ class DozeSettingsFragment : SettingsFragment() {
      override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
          super.onCreatePreferences(savedInstanceState, rootKey)
@@ -333,7 +333,7 @@ index 724d15e..cd8db0a 100644
  import vendor.huawei.hardware.tp.V1_0.ITouchscreen
 @@ -96,7 +96,7 @@ class Huawei: EntryStartup {
          }
- 
+
          Log.d("PHH", "Checking HwIms status")
 -        val installed = ctxt.packageManager.getInstalledPackages(0).find { it.packageName == "com.huawei.ims" } != null
 +        val installed = Tools.getInstalledPackages(ctxt.packageManager).find { it.packageName == "com.huawei.ims" } != null
@@ -354,14 +354,14 @@ index aee7d35..575c5f8 100644
  import android.util.Log
  import dalvik.system.PathClassLoader
 @@ -102,7 +102,7 @@ object Ims: EntryStartup {
- 
+
      // com.android.phone reads config_ims_mmtel_package only at start, so this must run before the next boot
      fun selectImsOverlay(ctxt: Context) {
 -        val installed = ctxt.packageManager.getInstalledPackages(0).map { it.packageName }
 +        val installed = Tools.getInstalledPackages(ctxt.packageManager).map { it.packageName }
          val gotLangsdorffFloss = "com.langsdorff.flossims" in installed
          val gotFloss = gotLangsdorffFloss || "me.phh.ims" in installed
- 
+
 diff --git a/app/src/main/java/me/phh/treble/app/ImsSettings.kt b/app/src/main/java/me/phh/treble/app/ImsSettings.kt
 index ad06e05..7ca77ef 100644
 --- a/app/src/main/java/me/phh/treble/app/ImsSettings.kt
@@ -369,7 +369,7 @@ index ad06e05..7ca77ef 100644
 @@ -60,7 +60,7 @@ class ImsSettingsFragment : SettingsFragment() {
          createApn!!.setOnPreferenceClickListener {
              Log.d("PHH", "Adding \"ims\" APN")
- 
+
 -            val tm = activity.getSystemService(TelephonyManager::class.java)
 +            val tm = requireActivity().getSystemService(TelephonyManager::class.java)
              val operator = tm.simOperator
@@ -378,15 +378,15 @@ index ad06e05..7ca77ef 100644
 @@ -71,7 +71,7 @@ class ImsSettingsFragment : SettingsFragment() {
              val mnc = operator.substring(3, operator.length)
              Log.d("PHH", "Got mcc = $mcc and mnc = $mnc")
- 
+
 -            val cr = activity.contentResolver
 +            val cr = requireActivity().contentResolver
- 
+
              val cursor = cr.query(
                      Uri.parse("content://telephony/carriers/current"),
 @@ -135,7 +135,7 @@ class ImsSettingsFragment : SettingsFragment() {
                  }
- 
+
          installIms!!.title = "Install IMS APK for $message"
 -        installIms!!.setOnPreferenceClickListener {
 +        installIms.setOnPreferenceClickListener {
@@ -395,24 +395,24 @@ index ad06e05..7ca77ef 100644
                      Pair(ImsSettings.flossLangsdorffUrl, "Alternative FlossIMS"))
 @@ -148,7 +148,7 @@ class ImsSettingsFragment : SettingsFragment() {
      }
- 
+
      private fun downloadAndInstallIms(url: String) {
 -        val dm = activity.getSystemService(DownloadManager::class.java)
 +        val dm = requireActivity().getSystemService(DownloadManager::class.java)
- 
+
          val downloadRequest = DownloadManager.Request(Uri.parse(url))
          downloadRequest.setTitle("IMS APK")
 @@ -164,7 +164,7 @@ class ImsSettingsFragment : SettingsFragment() {
              return
          }
- 
+
 -        activity.registerReceiver(object: BroadcastReceiver() {
 +        requireActivity().registerReceiver(object: BroadcastReceiver() {
              override fun onReceive(context: Context, intent: Intent) {
                  Log.d("PHH", "Received download completed with intent $intent ${intent.data}")
                  if(intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1L) != myId) return
 @@ -178,7 +178,6 @@ class ImsSettingsFragment : SettingsFragment() {
- 
+
                  val localUri = Uri.parse(cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI)))
                  Log.d("PHH", "Got localURI = $localUri")
 -                val filename = localUri.lastPathSegment
@@ -422,7 +422,7 @@ index ad06e05..7ca77ef 100644
 @@ -197,7 +196,7 @@ class ImsSettingsFragment : SettingsFragment() {
                      }
                  }
- 
+
 -                activity.registerReceiver(
 +                requireActivity().registerReceiver(
                          object: BroadcastReceiver() {
@@ -435,7 +435,7 @@ index ad06e05..7ca77ef 100644
 -                activity.unregisterReceiver(this)
 +                requireActivity().unregisterReceiver(this)
              }
- 
+
          }, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE), Context.RECEIVER_EXPORTED)
 diff --git a/app/src/main/java/me/phh/treble/app/Lenovo.kt b/app/src/main/java/me/phh/treble/app/Lenovo.kt
 index 0f147d3..f6f9627 100644
@@ -449,7 +449,7 @@ index 0f147d3..f6f9627 100644
 +import androidx.preference.PreferenceManager
  import android.util.Log
  import java.io.File
- 
+
 diff --git a/app/src/main/java/me/phh/treble/app/MainSettingsFragment.kt b/app/src/main/java/me/phh/treble/app/MainSettingsFragment.kt
 new file mode 100644
 index 0000000..a20396c
@@ -538,24 +538,24 @@ index 5a36de0..fb10b68 100644
 @@ -80,7 +80,7 @@ class MiscSettingsFragment : SettingsFragment() {
              builder.setTitle(getString(R.string.remove_telephony_subsystem))
              builder.setMessage(getString(R.string.continue_question))
- 
+
 -            builder.setPositiveButton(android.R.string.yes) { dialog, which ->
 +            builder.setPositiveButton(android.R.string.ok) { _, _ ->
- 
+
                  var cmds = listOf(
                      arrayOf("/sbin/su", "-c", "/system/bin/remove-telephony.sh"),
 @@ -100,7 +100,7 @@ class MiscSettingsFragment : SettingsFragment() {
                  }
              }
- 
+
 -            builder.setNegativeButton(android.R.string.no) { dialog, which ->
 +            builder.setNegativeButton(android.R.string.cancel) { _, _ ->
              }
- 
+
              builder.show()
 @@ -108,7 +108,7 @@ class MiscSettingsFragment : SettingsFragment() {
          }
- 
+
          val fpsPref = findPreference<ListPreference>(MiscSettings.displayFps)!!
 -        val displayManager = activity.getSystemService(DisplayManager::class.java)
 +        val displayManager = requireActivity().getSystemService(DisplayManager::class.java)
@@ -596,7 +596,7 @@ index a4ba635..04455b6 100644
 +import androidx.preference.PreferenceManager
  import android.util.Log
  import java.io.File
- 
+
 diff --git a/app/src/main/java/me/phh/treble/app/NubiaAutoFanControlService.kt b/app/src/main/java/me/phh/treble/app/NubiaAutoFanControlService.kt
 index 672eb2c..2337327 100644
 --- a/app/src/main/java/me/phh/treble/app/NubiaAutoFanControlService.kt
@@ -607,8 +607,8 @@ index 672eb2c..2337327 100644
  import android.os.PowerManager.WakeLock
 -import android.preference.PreferenceManager
 +import androidx.preference.PreferenceManager
- 
- 
+
+
  class NubiaAutoFanControlService : Service() {
 diff --git a/app/src/main/java/me/phh/treble/app/NubiaSettings.kt b/app/src/main/java/me/phh/treble/app/NubiaSettings.kt
 index c380909..047453d 100644
@@ -617,7 +617,7 @@ index c380909..047453d 100644
 @@ -17,10 +17,10 @@ object NubiaSettings : Settings {
      val boostUfs = "nubia_boost_ufs"
      val shoulderBtn = "nubia_shoulder_btn"
- 
+
 -    override fun enabled() = Tools.vendorFp.toLowerCase().startsWith("nubia/")
 -    fun is6Series() = Tools.vendorFp.toLowerCase().startsWith("nubia/nx669")
 -    fun is5GLite() = Tools.vendorFp.toLowerCase().startsWith("nubia/nx651")
@@ -626,9 +626,9 @@ index c380909..047453d 100644
 +    fun is6Series() = Tools.vendorFpLow.startsWith("nubia/nx669")
 +    fun is5GLite() = Tools.vendorFpLow.startsWith("nubia/nx651")
 +    fun is5G5S() = Tools.vendorFpLow.startsWith("nubia/nx659")
- 
+
  }
- 
+
 diff --git a/app/src/main/java/me/phh/treble/app/NubiaTilesService.kt b/app/src/main/java/me/phh/treble/app/NubiaTilesService.kt
 index 0924abe..ef09689 100644
 --- a/app/src/main/java/me/phh/treble/app/NubiaTilesService.kt
@@ -654,13 +654,13 @@ index fed3bc7..66217ef 100644
 +import androidx.preference.PreferenceManager
  import android.util.Log
  import java.io.File
- 
+
 diff --git a/app/src/main/java/me/phh/treble/app/OnePlusSettings.kt b/app/src/main/java/me/phh/treble/app/OnePlusSettings.kt
 index ea7b959..ea42056 100644
 --- a/app/src/main/java/me/phh/treble/app/OnePlusSettings.kt
 +++ b/app/src/main/java/me/phh/treble/app/OnePlusSettings.kt
 @@ -16,7 +16,7 @@ class OnePlusSettingsFragment : SettingsFragment() {
- 
+
      override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
          super.onCreatePreferences(savedInstanceState, rootKey)
 -        SettingsActivity.bindPreferenceSummaryToValue(findPreference(OnePlusSettings.displayModeKey)!!)
@@ -674,7 +674,7 @@ index 6a4a1b4..e52ec26 100644
 --- a/app/src/main/java/me/phh/treble/app/Oppo.kt
 +++ b/app/src/main/java/me/phh/treble/app/Oppo.kt
 @@ -2,7 +2,7 @@ package me.phh.treble.app
- 
+
  import android.content.Context
  import android.content.SharedPreferences
 -import android.preference.PreferenceManager
@@ -693,19 +693,19 @@ index eef5186..7e49479 100644
 -import android.preference.PreferenceManager
 +import androidx.preference.PreferenceManager
  import android.util.Log
- 
+
  object OverlayPicker: EntryStartup {
 @@ -58,13 +58,13 @@ object OverlayPicker: EntryStartup {
          }
      }
- 
+
 -    private fun enableLte(ctxt: Context) {
 +    private fun enableLte() {
          //TODO: List here all non-LTE platforms
          if ("mt6580" != platform)
              setOverlayEnabled("me.phh.treble.overlay.telephony.lte", true)
      }
- 
+
 -    private fun handleNokia(ctxt: Context) {
 +    private fun handleNokia() {
          if(vendorFp == null) return
@@ -714,25 +714,25 @@ index eef5186..7e49479 100644
 @@ -73,7 +73,7 @@ object OverlayPicker: EntryStartup {
          }
      }
- 
+
 -    private fun handleSamsung(ctxt: Context) {
 +    private fun handleSamsung() {
          if(vendorFp == null) return
- 
+
          if(vendorFp.matches(Regex(".*(crown|star)[q2]*lte.*")) ||
 @@ -82,7 +82,7 @@ object OverlayPicker: EntryStartup {
          }
      }
- 
+
 -    private fun handleXiaomi(ctxt: Context) {
 +    private fun handleXiaomi() {
          if(vendorFp == null) return
- 
+
          if(vendorFp.matches(Regex(".*iaomi/perseus.*"))) {
 @@ -93,7 +93,7 @@ object OverlayPicker: EntryStartup {
          }
      }
- 
+
 -    private fun getOverlays(ctxt: Context) {
 +    private fun getOverlays() {
          try {
@@ -741,7 +741,7 @@ index eef5186..7e49479 100644
 @@ -108,11 +108,11 @@ object OverlayPicker: EntryStartup {
          om = IOverlayManager.Stub.asInterface(
                  ServiceManager.getService("overlay"))
- 
+
 -        enableLte(ctxt)
 -        handleNokia(ctxt)
 -        handleSamsung(ctxt)
@@ -752,7 +752,7 @@ index eef5186..7e49479 100644
 +        handleSamsung()
 +        handleXiaomi()
 +        getOverlays()
- 
+
          setOverlayEnabled("me.phh.treble.overlay.systemui.falselocks", true)
      }
 diff --git a/app/src/main/java/me/phh/treble/app/PresetDownloader.kt b/app/src/main/java/me/phh/treble/app/PresetDownloader.kt
@@ -809,7 +809,7 @@ index b3d6ecb..03f3fe2 100644
                  } catch (e: Exception) {
 @@ -42,7 +42,7 @@ class QtiAudio: EntryStartup {
                  }
- 
+
                  try {
 -                    val svc = vendor.qti.qcril.am.V1_0.IQcRilAudio.getService(slot)
 +                    vendor.qti.qcril.am.V1_0.IQcRilAudio.getService(slot)
@@ -821,7 +821,7 @@ index 7e09cff..cd0fab8 100644
 --- a/app/src/main/java/me/phh/treble/app/Qualcomm.kt
 +++ b/app/src/main/java/me/phh/treble/app/Qualcomm.kt
 @@ -2,7 +2,7 @@ package me.phh.treble.app
- 
+
  import android.content.Context
  import android.content.SharedPreferences
 -import android.preference.PreferenceManager
@@ -847,7 +847,7 @@ index 86223c6..d95ba44 100644
 --- a/app/src/main/java/me/phh/treble/app/Settings.kt
 +++ b/app/src/main/java/me/phh/treble/app/Settings.kt
 @@ -2,13 +2,36 @@ package me.phh.treble.app
- 
+
  import android.os.Bundle
  import androidx.annotation.XmlRes
 -import androidx.preference.PreferenceFragment
@@ -855,11 +855,11 @@ index 86223c6..d95ba44 100644
 +import androidx.preference.Preference
 +import androidx.preference.PreferenceFragmentCompat
 +import androidx.preference.PreferenceManager
- 
+
  interface Settings {
      fun enabled(): Boolean
  }
- 
+
 -abstract class SettingsFragment : PreferenceFragment() {
 +fun bindPreferenceSummaryToValue(preference: Preference) {
 +    val listener = Preference.OnPreferenceChangeListener { pref, value ->
@@ -882,7 +882,7 @@ index 86223c6..d95ba44 100644
 +}
 +
 +abstract class SettingsFragment : PreferenceFragmentCompat() {
- 
+
      @get:XmlRes
      abstract val preferencesResId: Int
 @@ -16,4 +39,10 @@ abstract class SettingsFragment : PreferenceFragment() {
@@ -902,7 +902,7 @@ index 0772be0..a55f1d9 100644
 +++ b/app/src/main/java/me/phh/treble/app/SettingsActivity.kt
 @@ -1,170 +1,29 @@
  package me.phh.treble.app
- 
+
 -import android.content.Context
  import android.content.Intent
 -import android.content.res.Configuration
@@ -915,7 +915,7 @@ index 0772be0..a55f1d9 100644
 -import androidx.preference.PreferenceFragment
 -import androidx.preference.PreferenceManager
 +import androidx.appcompat.app.AppCompatActivity
- 
+
 -/**
 - * A [PreferenceActivity] that presents a set of application settings. On
 - * handset devices, settings are presented as a single list. On tablets,
@@ -928,7 +928,7 @@ index 0772be0..a55f1d9 100644
 - */
 -class SettingsActivity : PreferenceActivity() {
 +class SettingsActivity : AppCompatActivity() {
- 
+
      override fun onCreate(savedInstanceState: Bundle?) {
          super.onCreate(savedInstanceState)
 -        getApplicationContext().startServiceAsUser(Intent(getApplicationContext(), EntryService::class.java), UserHandle.SYSTEM)
@@ -1060,7 +1060,7 @@ index 0772be0..a55f1d9 100644
          }
 +        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 +    }
- 
+
 -        /**
 -         * Binds a preference's summary to its value. More specifically, when the
 -         * preference's value is changed, its summary (line of text below the
@@ -1093,21 +1093,21 @@ index efa4f2d..1fdd8ab 100644
 +++ b/app/src/main/java/me/phh/treble/app/Tools.kt
 @@ -1,16 +1,28 @@
  package me.phh.treble.app
- 
+
  import android.content.Context
 +import android.content.pm.PackageInfo
 +import android.content.pm.PackageManager
  import android.media.AudioManager
 +import android.os.Build
  import android.os.SystemProperties
- 
+
  object Tools {
      lateinit var audioManager: AudioManager
      val vendorFp = SystemProperties.get("ro.vendor.build.fingerprint")
 -    val vendorFpLow = vendorFp.toLowerCase()
 +    val vendorFpLow = vendorFp.lowercase()
      val deviceId = SystemProperties.get("ro.build.overlay.deviceid")
- 
+
      fun startup(ctxt: Context) {
          audioManager = ctxt.getSystemService(AudioManager::class.java)
      }
@@ -1128,7 +1128,7 @@ index d72e951..e50896f 100644
 --- a/app/src/main/java/me/phh/treble/app/Transsion.kt
 +++ b/app/src/main/java/me/phh/treble/app/Transsion.kt
 @@ -2,7 +2,7 @@ package me.phh.treble.app
- 
+
  import android.content.Context
  import android.content.SharedPreferences
 -import android.preference.PreferenceManager
@@ -1159,9 +1159,9 @@ index e81f49e..4e78090 100644
          campingTimeoutRunnable?.let { campingHandler.removeCallbacks(it) }
          campingTimeoutRunnable = null
 @@ -265,6 +265,13 @@ object Unihertz8849 : EntryStartup {
- 
+
      // ─── Display management ─────────────────────────────────────────────
- 
+
 +    private fun wakeDisplay(timeMs: Long) {
 +        // sdk wakeUp(time) is deprecated and its replacement is hidden api;
 +        // there is no public replacement to migrate to
@@ -1183,7 +1183,7 @@ index e81f49e..4e78090 100644
          Log.w(TAG, "Timed out waiting for projector_sys_status == $target")
 @@ -369,7 +376,7 @@ object Unihertz8849 : EntryStartup {
              sendIoctl(500, 0, 0, 6)
- 
+
              // Step 7: Wake display and wait for sys_status == 1
 -            pm.wakeUp(SystemClock.uptimeMillis())
 +            wakeDisplay(SystemClock.uptimeMillis())
@@ -1222,14 +1222,14 @@ index 131004a..223a058 100644
  import vendor.mediatek.hardware.agolddaemon.IAgoldDaemon
  import java.io.File
 @@ -64,7 +64,7 @@ class Unihertz8849SettingsFragment : SettingsFragment() {
- 
+
      override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
          super.onCreatePreferences(savedInstanceState, rootKey)
 -        sp = PreferenceManager.getDefaultSharedPreferences(activity)
 +        sp = PreferenceManager.getDefaultSharedPreferences(requireActivity())
          sp.registerOnSharedPreferenceChangeListener(spListener)
      }
- 
+
 diff --git a/app/src/main/java/me/phh/treble/app/UpdaterActivity.kt b/app/src/main/java/me/phh/treble/app/UpdaterActivity.kt
 index 7a9fe1c..be32ad6 100644
 --- a/app/src/main/java/me/phh/treble/app/UpdaterActivity.kt
@@ -1254,10 +1254,10 @@ index 7a9fe1c..be32ad6 100644
 @@ -29,7 +30,7 @@ import org.json.JSONObject
  import org.json.JSONTokener
  import org.tukaani.xz.XZInputStream
- 
+
 -class UpdaterActivity : PreferenceActivity() {
 +class UpdaterActivity : AppCompatActivity() {
- 
+
      private val OTA_JSON_URL = SystemProperties.get("ro.system.ota.json_url")
      private var hasUpdate = false
 @@ -39,7 +40,7 @@ class UpdaterActivity : PreferenceActivity() {
@@ -1266,7 +1266,7 @@ index 7a9fe1c..be32ad6 100644
          setContentView(R.layout.activity_updater)
 -        actionBar?.setDisplayHomeAsUpEnabled(true)
 +        supportActionBar?.setDisplayHomeAsUpEnabled(true)
- 
+
          updateUiElements(false)
          checkUpdate()
 @@ -55,23 +56,23 @@ class UpdaterActivity : PreferenceActivity() {
@@ -1274,7 +1274,7 @@ index 7a9fe1c..be32ad6 100644
              return@setOnClickListener
          }
 -    }
- 
+
 -    override fun onBackPressed() {
 -        if (isUpdating) {
 -            val builder = AlertDialog.Builder(this)
@@ -1306,7 +1306,7 @@ index 7a9fe1c..be32ad6 100644
 -        }
 +        })
      }
- 
+
      override fun onCreateOptionsMenu(menu: Menu): Boolean {
 @@ -86,11 +87,11 @@ class UpdaterActivity : PreferenceActivity() {
                  val builder = AlertDialog.Builder(this)
@@ -1327,7 +1327,7 @@ index 4327a20..49ed47b 100644
 --- a/app/src/main/java/me/phh/treble/app/Vsmart.kt
 +++ b/app/src/main/java/me/phh/treble/app/Vsmart.kt
 @@ -2,7 +2,7 @@ package me.phh.treble.app
- 
+
  import android.content.Context
  import android.content.SharedPreferences
 -import android.preference.PreferenceManager
@@ -1340,19 +1340,19 @@ index 41f0585..f91833b 100644
 --- a/app/src/main/java/me/phh/treble/app/Xiaomi.kt
 +++ b/app/src/main/java/me/phh/treble/app/Xiaomi.kt
 @@ -2,13 +2,10 @@ package me.phh.treble.app
- 
+
  import android.content.Context
  import android.content.SharedPreferences
 -import android.preference.PreferenceManager
 +import androidx.preference.PreferenceManager
- 
+
  object Xiaomi : EntryStartup {
 -    val spListener = SharedPreferences.OnSharedPreferenceChangeListener { sp, key ->
 -        when (key) {
 -        }
 -    }
 +    val spListener = SharedPreferences.OnSharedPreferenceChangeListener { _, _ -> }
- 
+
      override fun startup(ctxt: Context) {
          if (!XiaomiSettings.enabled()) return
 diff --git a/app/src/main/java/me/phh/treble/app/XiaomiSettings.kt b/app/src/main/java/me/phh/treble/app/XiaomiSettings.kt
@@ -1362,7 +1362,7 @@ index 8ed2055..cdb2835 100644
 @@ -4,9 +4,9 @@ package me.phh.treble.app
  object XiaomiSettings : Settings {
      val dt2w = "xiaomi_double_tap_to_wake"
- 
+
 -    override fun enabled() = Tools.vendorFp.toLowerCase().startsWith("xiaomi") ||
 -                             Tools.vendorFp.toLowerCase().startsWith("redmi/") ||
 -                             Tools.vendorFp.toLowerCase().startsWith("poco/")
@@ -1370,7 +1370,7 @@ index 8ed2055..cdb2835 100644
 +                             Tools.vendorFpLow.startsWith("redmi/") ||
 +                             Tools.vendorFpLow.startsWith("poco/")
  }
- 
+
  class XiaomiSettingsFragment : SettingsFragment() {
 diff --git a/app/src/main/res/drawable/ic_bedtime.xml b/app/src/main/res/drawable/ic_bedtime.xml
 new file mode 100644
@@ -1517,13 +1517,13 @@ index 15b6b17..4c9c546 100644
 +++ b/app/src/main/res/values/styles.xml
 @@ -1,6 +1,8 @@
  <resources>
- 
+
 -    <style name="Base.Theme.TrebleApp" parent="@android:style/Theme.DeviceDefault.Settings" />
 +    <style name="Base.Theme.TrebleApp" parent="Theme.AppCompat.DayNight">
 +        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
 +    </style>
      <style name="Theme.TrebleApp" parent="Base.Theme.TrebleApp" />
- 
+
  </resources>
 diff --git a/app/src/main/res/xml/pref_headers.xml b/app/src/main/res/xml/pref_headers.xml
 deleted file mode 100644
@@ -1714,7 +1714,7 @@ index c78fd6f..5f6d509 100644
 +        mavenCentral()
      }
  }
- 
+
 -- 
 2.56.0
 

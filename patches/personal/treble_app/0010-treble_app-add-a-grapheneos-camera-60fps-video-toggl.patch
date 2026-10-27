@@ -1,7 +1,7 @@
-From ea74228aa21d9a4bc26150f7ad97f08020872d61 Mon Sep 17 00:00:00 2001
+From f3f7bacd20b88e47965da37a3f67be8eceb49473 Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Sun, 4 Oct 2026 23:14:32 +0300
-Subject: [PATCH 15/25] treble_app: add a grapheneos camera 60fps video toggle
+Subject: [PATCH 10/20] treble_app: add a grapheneos camera 60fps video toggle
 
 ---
  app/src/main/java/me/phh/treble/app/Samsung.kt         |  4 ++++
@@ -58,5 +58,5 @@ index c7b5e25..d46a5f7 100644
              android:defaultValue="1"
              android:key="key_samsung_flash_strength"
 -- 
-2.39.2 (Apple Git-143)
+2.56.0
 

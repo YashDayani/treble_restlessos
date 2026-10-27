@@ -1,7 +1,7 @@
-From 7d1bcdcceee6ed05b2f8032740a7b263821a8959 Mon Sep 17 00:00:00 2001
+From e3ce07d316534e48cda09943f3f7a816aeec3579 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Thu, 26 Feb 2026 11:23:00 +0000
-Subject: [PATCH 1/25] Add Unihertz 8849 hardware controls
+Subject: [PATCH 1/20] Add Unihertz 8849 hardware controls
 
 ---
  ....mediatek.hardware.agolddaemon-V1-java.jar | Bin 14002 -> 10882 bytes
@@ -484,7 +484,7 @@ index 108fd2b..0772be0 100644
                  || HardeningSettingsFragment::class.java.name == fragmentName
 +                || Unihertz8849SettingsFragment::class.java.name == fragmentName
      }
- 
+
      companion object {
 diff --git a/app/src/main/java/me/phh/treble/app/Unihertz8849.kt b/app/src/main/java/me/phh/treble/app/Unihertz8849.kt
 new file mode 100644
@@ -1430,5 +1430,5 @@ index 0000000..09f24d0
 +    </PreferenceCategory>
 +</PreferenceScreen>
 -- 
-2.53.0
+2.56.0
 
