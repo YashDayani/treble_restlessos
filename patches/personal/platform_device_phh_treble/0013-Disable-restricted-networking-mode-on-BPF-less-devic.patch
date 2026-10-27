@@ -1,7 +1,7 @@
-From 4205e15f2931f8ee07abd9c77ca36df8aa4609e7 Mon Sep 17 00:00:00 2001
+From 87112d1ca35dfa4fb42f9fc49d7fed4ef793349d Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Tue, 10 Mar 2026 00:00:00 +0000
-Subject: [PATCH 13/56] Disable restricted networking mode on BPF-less devices
+Subject: [PATCH 13/52] Disable restricted networking mode on BPF-less devices
 
 Android 14+ enables restricted_networking_mode by default, which uses
 BPF firewall chains to block network access for apps without the
@@ -20,7 +20,7 @@ enforce a chain that cannot function.
  1 file changed, 11 insertions(+)
 
 diff --git a/phh-on-boot.sh b/phh-on-boot.sh
-index d2d5b0a..678fef1 100644
+index 01d6a01..d63947c 100644
 --- a/phh-on-boot.sh
 +++ b/phh-on-boot.sh
 @@ -1,5 +1,16 @@
@@ -41,5 +41,5 @@ index d2d5b0a..678fef1 100644
  [ -z "$vndk" ] && vndk="$(getprop ro.vndk.version |grep -oE '^[0-9]+')"
 
 -- 
-2.53.0
+2.56.0
 

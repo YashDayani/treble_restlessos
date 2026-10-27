@@ -1,7 +1,8 @@
-From 6ce5ea72753efd5defe4df3ce75d1dba68f54803 Mon Sep 17 00:00:00 2001
+From dd50ea8addf30faac89b2c7b3ee1b19391d9c5eb Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Wed, 11 Mar 2026 17:59:16 +0000
-Subject: [PATCH 5/56] Mount tmpfs on /metadata for devices without a metadata partition
+Subject: [PATCH 5/52] Mount tmpfs on /metadata for devices without a metadata
+ partition
 
 Older devices (pre-Android Q) have no metadata partition. The
 /metadata directory exists as an empty stub on the read-only rootfs,
@@ -61,10 +62,10 @@ index 0000000..40e4616
 +mountpoint -q /metadata || \
 +    mount -t tmpfs tmpfs /metadata -o mode=0775,uid=0,gid=1000
 diff --git a/base.mk b/base.mk
-index 2d467e6..622501c 100644
+index 4d97b2a..6089dd4 100644
 --- a/base.mk
 +++ b/base.mk
-@@ -154,7 +154,9 @@ PRODUCT_PACKAGES += \
+@@ -152,7 +152,9 @@ PRODUCT_PACKAGES += \
      uevent
 
  PRODUCT_COPY_FILES += \
@@ -100,5 +101,5 @@ index f8829cd..03208fc 100644
 
  allow { appdomain shell } phhsu_daemon:unix_stream_socket { connectto write read };
 -- 
-2.53.0
+2.56.0
 

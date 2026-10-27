@@ -1,7 +1,8 @@
-From 5e953b88ed25800c948681cc10e031d72c92ce91 Mon Sep 17 00:00:00 2001
+From d91e57ce6d3019472f19cedd3aa3328eeb66665d Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Sat, 28 Mar 2026 20:28:58 +0000
-Subject: [PATCH 7/56] allow health HAL to access vendor-defined sysfs_battery nodes
+Subject: [PATCH 7/52] allow health HAL to access vendor-defined sysfs_battery
+ nodes
 
 some vendors label all power_supply sysfs nodes (battery, charger,
 fuelgauge, etc.) under a vendor-defined sysfs_battery type instead
@@ -37,5 +38,5 @@ index cb44422..1ddc612 100644
  hal_client_domain(hal_fingerprint_oppo_compat, hal_fingerprint)
  hal_server_domain(hal_fingerprint_oppo_compat, hal_fingerprint)
 -- 
-2.53.0
+2.56.0
 

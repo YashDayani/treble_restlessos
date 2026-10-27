@@ -1,7 +1,7 @@
-From ab8d07fbee65152741243e7045ff1ea97465f93d Mon Sep 17 00:00:00 2001
+From 9b1bf942d0e23d7428d31482c702e57566e9cb4f Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Sun, 29 Mar 2026 16:15:32 +0100
-Subject: [PATCH 9/56] vndk: remove lcd_density surfaceflinger restart
+Subject: [PATCH 9/52] vndk: remove lcd_density surfaceflinger restart
 
 rw-system.sh sets ro.sf.lcd_density during post-fs, before class_start
 core launches surfaceflinger.  the property trigger that restarted SF
@@ -20,13 +20,13 @@ display is blank for the entire boot -- and beyond.
  1 file changed, 15 insertions(+), 2 deletions(-)
 
 diff --git a/vndk.rc b/vndk.rc
-index 960e47f..1062fe2 100644
+index dedbaae..9e9f4a5 100644
 --- a/vndk.rc
 +++ b/vndk.rc
 @@ -69,8 +69,21 @@ on property:persist.sys.phh.backlight.scale=*
  on property:persist.sys.phh.disable_soundvolume_effect=*
      exec u:r:phhsu_daemon:s0 root -- /system/bin/phh-prop-handler.sh "persist.sys.phh.disable_soundvolume_effect"
- 
+
 -on property:ro.sf.lcd_density=*
 -    restart surfaceflinger
 +# ro.sf.lcd_density is set by rw-system.sh during post-fs, before
@@ -44,9 +44,9 @@ index 960e47f..1062fe2 100644
 +# it during init().
 +#on property:ro.sf.lcd_density=*
 +#    restart surfaceflinger
- 
+
  on property:persist.bluetooth.system_audio_hal.enabled=*
      exec u:r:phhsu_daemon:s0 root -- /system/bin/phh-prop-handler.sh "persist.bluetooth.system_audio_hal.enabled"
 -- 
-2.53.0
+2.56.0
 

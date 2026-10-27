@@ -1,7 +1,7 @@
-From b3692247f48c9cf19495990451da4bd814fd2a1f Mon Sep 17 00:00:00 2001
+From 2064c37577604381c84e45ecca4692fe5abe908d Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Fri, 25 Sep 2026 18:25:53 +0100
-Subject: [PATCH 6/56] sepolicy: samsung device compatibility allow rules
+Subject: [PATCH 6/52] sepolicy: samsung device compatibility allow rules
 
 several samsung vendor daemons need allow rules the GSI policy does
 not provide:
@@ -38,9 +38,9 @@ index 7dee392..9446fad 100644
 --- a/sepolicy/samsung.te
 +++ b/sepolicy/samsung.te
 @@ -4,6 +4,33 @@ set_prop(system_server, boot_prop);
- 
+
  type hal_graphics_composer_default, domain;
- 
+
 +# allow samsung touch input HAL to read system properties
 +# (without this, touch stops working after wake on some samsung devices)
 +type hal_sec_inputdev_default, domain;
@@ -69,8 +69,8 @@ index 7dee392..9446fad 100644
 +allow tee gatekeeper_vendor_data_file:file { create getattr open read setattr unlink write };
 +
  type sf_hs_mode_prop, property_type;
- 
+
  get_prop(hal_graphics_composer_default, sf_hs_mode_prop);
 -- 
-2.55.0
+2.56.0
 

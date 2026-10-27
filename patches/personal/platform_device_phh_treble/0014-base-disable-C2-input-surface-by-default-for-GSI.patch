@@ -1,7 +1,7 @@
-From 4d0d688b117494868216d928ee8259eb5ee2ee9b Mon Sep 17 00:00:00 2001
+From ac67326a29549d7750153a99036a05c4b3e8f2f5 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Fri, 10 Apr 2026 00:38:55 +0100
-Subject: [PATCH 14/56] base: disable C2 input surface by default for GSI
+Subject: [PATCH 14/52] base: disable C2 input surface by default for GSI
 
 set debug.stagefright.c2inputsurface=-1 as a build-time default via
 PRODUCT_SYSTEM_DEFAULT_PROPERTIES in base.mk.
@@ -28,7 +28,7 @@ also includes power-mode-monitor.sh for vendor power HAL mode detection.
  create mode 100644 power-mode-monitor.sh
 
 diff --git a/base.mk b/base.mk
-index 86f179f..432cfb4 100644
+index 6089dd4..1737974 100644
 --- a/base.mk
 +++ b/base.mk
 @@ -72,6 +72,7 @@ PRODUCT_COPY_FILES += \
@@ -39,14 +39,14 @@ index 86f179f..432cfb4 100644
      device/phh/treble/phh-on-data.sh:system/bin/phh-on-data.sh \
      device/phh/treble/phh-prop-handler.sh:system/bin/phh-prop-handler.sh \
      device/phh/treble/fixSPL/getSPL.arm:system/bin/getSPL
-@@ -210,6 +211,7 @@ PRODUCT_PACKAGES += \
- 
+@@ -214,6 +215,7 @@ PRODUCT_PACKAGES += \
+
  PRODUCT_SYSTEM_DEFAULT_PROPERTIES += \
      debug.fdsan=warn_once \
 +    debug.stagefright.c2inputsurface=-1 \
      persist.sys.fflag.override.settings_provider_model=false \
      ro.setupwizard.mode=OPTIONAL \
- 
+
 diff --git a/power-mode-monitor.sh b/power-mode-monitor.sh
 new file mode 100644
 index 0000000..47deea9
@@ -100,7 +100,7 @@ index 9e9f4a5..94c7583 100644
 @@ -16,8 +16,13 @@ service phh_on_boot /system/bin/phh-on-boot.sh
      oneshot
      disabled
- 
+
 +service power_mode_monitor /system/bin/power-mode-monitor.sh
 +    oneshot
 +    disabled
@@ -110,7 +110,7 @@ index 9e9f4a5..94c7583 100644
 +    start power_mode_monitor
      chown wifi system /data/misc/wifi
      chown system wifi /data/misc/wifi/hostapd.conf
- 
+
 -- 
-2.54.0
+2.56.0
 
