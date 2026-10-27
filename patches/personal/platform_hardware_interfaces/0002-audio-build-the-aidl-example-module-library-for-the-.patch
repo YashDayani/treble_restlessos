@@ -1,7 +1,7 @@
 From ed7f7f952305cc0cb7d4904da65be41c564fa711 Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Sun, 18 Oct 2026 11:50:58 +0300
-Subject: [PATCH 2/2] audio: build the aidl example module library for the system side sysbta
+Subject: [PATCH 2/3] audio: build the aidl example module library for the system side sysbta
 
 ---
  audio/aidl/default/Android.bp | 107 ++++++++++++++++++++++++++++++++++

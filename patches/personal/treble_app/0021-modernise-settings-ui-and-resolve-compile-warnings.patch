@@ -1,7 +1,7 @@
 From 3da2146eeefee60c55f3f1947faa244db9f43370 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Fri, 23 Oct 2026 19:16:32 +0100
-Subject: [PATCH 21/21] modernise settings ui and resolve compile warnings
+Subject: [PATCH 21/25] modernise settings ui and resolve compile warnings
 
 ---
  app/build.gradle                              |   2 +
