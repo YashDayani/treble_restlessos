@@ -1,7 +1,8 @@
-From df976f56075dcfed055b690202a4ba6cea6121c3 Mon Sep 17 00:00:00 2001
+From a560b2df9786354d926f2b6bc8ea55cf8f332442 Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Wed, 30 Sep 2026 23:51:11 +0300
-Subject: [PATCH 28/44] display: drive the samsung sysinput aidl hal around display power changes
+Subject: [PATCH 24/40] display: drive the samsung sysinput aidl hal around
+ display power changes
 
 ---
  .../server/display/LocalDisplayAdapter.java   | 42 +++++++++++++++++++
@@ -96,5 +97,5 @@ index aa6f11d09..7e0ff4edd 100644
                                  && triedSamsungHal) {
                              try {
 -- 
-2.55.0
+2.56.0
 

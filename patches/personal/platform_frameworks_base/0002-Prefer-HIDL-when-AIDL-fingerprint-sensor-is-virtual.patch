@@ -1,20 +1,20 @@
-From e92717f13246aedb5fb87dcdc228ed57cd8c385a Mon Sep 17 00:00:00 2001
+From d043d1559b4fa3b372587250a9ef125ff7f99eee Mon Sep 17 00:00:00 2001
 From: TBM13 <mateotrueba@gmail.com>
 Date: Wed, 26 Mar 2025 20:43:15 -0300
-Subject: [PATCH 2/44] Prefer HIDL when AIDL fingerprint sensor is "virtual"
+Subject: [PATCH 2/40] Prefer HIDL when AIDL fingerprint sensor is "virtual"
 
 ---
  .../server/biometrics/AuthService.java        | 37 +++++++++++++++++--
  1 file changed, 34 insertions(+), 3 deletions(-)
 
 diff --git a/services/core/java/com/android/server/biometrics/AuthService.java b/services/core/java/com/android/server/biometrics/AuthService.java
-index b5043f8c1..d7f08317f 100644
+index 08bc23645..a3d66a0ff 100644
 --- a/services/core/java/com/android/server/biometrics/AuthService.java
 +++ b/services/core/java/com/android/server/biometrics/AuthService.java
-@@ -1083,8 +1083,24 @@ public class AuthService extends SystemService {
+@@ -1168,8 +1168,24 @@ public class AuthService extends SystemService {
      private void registerAuthenticators() {
          BiometricHandlerProvider handlerProvider = mInjector.getBiometricHandlerProvider();
-
+ 
 +        String[] configStrings = mInjector.getFingerprintConfiguration(getContext());
 +        if (configStrings == null || configStrings.length == 0) {
 +            Slog.i("PHH", "Attempting to generate config_biometric_sensors for fingerprint");
@@ -37,10 +37,10 @@ index b5043f8c1..d7f08317f 100644
                  mInjector.getFingerprintService(), handlerProvider);
          registerFaceSensors(mInjector.getFaceAidlInstances(),
                  mInjector.getFaceConfiguration(getContext()), getContext(),
-@@ -1207,12 +1223,27 @@ public class AuthService extends SystemService {
+@@ -1292,12 +1308,27 @@ public class AuthService extends SystemService {
              return;
          }
-
+ 
 +        final boolean preferHidlSensor;
 +        if (!SystemProperties.getBoolean("persist.sys.phh.virtual_sensors_are_real", false)) {
 +            if (hidlConfigStrings != null && hidlConfigStrings.length > 0
@@ -61,12 +61,12 @@ index b5043f8c1..d7f08317f 100644
                      new FingerprintSensorConfigurations(fingerprintAidlInstances != null
 -                            && fingerprintAidlInstances.length > 0);
 +                            && fingerprintAidlInstances.length > 0 && !preferHidlSensor);
-
+ 
 -            if (fingerprintAidlInstances != null && fingerprintAidlInstances.length > 0) {
 +            if (fingerprintAidlInstances != null && fingerprintAidlInstances.length > 0 && !preferHidlSensor) {
                  mFingerprintSensorConfigurations.addAidlSensors(fingerprintAidlInstances);
              } else if (hidlConfigStrings != null && hidlConfigStrings.length > 0) {
                  mFingerprintSensorConfigurations.addHidlSensors(hidlConfigStrings, context);
 -- 
-2.53.0
+2.56.0
 

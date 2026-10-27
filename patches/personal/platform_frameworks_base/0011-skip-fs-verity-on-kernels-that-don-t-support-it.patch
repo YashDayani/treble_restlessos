@@ -1,7 +1,7 @@
-From 3f5cbf49a72bc6d2db87c44376753d35eca8170b Mon Sep 17 00:00:00 2001
+From dece2931070bc9169a6a6f51fb8646fa3ed3b99a Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Thu, 26 Mar 2026 14:27:44 +0000
-Subject: [PATCH 11/44] skip fs-verity on kernels that don't support it
+Subject: [PATCH 11/40] skip fs-verity on kernels that don't support it
 
 on GSI builds the system partition is android 16 but the vendor kernel
 may predate fs-verity (added in 5.4).  isFsVeritySupported() only
@@ -59,10 +59,10 @@ index ac186d0a2..ff818b01f 100644
  
      /** Enables fs-verity for the file without signature. */
 diff --git a/services/core/java/com/android/server/pm/InstallPackageHelper.java b/services/core/java/com/android/server/pm/InstallPackageHelper.java
-index 00abc017c..38e4f9595 100644
+index 7c7e9c4a0..a56cb8202 100644
 --- a/services/core/java/com/android/server/pm/InstallPackageHelper.java
 +++ b/services/core/java/com/android/server/pm/InstallPackageHelper.java
-@@ -173,6 +173,7 @@ import com.android.internal.pm.pkg.component.ParsedIntentInfo;
+@@ -177,6 +177,7 @@ import com.android.internal.pm.pkg.component.ParsedIntentInfo;
  import com.android.internal.pm.pkg.component.ParsedPermission;
  import com.android.internal.pm.pkg.component.ParsedPermissionGroup;
  import com.android.internal.pm.pkg.parsing.ParsingPackageUtils;
@@ -70,7 +70,7 @@ index 00abc017c..38e4f9595 100644
  import com.android.internal.util.ArrayUtils;
  import com.android.internal.util.CollectionUtils;
  import com.android.server.EventLogTags;
-@@ -2016,7 +2017,9 @@ final class InstallPackageHelper {
+@@ -2144,7 +2145,9 @@ final class InstallPackageHelper {
              // this is an update to a system package
  
              try {
@@ -82,10 +82,10 @@ index 00abc017c..38e4f9595 100644
                  String message = "fs-verity not set up for system package update " + e;
                  boolean abortInstall = true;
 diff --git a/services/core/java/com/android/server/pm/PackageInstallerSession.java b/services/core/java/com/android/server/pm/PackageInstallerSession.java
-index 36adc149c..822054250 100644
+index ce13d1054..454547423 100644
 --- a/services/core/java/com/android/server/pm/PackageInstallerSession.java
 +++ b/services/core/java/com/android/server/pm/PackageInstallerSession.java
-@@ -4506,7 +4506,7 @@ public class PackageInstallerSession extends IPackageInstallerSession.Stub {
+@@ -4594,7 +4594,7 @@ public class PackageInstallerSession extends IPackageInstallerSession.Stub {
  
          // Needs to happen before the first v4 signature verification, which happens in
          // getAddedApkLitesLocked.
@@ -108,5 +108,5 @@ index 83972db25..e16de1dca 100644
          }
  
 -- 
-2.53.0
+2.56.0
 

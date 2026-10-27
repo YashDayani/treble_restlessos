@@ -1,7 +1,8 @@
-From e28651f0af98b8614d2b45142f5b74dbadb6b4b6 Mon Sep 17 00:00:00 2001
+From 1fc9c08ef5f8d5ac11b08896b2d08e993da95ec0 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Fri, 25 Sep 2026 18:22:21 +0100
-Subject: [PATCH 16/44] Bitmap: scale down bitmaps and tolerate seal failures on legacy kernels
+Subject: [PATCH 16/40] Bitmap: scale down bitmaps and tolerate seal failures
+ on legacy kernels
 
 On legacy kernels the binder transaction buffer cannot carry large
 bitmaps, and GrapheneOS's memfd sealing path uses a seal bit old
@@ -183,5 +184,5 @@ index d97d1bca4..1625473f1 100644
  
          // Workaround b/149851140 in AParcel_writeParcelFileDescriptor
 -- 
-2.55.0
+2.56.0
 

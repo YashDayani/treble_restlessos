@@ -1,7 +1,7 @@
-From 33ce9c1d2275c391495766263cc69599c1971a6e Mon Sep 17 00:00:00 2001
+From 953b45f5ba83d06e780cbbb9ce81f8af021e9287 Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Tue, 27 Oct 2026 16:35:30 +0300
-Subject: [PATCH 40/44] ConsumerIrService: restore the hidl ir hal fallback
+Subject: [PATCH 36/40] ConsumerIrService: restore the hidl ir hal fallback
 
 ---
  .../com/android/server/ConsumerIrService.java | 26 ++++-
@@ -13,7 +13,7 @@ Subject: [PATCH 40/44] ConsumerIrService: restore the hidl ir hal fallback
  create mode 100644 services/core/jni/com_android_server_ConsumerIrService.cpp
 
 diff --git a/services/core/java/com/android/server/ConsumerIrService.java b/services/core/java/com/android/server/ConsumerIrService.java
-index d68c938..0302655 100644
+index d68c938ed..030265567 100644
 --- a/services/core/java/com/android/server/ConsumerIrService.java
 +++ b/services/core/java/com/android/server/ConsumerIrService.java
 @@ -30,11 +30,21 @@ import android.os.RemoteException;
@@ -77,7 +77,7 @@ index d68c938..0302655 100644
      }
  }
 diff --git a/services/core/java/com/android/server/utils/LazyJniRegistrar.java b/services/core/java/com/android/server/utils/LazyJniRegistrar.java
-index da25c0c..7ad99bc 100644
+index da25c0cc3..7ad99bcaf 100644
 --- a/services/core/java/com/android/server/utils/LazyJniRegistrar.java
 +++ b/services/core/java/com/android/server/utils/LazyJniRegistrar.java
 @@ -39,6 +39,9 @@ public final class LazyJniRegistrar {
@@ -91,7 +91,7 @@ index da25c0c..7ad99bc 100644
      public static native void registerGameManagerService();
  
 diff --git a/services/core/jni/Android.bp b/services/core/jni/Android.bp
-index 4a2a813..d0ceecf 100644
+index 4a2a813a1..d0ceecfbf 100644
 --- a/services/core/jni/Android.bp
 +++ b/services/core/jni/Android.bp
 @@ -183,6 +183,7 @@ cc_defaults {
@@ -112,7 +112,7 @@ index 4a2a813..d0ceecf 100644
          "com_android_server_tv_TvUinputBridge.cpp",
 diff --git a/services/core/jni/com_android_server_ConsumerIrService.cpp b/services/core/jni/com_android_server_ConsumerIrService.cpp
 new file mode 100644
-index 0000000..63daa35
+index 000000000..63daa3503
 --- /dev/null
 +++ b/services/core/jni/com_android_server_ConsumerIrService.cpp
 @@ -0,0 +1,97 @@
@@ -214,7 +214,7 @@ index 0000000..63daa35
 +
 +};
 diff --git a/services/core/jni/com_android_server_utils_LazyJniRegistrar.cpp b/services/core/jni/com_android_server_utils_LazyJniRegistrar.cpp
-index 934b5ee..c9c6e00 100644
+index 934b5ee0d..c9c6e00f6 100644
 --- a/services/core/jni/com_android_server_utils_LazyJniRegistrar.cpp
 +++ b/services/core/jni/com_android_server_utils_LazyJniRegistrar.cpp
 @@ -21,6 +21,7 @@
@@ -245,5 +245,5 @@ index 934b5ee..c9c6e00 100644
          {"registerTvUinputBridge", "()V", (void*)registerTvUinputBridge},
          {"registerVpn", "()V", (void*)registerVpn},
 -- 
-2.43.0
+2.56.0
 

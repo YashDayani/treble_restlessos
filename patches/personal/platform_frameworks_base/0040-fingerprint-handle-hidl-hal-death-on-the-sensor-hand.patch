@@ -1,7 +1,8 @@
-From 62e01f2e9de498e5f290cd47fc92469dc35c2168 Mon Sep 17 00:00:00 2001
+From 81d4c92de313b9ee4648d9d855ab747ad0dd802c Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Tue, 27 Oct 2026 19:55:53 +0300
-Subject: [PATCH 44/44] fingerprint: handle hidl hal death on the sensor handler
+Subject: [PATCH 40/40] fingerprint: handle hidl hal death on the sensor
+ handler
 
 serviceDied runs on a hwbinder thread and resets the scheduler while the
 sensor handler may still be reading the pending operation queue, which

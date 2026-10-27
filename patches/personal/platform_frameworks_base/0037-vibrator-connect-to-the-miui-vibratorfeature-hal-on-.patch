@@ -1,8 +1,8 @@
-From a688d188b9a9a8aab4054383b8c8d6e44c28086d Mon Sep 17 00:00:00 2001
+From e956d54b78a796d6d4b24361190ad3c83bc12a05 Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Tue, 27 Oct 2026 17:08:17 +0300
-Subject: [PATCH 41/44] vibrator: connect to the miui vibratorfeature hal on the
- vintf path
+Subject: [PATCH 37/40] vibrator: connect to the miui vibratorfeature hal on
+ the vintf path
 
 ---
  .../android/server/vibrator/VintfHalVibrator.java    | 12 +++++++++++-
@@ -10,7 +10,7 @@ Subject: [PATCH 41/44] vibrator: connect to the miui vibratorfeature hal on the
  2 files changed, 20 insertions(+), 1 deletion(-)
 
 diff --git a/services/core/java/com/android/server/vibrator/VintfHalVibrator.java b/services/core/java/com/android/server/vibrator/VintfHalVibrator.java
-index a8d9224..c749044 100644
+index a8d922415..c74904467 100644
 --- a/services/core/java/com/android/server/vibrator/VintfHalVibrator.java
 +++ b/services/core/java/com/android/server/vibrator/VintfHalVibrator.java
 @@ -97,11 +97,21 @@ class VintfHalVibrator {
@@ -37,7 +37,7 @@ index a8d9224..c749044 100644
  
          @NonNull
 diff --git a/services/core/java/com/android/server/vibrator/VintfHalVibratorManager.java b/services/core/java/com/android/server/vibrator/VintfHalVibratorManager.java
-index 6350d05..d0cdc39 100644
+index 6350d05e4..d0cdc3980 100644
 --- a/services/core/java/com/android/server/vibrator/VintfHalVibratorManager.java
 +++ b/services/core/java/com/android/server/vibrator/VintfHalVibratorManager.java
 @@ -70,6 +70,15 @@ class VintfHalVibratorManager {
@@ -57,5 +57,5 @@ index 6350d05..d0cdc39 100644
                  + " Vibrator manager service will proceed without vibrator hardware.");
          return new LegacyHalVibratorManager();
 -- 
-2.43.0
+2.56.0
 

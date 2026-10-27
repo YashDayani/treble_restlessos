@@ -1,7 +1,8 @@
-From 0e29becaa18cb73e1505dac90e5c5eaa08d3bdbc Mon Sep 17 00:00:00 2001
+From da45b4802f86723adb05c3a319016c9aea1189a0 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Mon, 16 Feb 2026 09:45:15 +0000
-Subject: [PATCH 8/44] NetworkRegistrationInfo: conditionally force LTE carrier aggregation
+Subject: [PATCH 8/40] NetworkRegistrationInfo: conditionally force LTE
+ carrier aggregation
 
 Add persist.sys.radio.force_lte_ca property to force the carrier
 aggregation indicator when connected to LTE. When enabled, any LTE
@@ -36,5 +37,6 @@ index 59045cf5d..2c2d8698a 100644
          if (tech == TelephonyManager.NETWORK_TYPE_LTE_CA) {
              // For old device backward compatibility support
              tech = TelephonyManager.NETWORK_TYPE_LTE;
---
-2.55.0
+-- 
+2.56.0
+

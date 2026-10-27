@@ -1,7 +1,8 @@
-From 43d3258e6194e30f057d78a4fe38572dda2a961c Mon Sep 17 00:00:00 2001
+From 2891f864c82714800687561f568f82d4edd3bc05 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Wed, 1 Apr 2026 14:33:09 +0100
-Subject: [PATCH 12/44] fall back to sysfs touch poke when samsung sysinput HAL is missing
+Subject: [PATCH 12/40] fall back to sysfs touch poke when samsung sysinput HAL
+ is missing
 
 on samsung devices where the sysinput HIDL HAL
 (vendor.samsung.hardware.sysinput@1.1) is not declared in the VINTF
@@ -34,10 +35,10 @@ to sysfs_ss_writable on samsung devices.
  1 file changed, 48 insertions(+)
 
 diff --git a/services/core/java/com/android/server/display/LocalDisplayAdapter.java b/services/core/java/com/android/server/display/LocalDisplayAdapter.java
-index 6865a23a7..16159a693 100644
+index 33d432a27..aa6f11d09 100644
 --- a/services/core/java/com/android/server/display/LocalDisplayAdapter.java
 +++ b/services/core/java/com/android/server/display/LocalDisplayAdapter.java
-@@ -1004,6 +1004,54 @@ final class LocalDisplayAdapter extends DisplayAdapter {
+@@ -1032,6 +1032,54 @@ final class LocalDisplayAdapter extends DisplayAdapter {
                              }
                          }
  
@@ -93,5 +94,5 @@ index 6865a23a7..16159a693 100644
  
                          // If we're entering a suspended (but not OFF) power state and we
 -- 
-2.53.0
+2.56.0
 

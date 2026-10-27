@@ -1,7 +1,8 @@
-From ea02f0a05370a1479943dbd9094385d6acae6cc5 Mon Sep 17 00:00:00 2001
+From d1ef577f0a43bf763b1bdfdd968e200f22badbdc Mon Sep 17 00:00:00 2001
 From: rmp22 <195054967+rmp22@users.noreply.github.com>
 Date: Wed, 25 Mar 2026 23:09:40 +0000
-Subject: [PATCH 10/44] add performance activity animation override for low-end MTK devices
+Subject: [PATCH 10/40] add performance activity animation override for low-end
+ MTK devices
 
 on MTK and other low-end devices running android 16, the stock AOSP
 activity transition animations (XML-based fixed-dp translate + fade)
@@ -35,16 +36,16 @@ index 497756418..998ad9818 100644
 +import android.util.DisplayMetrics;
  import android.util.Xml;
  import android.view.InflateException;
-
+ 
 +import com.android.internal.R;
 +
  import org.xmlpull.v1.XmlPullParser;
  import org.xmlpull.v1.XmlPullParserException;
-
+ 
 @@ -145,6 +149,20 @@ public class AnimationUtils {
      public static Animation loadAnimation(Context context, @AnimRes int id)
              throws NotFoundException {
-
+ 
 +        if (SystemProperties.getBoolean("persist.sys.activity_anim_perf_override", false)) {
 +            ActivityAnimations.maybeInit(context);
 +            switch (id) {
@@ -176,5 +177,6 @@ index 497756418..998ad9818 100644
 +        }
 +    }
  }
---
-2.55.0
+-- 
+2.56.0
+

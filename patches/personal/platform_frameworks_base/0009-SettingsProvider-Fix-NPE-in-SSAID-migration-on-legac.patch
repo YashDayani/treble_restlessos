@@ -1,7 +1,8 @@
-From f676962ed5d56ed2f8bda8d29de916514e7be1d2 Mon Sep 17 00:00:00 2001
+From 8b82a86a0e32ee5a8167c27592fb6da06bf053dc Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Fri, 13 Mar 2026 14:04:57 +0000
-Subject: [PATCH 9/44] SettingsProvider: Fix NPE in SSAID migration on legacy vendor partitions
+Subject: [PATCH 9/40] SettingsProvider: Fix NPE in SSAID migration on legacy
+ vendor partitions
 
 migrateAllLegacySettingsIfNeededLocked() creates system, secure, and
 global settings states via migrateLegacySettingsForUserLocked(), but
@@ -26,13 +27,13 @@ regression.
  1 file changed, 32 insertions(+), 11 deletions(-)
 
 diff --git a/packages/SettingsProvider/src/com/android/providers/settings/SettingsProvider.java b/packages/SettingsProvider/src/com/android/providers/settings/SettingsProvider.java
-index 8c70d4e70..a7fcd77d8 100644
+index 1fbd8bccb..bbe3cf697 100644
 --- a/packages/SettingsProvider/src/com/android/providers/settings/SettingsProvider.java
 +++ b/packages/SettingsProvider/src/com/android/providers/settings/SettingsProvider.java
-@@ -4028,6 +4028,16 @@ public class SettingsProvider extends ContentProvider {
+@@ -4194,6 +4194,16 @@ public class SettingsProvider extends ContentProvider {
                      migrateLegacySettingsForUserLocked(dbHelper, database, userId,
                              Context.DEVICE_ID_DEFAULT);
-
+ 
 +                    // Ensure SSAID settings state exists before running upgrade.
 +                    // migrateLegacySettingsForUserLocked creates system, secure, and global
 +                    // settings states, but not SSAID. The upgrade path (version 136->137)
@@ -46,9 +47,9 @@ index 8c70d4e70..a7fcd77d8 100644
                      // Upgrade to the latest version.
                      UpgradeController upgrader = new UpgradeController(userId,
                              Context.DEVICE_ID_DEFAULT);
-@@ -4873,17 +4883,28 @@ public class SettingsProvider extends ContentProvider {
+@@ -5050,17 +5060,28 @@ public class SettingsProvider extends ContentProvider {
                          }
-
+ 
                          final SettingsState ssaidSettings = getSsaidSettingsLocked(userId);
 -                        for (PackageInfo info : packages) {
 -                            // Check if the UID already has an entry in the table.
@@ -87,5 +88,5 @@ index 8c70d4e70..a7fcd77d8 100644
                              }
                          }
 -- 
-2.53.0
+2.56.0
 

@@ -1,7 +1,7 @@
-From 270ac83f11e0dc1a9085f8dc2492e4c753a80ef2 Mon Sep 17 00:00:00 2001
+From 2614b7c3eb8fdd1abec6b5a42d1fbea940e551ac Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Tue, 27 Oct 2026 19:24:47 +0300
-Subject: [PATCH 43/44] SystemUI: derive the udfps pixel pitch from the display
+Subject: [PATCH 39/40] SystemUI: derive the udfps pixel pitch from the display
  when the overlay leaves it unset
 
 ---

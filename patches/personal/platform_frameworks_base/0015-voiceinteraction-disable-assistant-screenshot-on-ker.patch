@@ -1,7 +1,8 @@
-From 3df666f6d3eb64f9c27fd337c8f1312849702aa3 Mon Sep 17 00:00:00 2001
+From ee898a89417e523a8bf15b8316c8dba7adc6f601 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Sat, 23 May 2026 18:16:06 +0100
-Subject: [PATCH 15/44] voiceinteraction: disable assistant screenshot on kernels below 4.14
+Subject: [PATCH 15/40] voiceinteraction: disable assistant screenshot on
+ kernels below 4.14
 
 QPR2 assist screenshot capture uses ImageReader -> SurfaceFlinger -> GPU
 composition paths that depend on sync-fence / dma-buf semantics. Kernels
@@ -37,13 +38,13 @@ index c98a04336..0c012924b 100644
 +        if (isLegacyKernel()) {
 +            flags |= VoiceInteractionSession.SHOW_WITH_SCREENSHOT;
 +        }
-
+ 
          // If this session should restrict access to AssistStructure screen content and the
          // associated permission flag is enabled then READ_ASSIST_STRUCTURE_SCREEN_CONTENT must be
 @@ -307,6 +314,23 @@ final class VoiceInteractionSessionConnection implements ServiceConnection,
          return flags;
      }
-
+ 
 +    private static boolean isLegacyKernel() {
 +        String kv = System.getProperty("os.version");
 +        if (kv == null || kv.isEmpty()) return false;
@@ -64,5 +65,6 @@ index c98a04336..0c012924b 100644
      public boolean showLocked(@NonNull Bundle args, int flags, @Nullable String attributionTag,
              int disabledContext, @Nullable IVoiceInteractionSessionShowCallback showCallback,
              @NonNull List<ActivityAssistInfo> topActivities) {
---
-2.55.0
+-- 
+2.56.0
+

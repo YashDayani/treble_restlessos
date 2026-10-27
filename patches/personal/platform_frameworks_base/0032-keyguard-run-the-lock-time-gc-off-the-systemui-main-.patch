@@ -1,7 +1,8 @@
-From 171b0447597621b44a99c37b625b7d404192a690 Mon Sep 17 00:00:00 2001
+From 49cc775836e93854dc3ffc25197b8c714d701852 Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Sat, 17 Oct 2026 15:05:25 +0300
-Subject: [PATCH 36/44] keyguard: run the lock-time gc off the systemui main thread and the keyguard binder call
+Subject: [PATCH 32/40] keyguard: run the lock-time gc off the systemui main
+ thread and the keyguard binder call
 
 ---
  .../android/systemui/keyguard/KeyguardViewMediator.java  | 8 +++++---
@@ -9,7 +10,7 @@ Subject: [PATCH 36/44] keyguard: run the lock-time gc off the systemui main thre
  2 files changed, 11 insertions(+), 6 deletions(-)
 
 diff --git a/packages/SystemUI/src/com/android/systemui/keyguard/KeyguardViewMediator.java b/packages/SystemUI/src/com/android/systemui/keyguard/KeyguardViewMediator.java
-index ccd0baf..fa12de5 100644
+index f367342d3..98e824b8b 100644
 --- a/packages/SystemUI/src/com/android/systemui/keyguard/KeyguardViewMediator.java
 +++ b/packages/SystemUI/src/com/android/systemui/keyguard/KeyguardViewMediator.java
 @@ -3294,9 +3294,11 @@ public class KeyguardViewMediator implements CoreStartable,
@@ -28,7 +29,7 @@ index ccd0baf..fa12de5 100644
          }
          mKeyguardDisplayManager.show();
 diff --git a/services/core/java/com/android/server/policy/keyguard/KeyguardServiceDelegate.java b/services/core/java/com/android/server/policy/keyguard/KeyguardServiceDelegate.java
-index 81c072b..9021433 100644
+index 81c072be1..9021433a4 100644
 --- a/services/core/java/com/android/server/policy/keyguard/KeyguardServiceDelegate.java
 +++ b/services/core/java/com/android/server/policy/keyguard/KeyguardServiceDelegate.java
 @@ -38,6 +38,7 @@ import android.util.Log;
@@ -55,5 +56,5 @@ index 81c072b..9021433 100644
      }
  
 -- 
-2.50.1 (Apple Git-155)
+2.56.0
 

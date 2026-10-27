@@ -1,7 +1,8 @@
-From aaae20204026b002c6ba37f35c21457c7ea65977 Mon Sep 17 00:00:00 2001
+From b2bca261a09c844677b3b3e0eac37fd58b635bdf Mon Sep 17 00:00:00 2001
 From: dozeofffff <dozeoffff@dozeoffff>
 Date: Sun, 10 May 2026 23:55:47 +0000
-Subject: [PATCH 17/44] Record event to prop for oplus fingerprint sensor actuation
+Subject: [PATCH 17/40] Record event to prop for oplus fingerprint sensor
+ actuation
 
 ---
  .../com/android/systemui/biometrics/AuthController.java    | 7 +++++++
@@ -22,7 +23,7 @@ index 052e98506..37fb159fb 100644
 @@ -227,6 +228,10 @@ public class AuthController implements
          }
      };
-
+ 
 +    private void oplusFpUiReady(boolean fingerDown) {
 +        SystemProperties.set("sys.phh.oplus.fppress", fingerDown ? "1" : "0");
 +    }
@@ -36,12 +37,13 @@ index 052e98506..37fb159fb 100644
                  public void onFingerUp() {
 +                    oplusFpUiReady(false);
                  }
-
+ 
                  @Override
                  public void onFingerDown() {
 +                    oplusFpUiReady(true);
                      if (mCurrentDialog != null) {
                          mCurrentDialog.onPointerDown();
                      }
---
-2.55.0
+-- 
+2.56.0
+

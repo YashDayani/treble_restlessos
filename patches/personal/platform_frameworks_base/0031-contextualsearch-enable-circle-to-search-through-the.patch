@@ -1,7 +1,7 @@
-From 2ad39fef233462d22e455451f92de1d56318562b Mon Sep 17 00:00:00 2001
+From d9876f3680a91fd3ae84976d667d2f8d4360714e Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Sun, 18 Oct 2026 02:38:59 +0300
-Subject: [PATCH 35/44] contextualsearch: enable circle to search through the
+Subject: [PATCH 31/40] contextualsearch: enable circle to search through the
  google app
 
 ---
@@ -11,7 +11,7 @@ Subject: [PATCH 35/44] contextualsearch: enable circle to search through the
  3 files changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/core/res/res/values/config.xml b/core/res/res/values/config.xml
-index 0ed95ca..19ee607 100644
+index 0ed95ca0d..19ee6077b 100644
 --- a/core/res/res/values/config.xml
 +++ b/core/res/res/values/config.xml
 @@ -7742,7 +7742,7 @@
@@ -24,7 +24,7 @@ index 0ed95ca..19ee607 100644
      <!-- The key containing the entrypoint for Contextual Search. -->
      <string name="config_defaultContextualSearchKey" translatable="false" />
 diff --git a/data/etc/com.android.launcher3.xml b/data/etc/com.android.launcher3.xml
-index 9594194..c6fe978 100644
+index 9594194dd..c6fe9786a 100644
 --- a/data/etc/com.android.launcher3.xml
 +++ b/data/etc/com.android.launcher3.xml
 @@ -29,6 +29,7 @@
@@ -36,7 +36,7 @@ index 9594194..c6fe978 100644
          <permission name="android.permission.PERSONAL_CONTEXT_PUBLISH_HINTS"/>
          <permission name="android.permission.PERSONAL_CONTEXT_RECEIVE_INSIGHTS"/>
 diff --git a/data/etc/framework-sysconfig.xml b/data/etc/framework-sysconfig.xml
-index 2162ec4..6334c2a 100644
+index 2162ec421..6334c2a6e 100644
 --- a/data/etc/framework-sysconfig.xml
 +++ b/data/etc/framework-sysconfig.xml
 @@ -51,6 +51,8 @@
@@ -49,5 +49,5 @@ index 2162ec4..6334c2a 100644
      <bugreport-whitelisted package="com.android.shell" />
  
 -- 
-2.50.1 (Apple Git-155)
+2.56.0
 

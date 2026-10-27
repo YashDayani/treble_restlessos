@@ -1,7 +1,8 @@
-From 8553ba7b8e8730f1707aa114cd46c774f70e59b6 Mon Sep 17 00:00:00 2001
+From efb11fe9784e65f621e00ccda04ef752cbbca9a1 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Sun, 26 Apr 2026 16:43:59 +0100
-Subject: [PATCH 13/44] deviceidle: auto-disable AnyMotionDetector on MTK devices
+Subject: [PATCH 13/40] deviceidle: auto-disable AnyMotionDetector on MTK
+ devices
 
 MTK vendor HALs on A16 kernels continuously fire motion events,
 preventing doze and burning battery. The AnyMotionDetector wake
@@ -18,10 +19,10 @@ Fixes #21
  1 file changed, 10 insertions(+)
 
 diff --git a/apex/jobscheduler/service/java/com/android/server/DeviceIdleController.java b/apex/jobscheduler/service/java/com/android/server/DeviceIdleController.java
-index 247647a07..70c6100ac 100644
+index 5fd06150a..8ad2bf59a 100644
 --- a/apex/jobscheduler/service/java/com/android/server/DeviceIdleController.java
 +++ b/apex/jobscheduler/service/java/com/android/server/DeviceIdleController.java
-@@ -69,6 +69,7 @@ import android.os.Message;
+@@ -74,6 +74,7 @@ import android.os.Message;
  import android.os.PowerExemptionManager;
  import android.os.PowerExemptionManager.ReasonCode;
  import android.os.PowerExemptionManager.TempAllowListType;
@@ -29,7 +30,7 @@ index 247647a07..70c6100ac 100644
  import android.os.PowerManager;
  import android.os.PowerManager.ServiceType;
  import android.os.PowerManagerInternal;
-@@ -2581,6 +2582,15 @@ public class DeviceIdleController extends SystemService
+@@ -2610,6 +2611,15 @@ public class DeviceIdleController extends SystemService
          }
  
          boolean useMotionSensor() {
@@ -46,5 +47,5 @@ index 247647a07..70c6100ac 100644
                     com.android.internal.R.bool.config_autoPowerModeUseMotionSensor);
          }
 -- 
-2.53.0
+2.56.0
 
