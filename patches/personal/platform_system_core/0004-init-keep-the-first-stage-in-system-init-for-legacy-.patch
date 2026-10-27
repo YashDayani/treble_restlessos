@@ -1,7 +1,7 @@
-From 5afca27eeea856412dd823f97961e4040b0ab273 Mon Sep 17 00:00:00 2001
+From 0825342ae750974ef49068527eaccd56a841ae7f Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Wed, 21 Oct 2026 18:54:27 +0300
-Subject: [PATCH 6/6] init: keep the first stage in system init for legacy
+Subject: [PATCH 4/4] init: keep the first stage in system init for legacy
  system-as-root devices
 
 ---
@@ -10,7 +10,7 @@ Subject: [PATCH 6/6] init: keep the first stage in system init for legacy
  2 files changed, 11 insertions(+)
 
 diff --git a/init/Android.bp b/init/Android.bp
-index 9959daa52..b042bb556 100644
+index 9959daa..b042bb5 100644
 --- a/init/Android.bp
 +++ b/init/Android.bp
 @@ -337,6 +337,13 @@ cc_binary {
@@ -28,11 +28,11 @@ index 9959daa52..b042bb556 100644
      required: [
          "init.rc",
 diff --git a/init/first_stage_mount_android.cpp b/init/first_stage_mount_android.cpp
-index 09222de69..67b80c3e1 100644
+index 09222de..67b80c3 100644
 --- a/init/first_stage_mount_android.cpp
 +++ b/init/first_stage_mount_android.cpp
 @@ -47,6 +47,10 @@ FirstStageMountAndroid::FirstStageMountAndroid(Fstab fstab, bool data_on_userdat
- 
+
  Result<std::unique_ptr<FirstStageMount>> FirstStageMount::Create(const std::string& cmdline) {
      Fstab fstab;
 +    // legacy system-as-root devices only describe their first stage mounts in the dt fstab
@@ -43,5 +43,5 @@ index 09222de69..67b80c3e1 100644
          return Error() << "failed to read default fstab for first stage mount";
      }
 -- 
-2.50.1 (Apple Git-155)
+2.56.0
 
