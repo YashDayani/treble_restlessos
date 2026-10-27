@@ -1,4 +1,4 @@
-From aced2b068f1c24b9a69364da6b2eecbb5a3ccc1a Mon Sep 17 00:00:00 2001
+From 1454b1650cf527888674d80723f7a756303f8298 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Mon, 28 Sep 2026 08:40:32 +0100
 Subject: [PATCH 2/3] gsi: product trim adjustments
@@ -43,7 +43,7 @@ index 7689dd0..4df5c26 100644
      com.android.uwb:framework-uwb \
 -    com.android.virt:framework-virtualization \
      com.android.wifi:framework-wifi \
- 
+
  # When we release ondeviceintelligence in NeuralNetworks module
 diff --git a/target/product/gsi/Android.bp b/target/product/gsi/Android.bp
 index 1dea323..0ebd40b 100644
@@ -52,7 +52,7 @@ index 1dea323..0ebd40b 100644
 @@ -74,6 +74,60 @@ gsi_symlinks = [
      },
  ]
- 
+
 +// compat symlinks for legacy vendor partitions: pre-q vendor ld.config.txt files
 +// hardcode /system/${LIB}/vndk-${VER} and vndk-sp-${VER} search paths. point them
 +// into the matching vndk apex so those paths keep resolving on old devices.
@@ -140,7 +140,7 @@ index b276cf9..7a93d49 100644
      ThemesStub \
 -    TrichromeChrome \
      frameworks-base-overlays
- 
+
  PRODUCT_PACKAGES_DEBUG += \
 diff --git a/target/product/handheld_system.mk b/target/product/handheld_system.mk
 index 83170ad..b7113d3 100644
@@ -155,5 +155,5 @@ index 83170ad..b7113d3 100644
      VpnDialogs \
      vr \
 -- 
-2.55.0
+2.56.0
 

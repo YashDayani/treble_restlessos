@@ -1,4 +1,4 @@
-From 38eb6d0e237cd98b2c4fb5d8c389527cf820213e Mon Sep 17 00:00:00 2001
+From 74d0b0385b185679514cc327ec45be19c2c84401 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Mon, 28 Sep 2026 16:57:51 +0100
 Subject: [PATCH 1/1] appsearch: neuter the isolated storage service
@@ -10,6 +10,7 @@ reports the feature unavailable, and drop the framework-virtualization
 stub dependencies so the module builds without the virtualization
 sources. the data migration helpers stay intact for the classic
 migration paths.
+---
  apk/Android.bp                                |    1 -
  apk/AndroidManifest.xml                       |    8 -
  .../IsolatedStorageService.java               |  629 ---------
@@ -48,7 +49,7 @@ index 6bac0ef..bdfd54e 100644
 -            </intent-filter>
 -        </service>
      </application>
- 
+
  </manifest>
 diff --git a/apk/src/com/android/server/appsearch/isolated_storage_service/IsolatedStorageService.java b/apk/src/com/android/server/appsearch/isolated_storage_service/IsolatedStorageService.java
 deleted file mode 100644
@@ -702,7 +703,7 @@ index 8883e33..f51835e 100644
 --- a/service/java/com/android/server/appsearch/isolated_storage_service/IcingSearchEngine.java
 +++ b/service/java/com/android/server/appsearch/isolated_storage_service/IcingSearchEngine.java
 @@ -1513,10 +1513,7 @@ public final class IcingSearchEngine implements IcingSearchEngineInterface {
- 
+
      private @NonNull StatusProto futureGetFailureStatus(@NonNull Exception e) {
          String message;
 -        if (mManager.isReconnecting()) {
@@ -714,7 +715,7 @@ index 8883e33..f51835e 100644
              message = "vm isolated storage service/icing is not available: " + e.getMessage();
          }
 @@ -1528,10 +1525,7 @@ public final class IcingSearchEngine implements IcingSearchEngineInterface {
- 
+
      private @NonNull StatusProto remoteExceptionStatus(@NonNull RemoteException e) {
          String message;
 -        if (mManager.isReconnecting() && e instanceof DeadObjectException) {
@@ -728,7 +729,7 @@ index 8883e33..f51835e 100644
 @@ -1580,23 +1574,6 @@ public final class IcingSearchEngine implements IcingSearchEngineInterface {
              Log.w(TAG, "Unable to get jvm free memory size due to error", e);
          }
- 
+
 -        long vmIsolatedStorageFreeMemoryKb = -1;
 -        try {
 -            vmIsolatedStorageFreeMemoryKb =
@@ -746,7 +747,7 @@ index 8883e33..f51835e 100644
 -            LogUtil.criticalError(
 -                    TAG, "Unable to get vm isolated storage free memory size due to error", e);
 -        }
- 
+
          LogUtil.criticalError(
                  TAG,
 @@ -1604,8 +1581,6 @@ public final class IcingSearchEngine implements IcingSearchEngineInterface {
@@ -772,10 +773,10 @@ index e99862d..b868dd0 100644
 @@ -15,1235 +15,153 @@
   */
  package com.android.server.appsearch.isolated_storage_service;
- 
+
 -import static android.app.appsearch.AppSearchResult.RESULT_INTERNAL_ERROR;
  import static android.app.appsearch.AppSearchResult.RESULT_UNAVAILABLE;
- 
+
 -import android.aiseal.AiSealManager;
  import android.annotation.NonNull;
  import android.annotation.Nullable;
@@ -800,7 +801,7 @@ index e99862d..b868dd0 100644
 -import android.system.virtualmachine.VirtualMachineManager;
 -import android.util.ArrayMap;
  import android.util.Log;
- 
+
 -import com.android.appsearch.flags.Flags;
 -import com.android.internal.annotations.GuardedBy;
 -import com.android.internal.annotations.VisibleForTesting;
@@ -816,7 +817,7 @@ index e99862d..b868dd0 100644
  import com.google.android.icing.proto.IcingSearchEngineOptions;
 -import com.google.android.icing.proto.InitializeResultProto;
 -import com.google.android.icing.proto.StatusProto;
- 
+
 -import java.util.List;
 -import java.util.Map;
 -import java.util.Objects;
@@ -827,7 +828,7 @@ index e99862d..b868dd0 100644
 -import java.util.concurrent.TimeUnit;
 -import java.util.concurrent.locks.ReentrantLock;
  import java.util.function.Consumer;
- 
+
 -/** Manages the isolated storage service and provides related services. */
 +/**
 + * A shell of the isolated storage service manager that keeps the public surface the rest of
@@ -837,7 +838,7 @@ index e99862d..b868dd0 100644
 + */
  public class IsolatedStorageServiceManager {
      private static final String TAG = "IsolatedStorageServiceM";
- 
+
 -    // TODO: b/389105038 - remove the temporary workaround for binder transaction limit.
 -    // Binder RPC max transaction allocation is 600 KiB.
 -    // - We use 512 KiB here. This will leave some room for non-page fields in the response protos
@@ -845,7 +846,7 @@ index e99862d..b868dd0 100644
 -    //   one document into the page even if it exceeds this limit, so we're still able to get a
 -    //   single giant document in a single page.
      public static final int DEFAULT_MAX_PAGE_BYTES_LIMIT_FOR_ISOLATED_STORAGE = 512 * 1024;
- 
+
      public static final String SYSTEM_PROPERTY_ENABLE_ISOLATED_STORAGE =
              "ro.appsearch.feature.enable_isolated_storage";
 +
@@ -886,7 +887,7 @@ index e99862d..b868dd0 100644
 -    private static final int MAX_ICING_INITIALIZATION_RETRIES = 3;
 -    private static final long VM_STATUS_CHECK_INITIAL_DELAY_SECONDS = 120; // 2 minutes
 -    private static final long VM_STATUS_CHECK_INTERVAL_SECONDS = 60; // 1 minute
- 
+
      public static final UserHandle ISOLATED_STORAGE_USER = UserHandle.SYSTEM;
 -    private static final String SYSTEM_PROPERTY_ENABLE_DEBUG_BUILD = "ro.debuggable";
 -    private static final boolean IS_DEBUG_BUILD =
@@ -927,7 +928,7 @@ index e99862d..b868dd0 100644
 -    private final Map<UserHandle, UserInstance> mUserInstancesLocked = new ArrayMap<>();
 -
 -    private InternalAppSearchLogger mLogger;
- 
+
      public IsolatedStorageServiceManager(
              @NonNull Context context,
              @NonNull ServiceAppSearchConfig appSearchConfig,
@@ -973,7 +974,7 @@ index e99862d..b868dd0 100644
 +            Log.d(TAG, "isolated storage is not available on this device");
          }
      }
- 
+
 -    /** Gets whether isolated storage should be used. */
 +    /** Always returns false; the virtualization framework is not shipped. */
      public static boolean isIsolatedStorageAvailable(
@@ -997,14 +998,14 @@ index e99862d..b868dd0 100644
 -                        SYSTEM_PROPERTY_ENABLE_ISOLATED_STORAGE, /* def= */ false);
 +        return false;
      }
- 
+
 -    /** Gets whether or not there is an isolated storage migration freeze override */
 +    /** Always returns false; no migration state can exist without the service. */
      public static boolean overrideIsolatedStorageMigrationFreeze() {
          return SystemProperties.getBoolean(
                  SYSTEM_PROPERTY_OVERRIDE_ISOLATED_STORAGE_MIGRATION_FREEZE, /* def= */ false);
      }
- 
+
 -    /** Checks whether the device supports protect VMs, and new FD->IBinder VM APIs. */
 +    /** Always returns false; the virtualization framework is not shipped. */
      public static boolean deviceSupportsVmsAndNewApis(Context context) {
@@ -1029,13 +1030,13 @@ index e99862d..b868dd0 100644
 -        return (vmm.getCapabilities() & requiredCapability) != 0;
 +        return false;
      }
- 
+
 +    /** Always returns false. */
      public static boolean isNonProtectedVmEnabled() {
          return SystemProperties.getBoolean(
                  SYSTEM_PROPERTY_ENABLE_NONPROTECTED_APPSEARCH_VM, /* def= */ false);
      }
- 
+
 -    private static boolean isAiSealEnabled() {
 -        return Flags.enableAisealIsolatedStorage()
 -                && SystemProperties.getBoolean(SYSTEM_PROPERTY_ENABLE_AISEAL, /* def= */ false);
@@ -1052,7 +1053,7 @@ index e99862d..b868dd0 100644
 +    public static boolean isUserAllowed(@NonNull UserHandle userHandle) {
 +        return false;
      }
- 
+
 -    /** Cleans up the isolated storage service related data. */
 +    /** No-op; there is no service to clean up. */
      public static void cleanUp(@NonNull Context context, @NonNull Consumer<Void> onSuccess) {
@@ -1102,7 +1103,7 @@ index e99862d..b868dd0 100644
 -        }
 +        // Nothing to do.
      }
- 
+
 -    /**
 -     * Initializes the isolated storage service if not already.
 -     *
@@ -1118,7 +1119,7 @@ index e99862d..b868dd0 100644
 -                VmInitializationStats.VM_INIT_TYPE_BOOTING);
 +        // Nothing to do.
      }
- 
+
 -    /**
 -     * Initializes the isolated storage service if not already.
 -     *
@@ -1197,7 +1198,7 @@ index e99862d..b868dd0 100644
 -        }
 +        // Nothing to do.
      }
- 
+
 -    /** Removes the icing instance for the corresponding userHandle */
 +    /** No-op; no per-user instances exist. */
      public void removeUserInstance(UserHandle userHandle) {
@@ -1218,7 +1219,7 @@ index e99862d..b868dd0 100644
 -        }
 +        // Nothing to do.
      }
- 
+
 -    /** Binds to the isolated storage service if not already. */
 -    @WorkerThread
 -    @GuardedBy("mLock")
@@ -1554,14 +1555,14 @@ index e99862d..b868dd0 100644
 -        mVmStateSignaler.signalActivityStarts();
 +        // Nothing to do.
      }
- 
+
 -    /** Signals that a VM activity ends. */
 +    /** No-op; there is no VM to signal. */
      void signalActivityEnds() {
 -        mVmStateSignaler.signalActivityEnds();
 +        // Nothing to do.
      }
- 
+
 +    /** No-op; there is no engine to configure. */
      void setIcingSearchEngineOptions(
              @NonNull UserHandle userHandle, @NonNull IcingSearchEngineOptions options) {
@@ -1597,7 +1598,7 @@ index e99862d..b868dd0 100644
 -        return future;
 +        // Nothing to do.
      }
- 
+
 +    /** Always returns null; no engine instance exists. */
      @Nullable
      IIcingSearchEngine getVmIcingInstanceOrNull(@NonNull UserHandle userHandle) {
@@ -1607,7 +1608,7 @@ index e99862d..b868dd0 100644
 -        }
 +        return null;
      }
- 
+
 +    /**
 +     * Returns a future that always fails; callers on the isolated storage path are unreachable
 +     * because {@link #isIsolatedStorageAvailable} is always false.
@@ -2058,5 +2059,5 @@ index e99862d..b868dd0 100644
 -    }
  }
 -- 
-2.55.0
+2.56.0
 

@@ -1,4 +1,4 @@
-From 160a6b5774d1293ac446fd3e50f2f3f7c6ee987a Mon Sep 17 00:00:00 2001
+From fad7836fffa85ac7ad37aed43c93cec359a4e288 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Tue, 24 Mar 2026 12:44:06 +0000
 Subject: [PATCH 2/3] base.mk: add VNDK v30 to PRODUCT_EXTRA_VNDK_VERSIONS
@@ -11,7 +11,7 @@ restore in platform_packages_modules_vndk.
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/base.mk b/base.mk
-index 84cdfac..a88edfc 100644
+index 56d03d3..44f2c41 100644
 --- a/base.mk
 +++ b/base.mk
 @@ -263,4 +263,4 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/window_extensions.mk)
@@ -21,5 +21,5 @@ index 84cdfac..a88edfc 100644
 -PRODUCT_EXTRA_VNDK_VERSIONS += 28 29
 +PRODUCT_EXTRA_VNDK_VERSIONS += 28 29 30
 -- 
-2.53.0
+2.56.0
 

@@ -1,4 +1,4 @@
-From 856c20d0f309a28f78900a9050249830edd1d912 Mon Sep 17 00:00:00 2001
+From edc368824886d0c628089c7ff3cb5d5db882672b Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Mon, 28 Sep 2026 08:40:32 +0100
 Subject: [PATCH 1/3] gsi: build system adjustments
@@ -13,10 +13,10 @@ soong analysis on non-cuttlefish products.
  2 files changed, 4 insertions(+)
 
 diff --git a/target/product/generic/Android.bp b/target/product/generic/Android.bp
-index edef3a8..12de408 100644
+index d8b2f40..6ca7c46 100644
 --- a/target/product/generic/Android.bp
 +++ b/target/product/generic/Android.bp
-@@ -1174,6 +1174,7 @@ system_image_defaults {
+@@ -1178,6 +1178,7 @@ system_image_defaults {
  android_system_image {
      name: "aosp_shared_system_image",
      defaults: ["system_image_defaults"],
@@ -36,5 +36,5 @@ index 28f4349..612c3bc 100644
 +/mnt/vendor/my_manifest
 +/my_manifest
 -- 
-2.55.0
+2.56.0
 

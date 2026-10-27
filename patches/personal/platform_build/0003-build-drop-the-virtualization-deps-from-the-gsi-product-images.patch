@@ -1,12 +1,14 @@
-From eb65a5762e0f6e04c06935f36baa1eedde268243 Mon Sep 17 00:00:00 2001
+From 00968297be06270ef0e50c8d5b4e802e280fb941 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Tue, 29 Sep 2026 13:36:01 +0100
-Subject: [PATCH 3/3] build: drop the virtualization deps from the gsi product images
+Subject: [PATCH 3/3] build: drop the virtualization deps from the gsi product
+ images
 
 the virtualization sources are excluded from the gsi manifest sync,
 so the compos apex and the virtualizationservice aidl backends do not
 exist. remove them from the gsi system image defaults and the generic
 product dependency lists.
+---
  target/product/default_art_config.mk | 4 ----
  target/product/generic/Android.bp    | 2 --
  target/product/gsi/Android.bp        | 8 --------
@@ -18,9 +20,9 @@ index 4df5c26..2a5487c 100644
 --- a/target/product/default_art_config.mk
 +++ b/target/product/default_art_config.mk
 @@ -220,10 +220,6 @@ ifeq ($(RELEASE_TELECOM_MAINLINE_MODULE),true)
- 
+
  endif
- 
+
 -ifeq ($(RELEASE_AVF_ENABLE_LLPVM_CHANGES),true)
 -  PRODUCT_APEX_SYSTEM_SERVER_JARS += com.android.virt:service-virtualization
 -endif
@@ -29,10 +31,10 @@ index 4df5c26..2a5487c 100644
  # Keep the list sorted library names.
  PRODUCT_STANDALONE_SYSTEM_SERVER_JARS := \
 diff --git a/target/product/generic/Android.bp b/target/product/generic/Android.bp
-index 12de408..4f944e4 100644
+index 6ca7c46..90b13b2 100644
 --- a/target/product/generic/Android.bp
 +++ b/target/product/generic/Android.bp
-@@ -1021,8 +1021,6 @@ system_image_defaults {
+@@ -1025,8 +1025,6 @@ system_image_defaults {
          },
          lib64: {
              deps: [
@@ -42,10 +44,10 @@ index 12de408..4f944e4 100644
                  "servicemanager",
              ],
 diff --git a/target/product/gsi/Android.bp b/target/product/gsi/Android.bp
-index ffbe79e..80a99ac 100644
+index 0ebd40b..4f0a09a 100644
 --- a/target/product/gsi/Android.bp
 +++ b/target/product/gsi/Android.bp
-@@ -179,14 +179,6 @@ android_filesystem_defaults {
+@@ -195,14 +195,6 @@ android_filesystem_defaults {
          "android.hidl.allocator@1.0-service",
      ],
      multilib: {
@@ -87,5 +89,5 @@ index 976d26b..e1aa4c8 100644
          ":unpack_bootimg",
          ":update_device",
 -- 
-2.55.0
+2.56.0
 

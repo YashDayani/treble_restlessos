@@ -1,16 +1,51 @@
-From b14b6ebe16309351e272187d3d82430fe1272a14 Mon Sep 17 00:00:00 2001
-From: Christopher A. Williamson <contact@chrisaw.io>
+From fae243785d1cfbd147fea295baba8433ebf05146 Mon Sep 17 00:00:00 2001
+From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Sat, 26 Sep 2026 21:16:22 +0100
-Subject: [PATCH 3/3] device/phh/treble: ship prebuilt bootanimation zip
+Subject: [PATCH 3/3] device/phh/treble: ship the restlessos branding assets
+
+---
+ base.mk                                       |  23 ++++++++++++++++++
+ bootanimation.zip                             | Bin 6728633 -> 14844328 bytes
+ partner-wallpapers/Android.bp                 |  10 ++++++++
+ partner-wallpapers/AndroidManifest.xml        |  12 +++++++++
+ .../restlessstars_homescreen_light.webp       | Bin 0 -> 898050 bytes
+ .../restlessstars_homescreen_light_small.webp | Bin 0 -> 163924 bytes
+ .../drawable-nodpi/restlessstars_light.webp   | Bin 0 -> 891666 bytes
+ .../restlessstars_light_small.webp            | Bin 0 -> 161706 bytes
+ .../restlessstars_lockscreen_dark.webp        | Bin 0 -> 1035680 bytes
+ .../restlessstars_lockscreen_dark_small.webp  | Bin 0 -> 187262 bytes
+ .../restlessstars_lockscreen_light.webp       | Bin 0 -> 905202 bytes
+ .../restlessstars_lockscreen_light_small.webp | Bin 0 -> 164254 bytes
+ partner-wallpapers/res/values/arrays.xml      |  11 +++++++++
+ .../partner/wallpapers/PartnerReceiver.java   |  17 +++++++++++++
+ wallpapers/LICENSE                            |  16 ++++++++++++
+ wallpapers/RestlessStars-Homescreen-Dark.webp | Bin 0 -> 1026824 bytes
+ wallpapers/RestlessStars-Lock-Dark.webp       | Bin 0 -> 1020592 bytes
+ 17 files changed, 89 insertions(+)
+ create mode 100644 partner-wallpapers/Android.bp
+ create mode 100644 partner-wallpapers/AndroidManifest.xml
+ create mode 100755 partner-wallpapers/res/drawable-nodpi/restlessstars_homescreen_light.webp
+ create mode 100644 partner-wallpapers/res/drawable-nodpi/restlessstars_homescreen_light_small.webp
+ create mode 100755 partner-wallpapers/res/drawable-nodpi/restlessstars_light.webp
+ create mode 100644 partner-wallpapers/res/drawable-nodpi/restlessstars_light_small.webp
+ create mode 100755 partner-wallpapers/res/drawable-nodpi/restlessstars_lockscreen_dark.webp
+ create mode 100644 partner-wallpapers/res/drawable-nodpi/restlessstars_lockscreen_dark_small.webp
+ create mode 100755 partner-wallpapers/res/drawable-nodpi/restlessstars_lockscreen_light.webp
+ create mode 100644 partner-wallpapers/res/drawable-nodpi/restlessstars_lockscreen_light_small.webp
+ create mode 100644 partner-wallpapers/res/values/arrays.xml
+ create mode 100644 partner-wallpapers/src/com/restlessos/partner/wallpapers/PartnerReceiver.java
+ create mode 100644 wallpapers/LICENSE
+ create mode 100755 wallpapers/RestlessStars-Homescreen-Dark.webp
+ create mode 100755 wallpapers/RestlessStars-Lock-Dark.webp
 
 diff --git a/base.mk b/base.mk
-index 6cf6e95..99173ae 100644
+index 44f2c41..d191910 100644
 --- a/base.mk
 +++ b/base.mk
-@@ -228,6 +228,29 @@ PRODUCT_COPY_FILES += \
- 
+@@ -232,6 +232,29 @@ PRODUCT_COPY_FILES += \
+
  PRODUCT_PACKAGES += phh-ota
- 
+
 +# prebuilt bootanimation; installs to /system/media/bootanimation.zip, the
 +# default path the bootanimation binary reads. entries must stay stored
 +# (uncompressed) -- BootAnimation skips deflated frame entries entirely.
@@ -36,7 +71,7 @@ index 6cf6e95..99173ae 100644
 +
  PRODUCT_PACKAGES += \
      xiaomi-touch
- 
+
 diff --git a/bootanimation.zip b/bootanimation.zip
 index 796b0aca4609a99d2140afc995c19460572ec033..72fea528b0843875aeccb22ab7dd814f164f3bdb 100644
 GIT binary patch
@@ -557990,4 +558025,8 @@ I;=_Li038S?U;qFB
 
 literal 0
 HcmV?d00001
+
+
+-- 
+2.56.0
 
