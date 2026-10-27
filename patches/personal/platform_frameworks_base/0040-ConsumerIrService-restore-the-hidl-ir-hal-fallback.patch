@@ -1,7 +1,7 @@
 From 33ce9c1d2275c391495766263cc69599c1971a6e Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Tue, 27 Oct 2026 16:35:30 +0300
-Subject: [PATCH 40/40] ConsumerIrService: restore the hidl ir hal fallback
+Subject: [PATCH 40/41] ConsumerIrService: restore the hidl ir hal fallback
 
 ---
  .../com/android/server/ConsumerIrService.java | 26 ++++-

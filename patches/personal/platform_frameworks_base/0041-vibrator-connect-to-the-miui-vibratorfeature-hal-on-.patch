@@ -1,0 +1,61 @@
+From a688d188b9a9a8aab4054383b8c8d6e44c28086d Mon Sep 17 00:00:00 2001
+From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
+Date: Tue, 27 Oct 2026 17:08:17 +0300
+Subject: [PATCH 41/41] vibrator: connect to the miui vibratorfeature hal on the
+ vintf path
+
+---
+ .../android/server/vibrator/VintfHalVibrator.java    | 12 +++++++++++-
+ .../server/vibrator/VintfHalVibratorManager.java     |  9 +++++++++
+ 2 files changed, 20 insertions(+), 1 deletion(-)
+
+diff --git a/services/core/java/com/android/server/vibrator/VintfHalVibrator.java b/services/core/java/com/android/server/vibrator/VintfHalVibrator.java
+index a8d9224..c749044 100644
+--- a/services/core/java/com/android/server/vibrator/VintfHalVibrator.java
++++ b/services/core/java/com/android/server/vibrator/VintfHalVibrator.java
+@@ -97,11 +97,21 @@ class VintfHalVibrator {
+ 
+     /** {@link VintfSupplier} for default {@link IVibrator} service. */
+     static final class DefaultVibratorSupplier extends VintfSupplier<IVibrator> {
++        private final String mInstance;
++
++        DefaultVibratorSupplier() {
++            this("default");
++        }
++
++        DefaultVibratorSupplier(String instance) {
++            mInstance = instance;
++        }
++
+         @Nullable
+         @Override
+         IBinder connectToService() {
+             return Binder.allowBlocking(ServiceManager.waitForDeclaredService(
+-                    IVibrator.DESCRIPTOR + "/default"));
++                    IVibrator.DESCRIPTOR + "/" + mInstance));
+         }
+ 
+         @NonNull
+diff --git a/services/core/java/com/android/server/vibrator/VintfHalVibratorManager.java b/services/core/java/com/android/server/vibrator/VintfHalVibratorManager.java
+index 6350d05..d0cdc39 100644
+--- a/services/core/java/com/android/server/vibrator/VintfHalVibratorManager.java
++++ b/services/core/java/com/android/server/vibrator/VintfHalVibratorManager.java
+@@ -70,6 +70,15 @@ class VintfHalVibratorManager {
+                             handler, nativeHandler),
+                     nativeHandler);
+         }
++        // MIUI devices register their vibrator HAL as "vibratorfeature" instead of "default"
++        if (ServiceManager.isDeclared(IVibrator.DESCRIPTOR + "/vibratorfeature")) {
++            Slog.v(TAG, "Loading vibratorfeature IVibrator service.");
++            return new LegacyHalVibratorManager(
++                    new DefaultHalVibrator(DEFAULT_VIBRATOR_ID,
++                            new DefaultVibratorSupplier("vibratorfeature"), handler,
++                            nativeHandler),
++                    nativeHandler);
++        }
+         Slog.v(TAG, "No default services declared for IVibratorManager or IVibrator."
+                 + " Vibrator manager service will proceed without vibrator hardware.");
+         return new LegacyHalVibratorManager();
+-- 
+2.43.0
+
