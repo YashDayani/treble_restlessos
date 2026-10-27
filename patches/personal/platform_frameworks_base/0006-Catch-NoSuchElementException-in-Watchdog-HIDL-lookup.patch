@@ -1,7 +1,7 @@
-From 5f67514d6fcb49aec098e259ffa1ff6d3c294a99 Mon Sep 17 00:00:00 2001
+From 32cbc909add0e1ed966e17eb2e2917f2f73a0bcb Mon Sep 17 00:00:00 2001
 From: OpenCode <opencode@localhost>
 Date: Mon, 16 Feb 2026 05:00:00 +0000
-Subject: [PATCH 6/39] Catch NoSuchElementException in Watchdog HIDL lookup
+Subject: [PATCH 6/38] Catch NoSuchElementException in Watchdog HIDL lookup
 
 On GSI builds, hwservicemanager can crash (e.g. shadow stack allocation
 failure during boot memory pressure). When Watchdog tries to collect

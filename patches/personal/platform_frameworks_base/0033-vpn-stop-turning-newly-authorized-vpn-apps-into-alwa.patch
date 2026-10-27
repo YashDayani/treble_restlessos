@@ -1,7 +1,7 @@
-From 556fcff6992c51164ea404f5bfa3a4eae48d6c82 Mon Sep 17 00:00:00 2001
+From 1133fbd001806160ecc196bcb6ea4560b56b7931 Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Fri, 23 Oct 2026 02:14:33 +0300
-Subject: [PATCH 34/39] vpn: stop turning newly authorized vpn apps into
+Subject: [PATCH 33/38] vpn: stop turning newly authorized vpn apps into
  always-on lockdown vpns
 
 ---

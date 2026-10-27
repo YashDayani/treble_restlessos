@@ -1,7 +1,7 @@
-From 3ebf7b6053271235a8dc9cd1dd13c795762cde4b Mon Sep 17 00:00:00 2001
+From b4d5298ea7af6d0b147995e0fc191d2fb12fe08f Mon Sep 17 00:00:00 2001
 From: 0xALUCARD <0xALUCARD@protonmail.com>
 Date: Sun, 13 Sep 2026 16:04:32 +0000
-Subject: [PATCH 37/39] SystemUI: allow the hotspot quick settings tile for
+Subject: [PATCH 36/38] SystemUI: allow the hotspot quick settings tile for
  non-admin users
 
 ---
