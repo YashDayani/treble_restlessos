@@ -1,4 +1,4 @@
-From 95921187bbf9bdbe8b19f0cfa587825dc39f9156 Mon Sep 17 00:00:00 2001
+From 6e7572ee3b0d502445bc0f1fa804111f813934da Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Fri, 23 Oct 2026 00:26:48 +0300
 Subject: [PATCH 45/49] attention: keep the screen on while the user is looking
@@ -6,12 +6,12 @@ Subject: [PATCH 45/49] attention: keep the screen on while the user is looking
 
 ---
  attention/Android.bp                          |  10 +
- attention/AndroidManifest.xml                 |  21 +
+ attention/AndroidManifest.xml                 |  22 +
  ...p-permissions-com.restlessos.attention.xml |   7 +
  .../attention/FaceAttentionService.java       | 419 ++++++++++++++++++
  base.mk                                       |   6 +
  .../base/core/res/res/values/config.xml       |   5 +
- 6 files changed, 468 insertions(+)
+ 6 files changed, 469 insertions(+)
  create mode 100644 attention/Android.bp
  create mode 100644 attention/AndroidManifest.xml
  create mode 100644 attention/privapp-permissions-com.restlessos.attention.xml
@@ -35,15 +35,16 @@ index 0000000..1e56be8
 +}
 diff --git a/attention/AndroidManifest.xml b/attention/AndroidManifest.xml
 new file mode 100644
-index 0000000..c285a52
+index 0000000..b9758bd
 --- /dev/null
 +++ b/attention/AndroidManifest.xml
-@@ -0,0 +1,21 @@
+@@ -0,0 +1,22 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<manifest xmlns:android="http://schemas.android.com/apk/res/android"
 +    package="com.restlessos.attention">
 +
 +    <uses-permission android:name="android.permission.CAMERA" />
++    <uses-permission android:name="android.permission.UPDATE_DEVICE_STATS" />
 +
 +    <application
 +        android:label="Screen attention"
