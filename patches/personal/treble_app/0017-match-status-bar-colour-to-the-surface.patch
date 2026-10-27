@@ -1,7 +1,7 @@
-From db1dd0af382b58357b6fe99bd52a88881187fc28 Mon Sep 17 00:00:00 2001
+From 055ae847596b0391f25d3db8367d10dc70bc9a9f Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Fri, 23 Oct 2026 20:16:54 +0100
-Subject: [PATCH 19/20] match status bar colour to the surface
+Subject: [PATCH 17/18] match status bar colour to the surface
 
 ---
  app/src/main/res/values/styles.xml | 1 +

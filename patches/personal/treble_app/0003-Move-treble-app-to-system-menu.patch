@@ -1,7 +1,7 @@
-From 57f5b911e58742fd1567b833335db6eb6e4f0e45 Mon Sep 17 00:00:00 2001
+From 8516c1d68ba884335fc93dcbd5ab670003e151f2 Mon Sep 17 00:00:00 2001
 From: ahnet-69 <syedmusicrealise@gmail.com>
 Date: Mon, 13 May 2024 10:25:26 +0000
-Subject: [PATCH 3/20] Move treble app to system menu
+Subject: [PATCH 3/18] Move treble app to system menu
 
 Co-Authored-By: ahnet-69 <www.rajsonu13@gmail.com>
 ---

@@ -1,7 +1,7 @@
-From 5857fa143474348260c9e91e2ea956976f9f8a41 Mon Sep 17 00:00:00 2001
+From 859b2fec690f62fc9b1bcf0c672c1b106aa5d2bf Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Fri, 23 Oct 2026 20:06:06 +0100
-Subject: [PATCH 18/20] material 3 theming with dynamic colour
+Subject: [PATCH 16/18] material 3 theming with dynamic colour
 
 ---
  app/build.gradle                              |  1 +

@@ -1,7 +1,7 @@
-From 3aea0bcfa88ba075cec7b7b2eb7346f19cd8969c Mon Sep 17 00:00:00 2001
+From f6485b94d18e91d39efead14e5c059ff677e0f42 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Sun, 21 Jun 2026 23:58:54 +0100
-Subject: [PATCH 7/20] treble_app: run EntryService as a freezer-exempt
+Subject: [PATCH 7/18] treble_app: run EntryService as a freezer-exempt
  foreground service
 
 device-specific sensor listeners (e.g. motorola chop-chop flashlight,

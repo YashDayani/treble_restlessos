@@ -1,7 +1,7 @@
-From 8cf4a85f79d518f3c759706a13e24a2f954b432a Mon Sep 17 00:00:00 2001
+From 965898495fa630b943b36c1f9dcf10803b964d23 Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Thu, 8 Oct 2026 00:08:11 +0300
-Subject: [PATCH 13/20] treble_app: let the ims install button pick the phh or
+Subject: [PATCH 11/18] treble_app: let the ims install button pick the phh or
  alternative floss apk
 
 ---

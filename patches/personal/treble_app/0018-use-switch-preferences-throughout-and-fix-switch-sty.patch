@@ -1,7 +1,7 @@
-From 8387eb5ce9e50be2995495cd3d3bdfed9bb9e8dc Mon Sep 17 00:00:00 2001
+From 302ca13b8e34d1702244fcc45cdc63213205844f Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Fri, 23 Oct 2026 20:44:39 +0100
-Subject: [PATCH 20/20] use switch preferences throughout and fix switch
+Subject: [PATCH 18/18] use switch preferences throughout and fix switch
  styling
 
 ---

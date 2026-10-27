@@ -1,7 +1,7 @@
-From f1c7e039f1d9254bb15a358db258ae839fad6b46 Mon Sep 17 00:00:00 2001
+From e962c4a3b14921aeb1a1625620c38ec3606d3589 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Mon, 5 Oct 2026 09:43:44 +0100
-Subject: [PATCH 11/20] treble_app: add a GNSS time fallback toggle
+Subject: [PATCH 9/18] treble_app: add a GNSS time fallback toggle
 
 gnss time fallback is enabled by default on the framework side; the
 toggle writes persist.sys.phh.hardening.gnss_time which gates
