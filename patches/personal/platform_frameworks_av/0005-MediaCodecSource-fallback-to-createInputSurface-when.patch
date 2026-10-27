@@ -1,7 +1,8 @@
-From 86f18dff08763ab7e58ef5dfbb2e0b4c66e86301 Mon Sep 17 00:00:00 2001
+From 987f3c089571525bf0df7b270e948f7f388d8d8a Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
 Date: Mon, 1 Jun 2026 20:06:24 +0100
-Subject: [PATCH 5/12] MediaCodecSource: fallback to createInputSurface when PersistentSurface fails
+Subject: [PATCH 5/10] MediaCodecSource: fallback to createInputSurface when
+ PersistentSurface fails
 
 some vendor HALs (notably MediaTek) report isModeSupported=true for
 PersistentSurface but then reject setInputSurface at runtime with
@@ -15,10 +16,10 @@ internally and avoids the PersistentSurface code path entirely.
  1 file changed, 9 insertions(+)
 
 diff --git a/media/libstagefright/MediaCodecSource.cpp b/media/libstagefright/MediaCodecSource.cpp
-index fdb3f67..0a8b342 100644
+index 53fc437..aa5159e 100644
 --- a/media/libstagefright/MediaCodecSource.cpp
 +++ b/media/libstagefright/MediaCodecSource.cpp
-@@ -578,6 +578,15 @@ status_t MediaCodecSource::initEncoder() {
+@@ -621,6 +621,15 @@ status_t MediaCodecSource::initEncoder() {
              // consumer, but have to use PersistentSurface as a wrapper to
              // pass consumer over messages (similar to BufferProducerWrapper)
              err = mEncoder->setInputSurface(mPersistentSurface);
@@ -35,5 +36,5 @@ index fdb3f67..0a8b342 100644
              err = mEncoder->createInputSurface(&mSurface);
          }
 -- 
-2.54.0
+2.56.0
 

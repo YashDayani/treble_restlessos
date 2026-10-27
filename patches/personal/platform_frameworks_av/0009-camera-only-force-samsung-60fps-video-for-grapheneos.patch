@@ -1,7 +1,8 @@
-From e4ec832d6f220adf19581c11daa78bc85299327a Mon Sep 17 00:00:00 2001
+From 7b018863f0a52793da4de395b1a135d474ba0109 Mon Sep 17 00:00:00 2001
 From: Langsdorff <131063968+clangsdorff@users.noreply.github.com>
 Date: Sun, 4 Oct 2026 23:12:38 +0300
-Subject: [PATCH 11/12] camera: only force samsung 60fps video for grapheneos camera
+Subject: [PATCH 9/10] camera: only force samsung 60fps video for grapheneos
+ camera
 
 ---
  .../camera/libcameraservice/common/Camera2ClientBase.cpp    | 2 ++
@@ -19,7 +20,7 @@ index 9f8e03c..83f89de 100644
      }
 +    static_cast<Camera3Device*>(mDevice.get())->setClientPackageName(
 +            TClientBase::getPackageName());
- 
+
      // Notify camera opening (check op if check_full_attribution_source_chain flag is off).
      res = TClientBase::notifyCameraOpening();
 diff --git a/services/camera/libcameraservice/device3/Camera3Device.cpp b/services/camera/libcameraservice/device3/Camera3Device.cpp
@@ -40,7 +41,7 @@ index 508444e..4602d53 100644
 @@ -2737,7 +2741,7 @@ status_t Camera3Device::configureStreamsLocked(int operatingMode,
              mComposerOutput = true;
          }
- 
+
 -        if (samsungVideoFpsEnabled && mOutputStreams[i]->isVideoStream()) {
 +        if (samsungVideoFpsForced && mOutputStreams[i]->isVideoStream()) {
              samsungVideoFps = std::max(samsungVideoFps, getSamsungHighFpsVideoFps(mDeviceInfo,
@@ -53,7 +54,7 @@ index 493aaa2..aa94e94 100644
 @@ -157,6 +157,10 @@ class Camera3Device :
          return mIsCompositeHeicUltraHDRDisabled;
      }
- 
+
 +    void setClientPackageName(const std::string& packageName) {
 +        mClientPackageName = packageName;
 +    }
@@ -64,12 +65,12 @@ index 493aaa2..aa94e94 100644
 @@ -1670,6 +1674,8 @@ class Camera3Device :
      camera_metadata_enum_android_scaler_rotate_and_crop_t mRotateAndCropOverride;
      bool mComposerOutput;
- 
+
 +    std::string mClientPackageName;
 +
      // Auto framing override value
      camera_metadata_enum_android_control_autoframing mAutoframingOverride;
- 
+
 -- 
-2.39.2 (Apple Git-143)
+2.56.0
 

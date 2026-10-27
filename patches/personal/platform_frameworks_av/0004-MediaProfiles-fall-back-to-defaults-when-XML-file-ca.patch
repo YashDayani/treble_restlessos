@@ -1,7 +1,8 @@
-From 3d3d3a014cfd6eb41a55f79a3c2962912a951bba Mon Sep 17 00:00:00 2001
+From 84ce2ecb3313b846538e1309264c18c328ad0460 Mon Sep 17 00:00:00 2001
 From: "Christopher A. Williamson" <contact@chrisaw.io>
-Date: Thu, 10 Apr 2026 12:00:00 +0100
-Subject: [PATCH 4/12] MediaProfiles: fall back to defaults when XML file cannot be opened
+Date: Fri, 10 Apr 2026 12:00:00 +0100
+Subject: [PATCH 4/10] MediaProfiles: fall back to defaults when XML file
+ cannot be opened
 
 On GSI builds running via DSU, the vendor media_profiles XML file may
 exist on disk (passing the stat() check) but be inaccessible due to
@@ -19,14 +20,14 @@ XML file is found at all.
 Bug: none
 Change-Id: I0000000000000000000000000000000000000000
 ---
- media/libmedia/MediaProfiles.cpp | 13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+ media/libmedia/MediaProfiles.cpp | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
 diff --git a/media/libmedia/MediaProfiles.cpp b/media/libmedia/MediaProfiles.cpp
-index 0438806..9caaefe 100644
+index 75d284d..9d35c4d 100644
 --- a/media/libmedia/MediaProfiles.cpp
 +++ b/media/libmedia/MediaProfiles.cpp
-@@ -995,6 +995,11 @@ MediaProfiles::getInstance()
+@@ -1004,6 +1004,11 @@ MediaProfiles::getInstance()
          } else {
              sInstance = createInstanceFromXmlFile(value);
          }
@@ -38,7 +39,7 @@ index 0438806..9caaefe 100644
          CHECK(sInstance != NULL);
          sInstance->checkAndAddRequiredProfilesIfNecessary();
          sIsInitialized = true;
-@@ -1236,8 +1241,11 @@ bool MediaProfiles::checkXmlFile(const char* xmlFile) {
+@@ -1245,8 +1250,11 @@ bool MediaProfiles::checkXmlFile(const char* xmlFile) {
  /*static*/ MediaProfiles*
  MediaProfiles::createInstanceFromXmlFile(const char *xml)
  {
@@ -49,9 +50,9 @@ index 0438806..9caaefe 100644
 +        ALOGE("failed to open media profiles file '%s'", xml);
 +        return NULL;
 +    }
- 
+
      XML_Parser parser = ::XML_ParserCreate(NULL);
      CHECK(parser != NULL);
 -- 
-2.53.0
+2.56.0
 
